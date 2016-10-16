@@ -1,18 +1,27 @@
-package net.primomc.TracerBlocker;
+package cz.GravelCZLP.TracerBlocker;
 
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
-import net.primomc.TracerBlocker.PacketWrapper.WrapperPlayServerBlockChange;
-import org.bukkit.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
+import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
+
+import cz.GravelCZLP.FakePlayer.FakePlayer1_10;
+import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerBlockChange;
+import cz.GravelCZLP.PlayerHider.AbstractPlayerHider;
+import cz.GravelCZLP.PlayerHider.PlayerHider1_10;
 
 /*
  * Copyright 2016 Luuk Jacobs
@@ -29,21 +38,31 @@ import java.util.Random;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@SuppressWarnings("deprecation")
 public class TracerBlocker extends JavaPlugin
 {
 
     private static final Random rand = new Random();
-    private PlayerHider playerHider;
+    private AbstractPlayerHider playerHider;
 
     @Override
     public void onEnable()
     {
-
+        if (!getServer().getVersion().contains( "1.10" ) )
+        {
+            this.getServer().getPluginManager().disablePlugin(this);
+            getLogger().warning( "PrimoTracerBlocker currently only supports 1.10.x" );
+            return;
+        }
         loadConfig();
 
+        getLogger().info( getServer().getVersion() );
         if ( Settings.PlayerHider.enabled )
         {
-            playerHider = new PlayerHider( this );
+            if ( getServer().getVersion().contains( "1.10" ) )
+            {
+                playerHider = new PlayerHider1_10( this );
+            }
             getServer().getScheduler().runTaskTimer( this, new Runnable()
             {
                 @Override
@@ -225,7 +244,16 @@ public class TracerBlocker extends JavaPlugin
                 }
                 fakeLocation = player.getLocation().clone().add( x, y, z );
             } while ( fakeLocation.distance( player.getLocation() ) < 16 );
-            new FakePlayer( this, fakeLocation ).addObserver( player );
+            newFakePlayer( fakeLocation, player );
+
+        }
+    }
+
+    private void newFakePlayer( Location fakeLocation, Player player )
+    {
+        if ( getServer().getVersion().contains( "1.10" ) )
+        {
+            new FakePlayer1_10( this, fakeLocation ).addObserver( player );
         }
     }
 
@@ -406,11 +434,5 @@ public class TracerBlocker extends JavaPlugin
         TRANSPARENT_MATERIALS.add( Material.TRAPPED_CHEST.getId() );
         TRANSPARENT_MATERIALS.add( Material.LEAVES.getId() );
         TRANSPARENT_MATERIALS.add( Material.LEAVES_2.getId() );
-    }
-
-    @Override
-    public void onDisable()
-    {
-
     }
 }
