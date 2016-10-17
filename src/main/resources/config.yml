@@ -29,7 +29,7 @@ fakeplayers:
   #If you have lag problems, both FPS(clientside) and TPS(serverside) this might lower it.
   moving: true
   #how often it checks if someone is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
-  every-ticks: 40
+  every-ticks: 5
   #the amount of seconds the fake players should exist for.
   seconds-alive: 5
   # The update speed of the fake player entities in ticks. 1 tick = 50ms
