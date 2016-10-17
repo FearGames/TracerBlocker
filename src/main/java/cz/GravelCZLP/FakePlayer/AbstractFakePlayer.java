@@ -28,15 +28,35 @@ public abstract class AbstractFakePlayer
      */
     protected static final FieldAccessor ENTITY_ID = Accessors.getFieldAccessor( MinecraftReflection.getEntityClass(), "entityCount", true );
     protected final Vector vector;
-
+    
+    /**
+     * List of Players that will see the entity
+     */
     public List<Player> observers = Lists.newArrayList();
 
+    /**
+     * Client (Player) location
+     */
     protected Location clientLocation;
+    /**
+     * Location of Client-Side Player
+     */
     protected Location serverLocation;
-
+    /**
+     * id for this entity
+     */
     protected int entityId;
+    /**
+     * Name of this Entity
+     */
     protected String name;
+    /**
+     * UUID of this entity
+     */
     protected UUID uuid;
+    /**
+     * if name has changed
+     */
     protected boolean changed;
     
     // Update task
@@ -44,7 +64,7 @@ public abstract class AbstractFakePlayer
 
     public AbstractFakePlayer( final Plugin plugin, Location location )
     {
-        this.clientLocation = Preconditions.checkNotNull( location, "location cannot be NULL" );
+        this.clientLocation = Preconditions.checkNotNull( location, "Location cannot be NULL" );
         this.serverLocation = clientLocation.clone();
         Vector v = Vector.getRandom(); // This makes a random vector but it doesn't shoot all ways //
         v.setX( v.getX() - 0.5f );
@@ -126,7 +146,7 @@ public abstract class AbstractFakePlayer
             clientLocation = serverLocation.clone();
         }
     }
-
+    
     protected abstract void notifySpawnEntity( Player player );
 
     protected abstract void sendAddPlayerTab( Player player );
