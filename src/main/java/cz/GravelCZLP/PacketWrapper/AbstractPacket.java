@@ -85,5 +85,5 @@ public abstract class AbstractPacket
 		} catch (Exception e) {
 			throw new RuntimeException("Cannot recieve packet.", e);
 		}
-}
+	}
 }

@@ -228,4 +228,8 @@ public abstract class AbstractFakePlayer
     	}
     	return toReturn;
     }
+    public void stopRunnble() 
+    {
+    	task.cancel();
+    }
 }

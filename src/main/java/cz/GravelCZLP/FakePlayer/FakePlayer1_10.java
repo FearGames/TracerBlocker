@@ -20,7 +20,6 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
 import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerAnimation;
 import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerEntityDestroy;
@@ -169,6 +168,12 @@ public class FakePlayer1_10 extends AbstractFakePlayer
         animation.setEntityID(entityId);
         animation.setAnimation(getRandomAnimation());
         
+        WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
+        WrappedDataWatcher watcher = new WrappedDataWatcher();
+        watcher.setObject(0, (byte) 0x02);
+        metadata.setEntityID(entityId);
+        metadata.setMetadata(watcher.getWatchableObjects());
+        
         for ( Player player : observers )
         {
         	if (move != null) {
@@ -176,6 +181,7 @@ public class FakePlayer1_10 extends AbstractFakePlayer
         	}
             equipment.sendPacket( player );
             animation.sendPacket(player);
+            metadata.sendPacket(player);
             if (tp != null) {
             	tp.sendPacket(player);
             }
@@ -206,5 +212,12 @@ public class FakePlayer1_10 extends AbstractFakePlayer
     	default:
     		return 0;
     	}
+    }
+    public void printInfo(Player toWho)
+    {
+    	toWho.sendMessage("Entity Spawned !");
+    	toWho.sendMessage("Name: " + name);
+    	toWho.sendMessage("UUID: " + uuid);
+    	toWho.sendMessage("Entity ID: " + entityId);
     }
 }

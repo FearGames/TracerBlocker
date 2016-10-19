@@ -1,5 +1,7 @@
 package cz.GravelCZLP.TracerBlocker;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -8,9 +10,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
@@ -22,6 +26,7 @@ import cz.GravelCZLP.FakePlayer.FakePlayer1_10;
 import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerBlockChange;
 import cz.GravelCZLP.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.PlayerHider.PlayerHider1_10;
+import cz.GravelCZLP.TracerBlocker.commands.TracerBlockerCommand;
 
 /*
  * Copyright 2016 Luuk Jacobs
@@ -56,6 +61,10 @@ public class TracerBlocker extends JavaPlugin
         }
         loadConfig();
 
+        Server server = getServer();
+        
+        server.getPluginCommand("tracerblocker").setExecutor(new TracerBlockerCommand(this));
+        
         getLogger().info( getServer().getVersion() );
         if ( Settings.PlayerHider.enabled )
         {
@@ -70,7 +79,7 @@ public class TracerBlocker extends JavaPlugin
                 {
                     checkVisibility();
                 }
-            }, 100, Settings.PlayerHider.everyTicks );
+            }, 1, Settings.PlayerHider.everyTicks );
         }
         if ( Settings.ChestHider.enabled )
         {
@@ -81,7 +90,7 @@ public class TracerBlocker extends JavaPlugin
                 {
                     checkChestVisibility();
                 }
-            }, 100, Settings.ChestHider.everyTicks );
+            }, 1, Settings.ChestHider.everyTicks );
         }
         if ( Settings.FakePlayers.enabled )
         {
@@ -92,11 +101,16 @@ public class TracerBlocker extends JavaPlugin
                 {
                     spawnFakePlayers();
                 }
-            }, 100, Settings.FakePlayers.everyTicks );
+            }, 1, Settings.FakePlayers.everyTicks );
         }
     }
-
-    private void loadConfig()
+    
+    
+    public void onDisable() {
+    	saveConfig();
+    }
+    
+    public void loadConfig()
     {
         saveDefaultConfig();
         Settings.PlayerHider.enabled = getConfig().getBoolean( "playerhider.enabled" );
@@ -120,6 +134,42 @@ public class TracerBlocker extends JavaPlugin
         Settings.FakePlayers.disabledWorlds = getConfig().getStringList( "fakeplayers.disabledWorlds" );
     }
 
+    public void saveConfig() 
+    {
+    	FileConfiguration config = getConfig();
+    	
+    	//Player hider
+    	config.set("playerhider.enabled", Settings.PlayerHider.enabled);
+    	config.set("playerhider.every-ticks", Settings.PlayerHider.everyTicks);
+    	config.set("playerhider.ignore-distance", Settings.PlayerHider.ignoreDistance);
+    	config.set("playerhider.max-distance", Settings.PlayerHider.maxDistance);
+    	config.set("playerhider.disabledworlds", Settings.PlayerHider.disabledWorlds);
+    	
+    	//Chest hider
+    	config.set("chesthider.enabled", Settings.ChestHider.enabled);
+    	config.set("chesthider.every-ticks", Settings.ChestHider.everyTicks);
+    	config.set("chesthider.ignore-distance", Settings.ChestHider.ignoreDistance);
+    	config.set("chesthider.max-distance", Settings.ChestHider.maxDistance);
+    	config.set("chesthider.disabledWorlds", Settings.ChestHider.disabledWorlds);
+    	
+    	//Fake Players
+    	config.set("fakeplayers.enabled", Settings.FakePlayers.enabled);
+    	config.set("fakeplayers.moving", Settings.FakePlayers.moving);
+    	config.set("fakeplayers.enabled", Settings.FakePlayers.enabled);
+    	config.set("fakeplayers.every-ticks", Settings.FakePlayers.everyTicks);
+    	config.set("fakeplayers.seconds-alive", Settings.FakePlayers.secondsAlive);
+    	config.set("fakeplayers.speed", Settings.FakePlayers.speed);
+    	config.set("fakeplayers.disabledWorlds", Settings.FakePlayers.disabledWorlds);
+    	
+    	File configFile = new File(getDataFolder() + "/config.yml");
+    	try {
+			config.save(configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error occuren when tying to save config for tracer Blocker, all settings set in game have been not saved ?:(");
+		}
+    }
+    
     private void checkChestVisibility()
     {
         for ( Player a : Bukkit.getOnlinePlayers() )
