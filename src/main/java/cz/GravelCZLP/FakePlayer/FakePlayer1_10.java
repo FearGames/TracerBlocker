@@ -45,7 +45,7 @@ public class FakePlayer1_10 extends AbstractFakePlayer
         watcher.setObject( 0, WrappedDataWatcher.Registry.get( Byte.class ), (byte) 0x20 );
         watcher.setObject( 1, WrappedDataWatcher.Registry.get( Integer.class ), 300 );
         watcher.setObject( 3, WrappedDataWatcher.Registry.get( String.class ), name );
-        watcher.setObject( 2, WrappedDataWatcher.Registry.get( Float.class ), (float) randomHealth() );
+        watcher.setObject( 7, WrappedDataWatcher.Registry.get( Float.class ), (float) 20 );
         return watcher;
     }
 
@@ -170,7 +170,9 @@ public class FakePlayer1_10 extends AbstractFakePlayer
         
         WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
         WrappedDataWatcher watcher = new WrappedDataWatcher();
-        watcher.setObject(0, (byte) 0x02);
+        watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
+        watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), (float) randomHealth());
+        watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());
         metadata.setEntityID(entityId);
         metadata.setMetadata(watcher.getWatchableObjects());
         
@@ -219,5 +221,9 @@ public class FakePlayer1_10 extends AbstractFakePlayer
     	toWho.sendMessage("Name: " + name);
     	toWho.sendMessage("UUID: " + uuid);
     	toWho.sendMessage("Entity ID: " + entityId);
+    }
+    public int randomArrows() 
+    {
+    	return new Random().nextInt(20);
     }
 }

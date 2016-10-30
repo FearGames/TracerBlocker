@@ -19,11 +19,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 import cz.GravelCZLP.FakePlayer.FakePlayer1_10;
 import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerBlockChange;
+import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerEntityMetadata;
 import cz.GravelCZLP.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.PlayerHider.PlayerHider1_10;
 import cz.GravelCZLP.TracerBlocker.commands.TracerBlockerCommand;
@@ -49,7 +56,8 @@ public class TracerBlocker extends JavaPlugin
 
     private static final Random rand = new Random();
     private AbstractPlayerHider playerHider;
-
+    private ProtocolManager manager;
+    
     @Override
     public void onEnable()
     {
@@ -59,11 +67,14 @@ public class TracerBlocker extends JavaPlugin
             getLogger().warning( "PrimoTracerBlocker currently only supports 1.10.x" );
             return;
         }
+        manager = ProtocolLibrary.getProtocolManager();
         loadConfig();
 
         Server server = getServer();
         
         server.getPluginCommand("tracerblocker").setExecutor(new TracerBlockerCommand(this));
+        
+        setupProtocol();
         
         getLogger().info( getServer().getVersion() );
         if ( Settings.PlayerHider.enabled )
@@ -105,6 +116,26 @@ public class TracerBlocker extends JavaPlugin
         }
     }
     
+    private void setupProtocol()
+    {
+    	PacketAdapter adapter = new PacketAdapter(this, PacketType.Play.Server.ENTITY_METADATA) {
+    		@Override
+    		public void onPacketSending(PacketEvent e) {
+    			WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata(e.getPacket());
+    			for (Player p : Bukkit.getOnlinePlayers())
+    			{
+    				if (p.getEntityId() == metadata.getEntityID()) {
+    					WrappedDataWatcher watcher = new WrappedDataWatcher();
+    					watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 1);
+    					metadata.setMetadata(watcher.getWatchableObjects());
+    					e.setPacket(metadata.getHandle());
+    					return;
+    				}
+    			}
+    		}
+		};
+		manager.addPacketListener(adapter);
+    }
     
     public void onDisable() {
     	saveConfig();
@@ -127,7 +158,6 @@ public class TracerBlocker extends JavaPlugin
 
         Settings.FakePlayers.enabled = getConfig().getBoolean( "fakeplayers.enabled" );
         Settings.FakePlayers.moving = getConfig().getBoolean( "fakeplayers.moving" );
-        Settings.FakePlayers.enabled = getConfig().getBoolean( "fakeplayers.enabled" );
         Settings.FakePlayers.everyTicks = getConfig().getInt( "fakeplayers.every-ticks" );
         Settings.FakePlayers.secondsAlive = getConfig().getInt( "fakeplayers.seconds-alive" );
         Settings.FakePlayers.speed = getConfig().getInt( "fakeplayers.speed" );
@@ -155,7 +185,6 @@ public class TracerBlocker extends JavaPlugin
     	//Fake Players
     	config.set("fakeplayers.enabled", Settings.FakePlayers.enabled);
     	config.set("fakeplayers.moving", Settings.FakePlayers.moving);
-    	config.set("fakeplayers.enabled", Settings.FakePlayers.enabled);
     	config.set("fakeplayers.every-ticks", Settings.FakePlayers.everyTicks);
     	config.set("fakeplayers.seconds-alive", Settings.FakePlayers.secondsAlive);
     	config.set("fakeplayers.speed", Settings.FakePlayers.speed);
@@ -230,7 +259,22 @@ public class TracerBlocker extends JavaPlugin
                                 Block blockGG = getTargetBlock( lookAt( a.getEyeLocation(), targetGG ), distance );
                                 Block blockHH = getTargetBlock( lookAt( a.getEyeLocation(), targetHH ), distance );
 
-                                if ( blockAA == null || blockAA.getType().equals( state.getBlock().getType() ) || blockBB == null || blockBB.getType().equals( state.getBlock().getType() ) || blockCC == null || blockCC.getType().equals( state.getBlock().getType() ) || blockDD == null || blockDD.getType().equals( state.getBlock().getType() ) || blockEE == null || blockEE.getType().equals( state.getBlock().getType() ) || blockFF == null || blockFF.getType().equals( state.getBlock().getType() ) || blockGG == null || blockGG.getType().equals( state.getBlock().getType() ) || blockHH == null || blockHH.getType().equals( state.getBlock().getType() ) )
+                                if ( blockAA == null || 
+                                		blockAA.getType().equals( state.getBlock().getType() ) 
+                                		|| blockBB == null 
+                                		|| blockBB.getType().equals( state.getBlock().getType() ) 
+                                		|| blockCC == null 
+                                		|| blockCC.getType().equals( state.getBlock().getType() ) 
+                                		|| blockDD == null || 
+                                		blockDD.getType().equals( state.getBlock().getType() )
+                                		|| blockEE == null
+                                		|| blockEE.getType().equals( state.getBlock().getType() )
+                                		|| blockFF == null || 
+                                		blockFF.getType().equals( state.getBlock().getType() ) ||
+                                		blockGG == null || 
+                                		blockGG.getType().equals( state.getBlock().getType() ) 
+                                		|| blockHH == null 
+                                		|| blockHH.getType().equals( state.getBlock().getType() ) )
                                 {
                                     showBlock( a, state.getLocation() );
                                 }

@@ -24,7 +24,7 @@ public class TracerBlockerCommand implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender.hasPermission("antitracer.command")) {
+		if (sender.hasPermission("antitracer.command") || sender.isOp()) {
 			return false;
 		}
 		if (args[0].equalsIgnoreCase("reload")) {
