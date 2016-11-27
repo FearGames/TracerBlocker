@@ -19,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
 
+import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
+import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -29,8 +31,6 @@ import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 import cz.GravelCZLP.FakePlayer.FakePlayer1_10;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerBlockChange;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerEntityMetadata;
 import cz.GravelCZLP.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.PlayerHider.PlayerHider1_10;
 import cz.GravelCZLP.TracerBlocker.commands.TracerBlockerCommand;

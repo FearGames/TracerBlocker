@@ -36,19 +36,6 @@ public class TracerBlockerCommand implements CommandExecutor {
 				pl.saveConfig();
 				return true;
 			}
-			if (args[1].equalsIgnoreCase("set")) {
-				if (args[2].equalsIgnoreCase("fakeplayers")) {
-					if (args[3].equalsIgnoreCase("enable")) {
-						
-					}
-				}
-				if (args[2].equalsIgnoreCase("chest")) {
-					//TODO:
-				}
-				if (args[2].equalsIgnoreCase("playerhider")) {
-					//TODO: 
-				}
-			}
 		}
 		if (args[0].equalsIgnoreCase("debug")) {
 			if (!(sender instanceof Player)) {

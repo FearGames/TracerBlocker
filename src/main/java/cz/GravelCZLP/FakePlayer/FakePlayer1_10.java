@@ -13,6 +13,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import com.comphenix.packetwrapper.WrapperPlayServerAnimation;
+import com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
+import com.comphenix.packetwrapper.WrapperPlayServerEntityEquipment;
+import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
+import com.comphenix.packetwrapper.WrapperPlayServerEntityTeleport;
+import com.comphenix.packetwrapper.WrapperPlayServerNamedEntitySpawn;
+import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
+import com.comphenix.packetwrapper.WrapperPlayServerRelEntityMoveLook;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
@@ -20,15 +28,6 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerAnimation;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerEntityDestroy;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerEntityEquipment;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerEntityMetadata;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerEntityTeleport;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerNamedEntitySpawn;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerPlayerInfo;
-import cz.GravelCZLP.PacketWrapper.v1_10.WrapperPlayServerRelEntityMoveLook;
 
 public class FakePlayer1_10 extends AbstractFakePlayer
 {
