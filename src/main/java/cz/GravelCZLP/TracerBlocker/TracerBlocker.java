@@ -24,11 +24,13 @@ import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
 import cz.GravelCZLP.FakePlayer.FakePlayer1_10;
 import cz.GravelCZLP.PlayerHider.AbstractPlayerHider;
@@ -51,9 +53,7 @@ import cz.GravelCZLP.TracerBlocker.commands.TracerBlockerCommand;
  * limitations under the License.
  */
 @SuppressWarnings("deprecation")
-public class TracerBlocker extends JavaPlugin
-{
-
+public class TracerBlocker extends JavaPlugin {
     private static final Random rand = new Random();
     private AbstractPlayerHider playerHider;
     private ProtocolManager manager;
@@ -118,21 +118,19 @@ public class TracerBlocker extends JavaPlugin
     
     private void setupProtocol()
     {
-    	PacketAdapter adapter = new PacketAdapter(this, PacketType.Play.Server.ENTITY_METADATA) {
-    		@Override
-    		public void onPacketSending(PacketEvent e) {
-    			WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata(e.getPacket());
-    			for (Player p : Bukkit.getOnlinePlayers())
-    			{
-    				if (p.getEntityId() == metadata.getEntityID()) {
-    					WrappedDataWatcher watcher = new WrappedDataWatcher();
-    					watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 1);
-    					metadata.setMetadata(watcher.getWatchableObjects());
-    					e.setPacket(metadata.getHandle());
-    					return;
-    				}
-    			}
-    		}
+		PacketAdapter adapter = new PacketAdapter(this, ListenerPriority.HIGHEST, PacketType.Play.Server.ENTITY_METADATA) {
+			
+			@Override
+			public void onPacketSending(PacketEvent event) {
+				WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
+				
+				WrappedDataWatcher watcher = new WrappedDataWatcher();
+				watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 1);
+				metadata.setMetadata(watcher.getWatchableObjects());
+				event.setPacket(metadata.getHandle());
+				return;
+			}
+			
 		};
 		manager.addPacketListener(adapter);
     }

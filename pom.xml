@@ -34,12 +34,13 @@
             <version>4.1.0</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>idk</groupId>
+			<artifactId>PacketWrapper</artifactId>
+			<version>1.10</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/PacketWrapper.jar</systemPath>
+		</dependency>
     </dependencies>
 
 </project>
