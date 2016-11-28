@@ -1,3 +1,4 @@
+
 package cz.GravelCZLP.FakePlayer;
 
 import com.comphenix.protocol.reflect.accessors.Accessors;
@@ -21,215 +22,190 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public abstract class AbstractFakePlayer
-{
-    /**
-     * Retrieve the entity counter field used to generate a unique entity ID.
-     */
-    protected static final FieldAccessor ENTITY_ID = Accessors.getFieldAccessor( MinecraftReflection.getEntityClass(), "entityCount", true );
-    protected final Vector vector;
-    
-    /**
-     * List of Players that will see the entity
-     */
-    public List<Player> observers = Lists.newArrayList();
+public abstract class AbstractFakePlayer {
+	/**
+	 * Retrieve the entity counter field used to generate a unique entity ID.
+	 */
+	protected static final FieldAccessor ENTITY_ID = Accessors.getFieldAccessor(MinecraftReflection.getEntityClass(),
+			"entityCount", true);
+	protected final Vector vector;
 
-    /**
-     * Client (Player) location
-     */
-    protected Location clientLocation;
-    /**
-     * Location of Client-Side Player
-     */
-    protected Location serverLocation;
-    /**
-     * id for this entity
-     */
-    protected int entityId;
-    /**
-     * Name of this Entity
-     */
-    protected String name;
-    /**
-     * UUID of this entity
-     */
-    protected UUID uuid;
-    /**
-     * if name has changed
-     */
-    protected boolean changed;
-    
-    // Update task
-    private BukkitTask task;
+	/**
+	 * List of Players that will see the entity
+	 */
+	public List<Player> observers = Lists.newArrayList();
 
-    public AbstractFakePlayer( final Plugin plugin, Location location )
-    {
-        this.clientLocation = Preconditions.checkNotNull( location, "Location cannot be NULL" );
-        this.serverLocation = clientLocation.clone();
-        Vector v = Vector.getRandom(); // This makes a random vector but it doesn't shoot all ways //
-        v.setX( v.getX() - 0.5f );
-        v.setZ( v.getZ() - 0.5f ); // Now it does //
-        v.setY( v.getY() / 5 );
-        vector = v.clone();
-        this.name = RandomNameGenerator.getRandomName();
-        this.uuid = UUID.randomUUID();
-        this.entityId = (Integer) ENTITY_ID.get( null );
-        // Increment next entity ID
-        ENTITY_ID.set( null, entityId + 1 );
-        // Background worker
-        task = new BukkitRunnable()
-        {
-            int i = 0;
+	/**
+	 * Client (Player) location
+	 */
+	protected Location clientLocation;
+	/**
+	 * Location of Client-Side Player
+	 */
+	protected Location serverLocation;
+	/**
+	 * id for this entity
+	 */
+	protected int entityId;
+	/**
+	 * Name of this Entity
+	 */
+	protected String name;
+	/**
+	 * UUID of this entity
+	 */
+	protected UUID uuid;
+	/**
+	 * if name has changed
+	 */
+	protected boolean changed;
 
-            @Override
-            public void run()
-            {
-                if ( i > Settings.FakePlayers.secondsAlive * ( 20 / Settings.FakePlayers.speed ) )
-                {
-                    destroy();
-                    return;
-                }
-                if ( Settings.FakePlayers.moving )
-                {
-                    moveEntity();
-                    updateEntity();
-                }
-                maybeDestroyEntity();
-                i++;
-            }
-        }.runTaskTimer( plugin, 1, Settings.FakePlayers.speed );
-    }
+	// Update task
+	private BukkitTask task;
 
-    private void maybeDestroyEntity()
-    {
-        for ( Player player : observers )
-        {
-            if ( !player.getLocation().getWorld().equals( serverLocation.getWorld() ) )
-            {
-                continue;
-            }
-            if ( player.getLocation().distance( serverLocation ) < 16 )
-            {
-                destroy();
-                return;
-            }
-        }
-    }
+	public AbstractFakePlayer(final Plugin plugin, Location location) {
+		this.clientLocation = Preconditions.checkNotNull(location, "Location cannot be NULL");
+		this.serverLocation = clientLocation.clone();
+		Vector v = Vector.getRandom(); // This makes a random vector but it
+										// doesn't shoot all ways //
+		v.setX(v.getX() - 0.5f);
+		v.setZ(v.getZ() - 0.5f); // Now it does //
+		v.setY(v.getY() / 5);
+		vector = v.clone();
+		this.name = RandomNameGenerator.getRandomName();
+		this.uuid = UUID.randomUUID();
+		this.entityId = (Integer) ENTITY_ID.get(null);
+		// Increment next entity ID
+		ENTITY_ID.set(null, entityId + 1);
+		// Background worker
+		task = new BukkitRunnable() {
+			int i = 0;
 
-    private void moveEntity()
-    {
-        serverLocation.add( vector.getX() / 100, vector.getY() / 100, vector.getZ() / 100 );
-    }
+			@Override
+			public void run() {
+				if (i > Settings.FakePlayers.secondsAlive * (20 / Settings.FakePlayers.speed)) {
+					destroy();
+					return;
+				}
+				if (Settings.FakePlayers.moving) {
+					moveEntity();
+					updateEntity();
+				}
+				maybeDestroyEntity();
+				i++;
+			}
+		}.runTaskTimer(plugin, 1, Settings.FakePlayers.speed);
+	}
 
-    public void addObserver( Player player )
-    {
-        notifySpawnEntity( player );
-        observers.add( player );
-    }
+	private void maybeDestroyEntity() {
+		for (Player player : observers) {
+			if (!player.getLocation().getWorld().equals(serverLocation.getWorld())) {
+				continue;
+			}
+			if (player.getLocation().distance(serverLocation) < 16) {
+				destroy();
+				return;
+			}
+		}
+	}
 
-    private void updateEntity()
-    {
-        // Detect changes
-        if ( changed )
-        {
-            for ( Player player : observers )
-            {
-                notifySpawnEntity( player );
-            }
-            changed = false;
+	private void moveEntity() {
+		serverLocation.add(vector.getX() / 100, vector.getY() / 100, vector.getZ() / 100);
+	}
 
-            // Update location
-        }
-        else if ( !serverLocation.equals( clientLocation ) )
-        {
-            broadcastMoveEntity();
-            clientLocation = serverLocation.clone();
-        }
-    }
-    
-    protected abstract void notifySpawnEntity( Player player );
+	public void addObserver(Player player) {
+		notifySpawnEntity(player);
+		observers.add(player);
+	}
 
-    protected abstract void sendAddPlayerTab( Player player );
+	private void updateEntity() {
+		// Detect changes
+		if (changed) {
+			for (Player player : observers) {
+				notifySpawnEntity(player);
+			}
+			changed = false;
 
-    protected abstract void sendRemovePlayerTab( Player player );
+			// Update location
+		}
+		else if (!serverLocation.equals(clientLocation)) {
+			broadcastMoveEntity();
+			clientLocation = serverLocation.clone();
+		}
+	}
 
-    protected abstract void broadcastMoveEntity();
+	protected abstract void notifySpawnEntity(Player player);
 
-    protected abstract void removeObserver( Player player );
-    
-    /**
-     * Destroy the current entity.
-     */
-    public void destroy()
-    {
-        task.cancel();
+	protected abstract void sendAddPlayerTab(Player player);
 
-        for ( Player player : Lists.newArrayList( observers ) )
-        {
-            removeObserver( player );
-        }
-    }
+	protected abstract void sendRemovePlayerTab(Player player);
 
-    public int getEntityId()
-    {
-        return entityId;
-    }
+	protected abstract void broadcastMoveEntity();
 
-    /**
-     * Retrieve an immutable view of every player observing this entity.
-     *
-     * @return Every observer.
-     */
-    public List<Player> getObservers()
-    {
-        return Collections.unmodifiableList( observers );
-    }
+	protected abstract void removeObserver(Player player);
 
-    public Location getLocation()
-    {
-        return serverLocation;
-    }
+	/**
+	 * Destroy the current entity.
+	 */
+	public void destroy() {
+		task.cancel();
 
-    public void setLocation( Location location )
-    {
-        this.serverLocation = location;
-    }
+		for (Player player : Lists.newArrayList(observers)) {
+			removeObserver(player);
+		}
+	}
 
-    public String getName()
-    {
-        return name;
-    }
+	public int getEntityId() {
+		return entityId;
+	}
 
-    public void setName( String name )
-    {
-        this.name = name;
-        this.changed = true;
-    }
+	/**
+	 * Retrieve an immutable view of every player observing this entity.
+	 *
+	 * @return Every observer.
+	 */
+	public List<Player> getObservers() {
+		return Collections.unmodifiableList(observers);
+	}
 
-    protected int getRandomYaw()
-    {
-    	return new Random().nextInt(360);
-    }
-    
-    protected int getRandomPitch()
-    {
-    	return new Random().nextInt(180) - 90;
-    }
-    
-    protected float randomHealth()
-    {
-    	Random r = new Random();
-    	int toReturn = r.nextInt(20);
-    	if (toReturn == 0) {
-    		toReturn = 1;
-    	}
-    	if (toReturn > 20) {
-    		toReturn = 20;
-    	}
-    	return toReturn;
-    }
-    public void stopRunnble() 
-    {
-    	task.cancel();
-    }
+	public Location getLocation() {
+		return serverLocation;
+	}
+
+	public void setLocation(Location location) {
+		this.serverLocation = location;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		this.changed = true;
+	}
+
+	protected int getRandomYaw() {
+		return new Random().nextInt(360);
+	}
+
+	protected int getRandomPitch() {
+		return new Random().nextInt(180) - 90;
+	}
+
+	protected float randomHealth() {
+		Random r = new Random();
+		int toReturn = r.nextInt(20);
+		if (toReturn == 0) {
+			toReturn = 1;
+		}
+		if (toReturn > 20) {
+			toReturn = 20;
+		}
+		return toReturn;
+	}
+
+	public void stopRunnble() {
+		task.cancel();
+	}
 }

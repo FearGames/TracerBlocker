@@ -1,3 +1,4 @@
+
 package cz.GravelCZLP.TracerBlocker;
 
 import java.util.ArrayList;
@@ -18,33 +19,29 @@ import java.util.List;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class Settings
-{
-    public static class PlayerHider
-    {
-        public static boolean enabled = false;
-        public static int everyTicks = 1;
-        public static int ignoreDistance = 7;
-        public static int maxDistance = 120;
-        public static List<String> disabledWorlds = new ArrayList<>();
-    }
+public class Settings {
+	public static class PlayerHider {
+		public static boolean enabled = false;
+		public static int everyTicks = 1;
+		public static int ignoreDistance = 7;
+		public static int maxDistance = 120;
+		public static List<String> disabledWorlds = new ArrayList<>();
+	}
 
-    public static class ChestHider
-    {
-        public static boolean enabled = false;
-        public static int everyTicks = 3;
-        public static int ignoreDistance = 7;
-        public static int maxDistance = 80;
-        public static List<String> disabledWorlds = new ArrayList<>();
-    }
+	public static class ChestHider {
+		public static boolean enabled = false;
+		public static int everyTicks = 3;
+		public static int ignoreDistance = 7;
+		public static int maxDistance = 80;
+		public static List<String> disabledWorlds = new ArrayList<>();
+	}
 
-    public static class FakePlayers
-    {
-        public static boolean enabled = false;
-        public static boolean moving = true;
-        public static int everyTicks = 40;
-        public static int secondsAlive = 5;
-        public static int speed = 3;
-        public static List<String> disabledWorlds = new ArrayList<>();
-    }
+	public static class FakePlayers {
+		public static boolean enabled = false;
+		public static boolean moving = true;
+		public static int everyTicks = 40;
+		public static int secondsAlive = 5;
+		public static int speed = 3;
+		public static List<String> disabledWorlds = new ArrayList<>();
+	}
 }
