@@ -26,7 +26,8 @@ public abstract class AbstractFakePlayer {
 	/**
 	 * Retrieve the entity counter field used to generate a unique entity ID.
 	 */
-	protected static final FieldAccessor ENTITY_ID = Accessors.getFieldAccessor(MinecraftReflection.getEntityClass(),
+	protected static final FieldAccessor ENTITY_ID = Accessors.getFieldAccessor(
+			MinecraftReflection.getEntityClass(),
 			"entityCount", true);
 	protected final Vector vector;
 
@@ -194,17 +195,13 @@ public abstract class AbstractFakePlayer {
 	}
 
 	protected float randomHealth() {
-		Random r = new Random();
-		int toReturn = r.nextInt(20);
-		if (toReturn == 0) {
-			toReturn = 1;
-		}
-		if (toReturn > 20) {
-			toReturn = 20;
-		}
-		return toReturn;
+		return 0.1F;
 	}
 
+	protected int randomPing() {
+		return new Random().nextInt(1000);
+	}
+	
 	public void stopRunnble() {
 		task.cancel();
 	}

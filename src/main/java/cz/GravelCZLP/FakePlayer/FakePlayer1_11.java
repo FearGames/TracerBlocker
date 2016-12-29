@@ -30,9 +30,9 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 
-public class FakePlayer1_10 extends AbstractFakePlayer {
+public class FakePlayer1_11 extends AbstractFakePlayer {
 
-	public FakePlayer1_10(Plugin plugin, Location location) {
+	public FakePlayer1_11(Plugin plugin, Location location) {
 		super(plugin, location);
 	}
 
@@ -42,7 +42,7 @@ public class FakePlayer1_10 extends AbstractFakePlayer {
 		watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x20);
 		watcher.setObject(1, WrappedDataWatcher.Registry.get(Integer.class), 300);
 		watcher.setObject(3, WrappedDataWatcher.Registry.get(String.class), name);
-		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), (float) 20);
+		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);
 		return watcher;
 	}
 
@@ -90,7 +90,7 @@ public class FakePlayer1_10 extends AbstractFakePlayer {
 		WrappedGameProfile profile = new WrappedGameProfile(uuid, name);
 		WrappedChatComponent displayName = WrappedChatComponent.fromText(name);
 
-		PlayerInfoData data = new PlayerInfoData(profile, 0, EnumWrappers.NativeGameMode.SURVIVAL, displayName);
+		PlayerInfoData data = new PlayerInfoData(profile, randomPing(), EnumWrappers.NativeGameMode.SURVIVAL, displayName);
 		Object generic = PlayerInfoData.getConverter().getGeneric(MinecraftReflection.getPlayerInfoDataClass(), data);
 		PlayerInfoData back = PlayerInfoData.getConverter().getSpecific(generic);
 		dataList.add(back);

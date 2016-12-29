@@ -9,12 +9,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import cz.GravelCZLP.FakePlayer.FakePlayer1_10;
+import cz.GravelCZLP.FakePlayer.FakePlayer1_11;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
 
 public class TracerBlockerCommand implements CommandExecutor {
 
-	public HashMap<UUID, FakePlayer1_10> debugEntites;
+	public HashMap<UUID, FakePlayer1_11> debugEntites;
 
 	TracerBlocker pl;
 
@@ -41,13 +41,13 @@ public class TracerBlockerCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			if (args[1].equalsIgnoreCase("entity")) {
 				if (args[2].equalsIgnoreCase("spawn")) {
-					FakePlayer1_10 fakePlayer = new FakePlayer1_10(pl, p.getLocation());
+					FakePlayer1_11 fakePlayer = new FakePlayer1_11(pl, p.getLocation());
 					fakePlayer.stopRunnble();
 					fakePlayer.printInfo(p);
 					debugEntites.put(p.getUniqueId(), fakePlayer);
 				}
 				if (args[2].equalsIgnoreCase("despawn")) {
-					FakePlayer1_10 fakePlayer = debugEntites.get(p.getUniqueId());
+					FakePlayer1_11 fakePlayer = debugEntites.get(p.getUniqueId());
 					fakePlayer.destroy();
 				}
 			}

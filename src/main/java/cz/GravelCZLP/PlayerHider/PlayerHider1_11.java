@@ -28,7 +28,7 @@ import static com.comphenix.protocol.PacketType.Play.Server.*;
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-public class PlayerHider1_10 extends AbstractPlayerHider {
+public class PlayerHider1_11 extends AbstractPlayerHider {
 
 	private static final PacketType[] ENTITY_PACKETS = { ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN, COLLECT,
 			ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK, REL_ENTITY_MOVE_LOOK, ENTITY_TELEPORT, ENTITY_HEAD_ROTATION,
@@ -40,7 +40,7 @@ public class PlayerHider1_10 extends AbstractPlayerHider {
 	 * @param plugin
 	 *            - the plugin that controls this entity hider.
 	 */
-	public PlayerHider1_10(Plugin plugin) {
+	public PlayerHider1_11(Plugin plugin) {
 		super(plugin);
 	}
 
