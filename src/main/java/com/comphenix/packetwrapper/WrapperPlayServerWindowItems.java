@@ -18,8 +18,6 @@
  */
 package com.comphenix.packetwrapper;
 
-import java.util.List;
-
 import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.PacketType;

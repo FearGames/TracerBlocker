@@ -22,6 +22,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 import cz.GravelCZLP.ChestHider.AbstractChestHider;
+import cz.GravelCZLP.ChestHider.ChestHider1_11;
 import cz.GravelCZLP.FakePlayer.FakePlayer1_11;
 import cz.GravelCZLP.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.PlayerHider.PlayerHider1_11;
@@ -65,7 +66,7 @@ public class TracerBlocker extends JavaPlugin {
 		}
 		if (Settings.ChestHider.enabled) {
 			if (getServer().getVersion().contains("1.11")) {
-				chestHider = null;
+				chestHider = new ChestHider1_11(mathUtils);
 			}
 			getServer().getScheduler().runTaskTimer(this, new Runnable() {
 				@Override
