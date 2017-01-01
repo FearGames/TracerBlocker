@@ -52,12 +52,12 @@ public class TracerBlocker extends JavaPlugin {
 		
 		setupProtocol();
 
-		getLogger().info(getServer().getVersion());
+		getLogger().info(server.getVersion());
 		if (Settings.PlayerHider.enabled) {
 			if (getServer().getVersion().contains("1.11")) {
 				playerHider = new PlayerHider1_11(this);
 			}
-			getServer().getScheduler().runTaskTimer(this, new Runnable() {
+			server.getScheduler().runTaskTimer(this, new Runnable() {
 				@Override
 				public void run() {
 					checkVisibility();
@@ -65,10 +65,10 @@ public class TracerBlocker extends JavaPlugin {
 			}, 1, Settings.PlayerHider.everyTicks);
 		}
 		if (Settings.ChestHider.enabled) {
-			if (getServer().getVersion().contains("1.11")) {
+			if (server.getVersion().contains("1.11")) {
 				chestHider = new ChestHider1_11(mathUtils);
 			}
-			getServer().getScheduler().runTaskTimer(this, new Runnable() {
+			server.getScheduler().runTaskTimer(this, new Runnable() {
 				@Override
 				public void run() {
 					chestHider.checkChestVisibility();
@@ -76,7 +76,7 @@ public class TracerBlocker extends JavaPlugin {
 			}, 1, Settings.ChestHider.everyTicks);
 		}
 		if (Settings.FakePlayers.enabled) {
-			getServer().getScheduler().runTaskTimer(this, new Runnable() {
+			server.getScheduler().runTaskTimer(this, new Runnable() {
 				@Override
 				public void run() {
 					spawnFakePlayers();
@@ -97,13 +97,18 @@ public class TracerBlocker extends JavaPlugin {
 					return;
 				}
 				
+				int eid = metadata.getEntityID();
+				Player reciever = event.getPlayer();
+				if (eid != reciever.getEntityId()) {
+					return;
+				}
+				
 				WrappedDataWatcher watcher = new WrappedDataWatcher();
-				watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), (float) 0.1);
+				watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);
 				metadata.setMetadata(watcher.getWatchableObjects());
 				event.setPacket(metadata.getHandle());
 				return;
 			}
-
 		};
 		manager.addPacketListener(adapter);
 	}
@@ -191,12 +196,11 @@ public class TracerBlocker extends JavaPlugin {
 			}
 			while (fakeLocation.distance(player.getLocation()) < 16);
 			newFakePlayer(fakeLocation, player);
-
 		}
 	}
 
 	private void newFakePlayer(Location fakeLocation, Player player) {
-		if (getServer().getVersion().contains("1.10")) {
+		if (getServer().getVersion().contains("1.11")) {
 			new FakePlayer1_11(this, fakeLocation).addObserver(player);
 		}
 	}
