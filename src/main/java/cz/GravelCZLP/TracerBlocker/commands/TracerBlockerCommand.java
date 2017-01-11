@@ -30,12 +30,6 @@ public class TracerBlockerCommand implements CommandExecutor {
 			pl.loadConfig();
 			return true;
 		}
-		if (args[0].equalsIgnoreCase("config")) {
-			if (args[1].equalsIgnoreCase("save")) {
-				pl.saveConfig();
-				return true;
-			}
-		}
 		if (args[0].equalsIgnoreCase("debug")) {
 			if (!(sender instanceof Player)) { return false; }
 			Player p = (Player) sender;
@@ -51,6 +45,7 @@ public class TracerBlockerCommand implements CommandExecutor {
 					fakePlayer.destroy();
 				}
 			}
+			
 		}
 		return false;
 	}

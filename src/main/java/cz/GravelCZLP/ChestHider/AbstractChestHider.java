@@ -61,31 +61,26 @@ public abstract class AbstractChestHider {
 								continue;
 							}
 
-							try {
-								Block blockAA = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetAA), distance);
-								Block blockBB = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetBB), distance);
-								Block blockCC = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetCC), distance);
-								Block blockDD = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetDD), distance);
-								Block blockEE = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetEE), distance);
-								Block blockFF = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetFF), distance);
-								Block blockGG = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetGG), distance);
-								Block blockHH = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetHH), distance);
+							Block blockAA = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetAA), distance);
+							Block blockBB = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetBB), distance);
+							Block blockCC = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetCC), distance);
+							Block blockDD = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetDD), distance);
+							Block blockEE = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetEE), distance);
+							Block blockFF = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetFF), distance);
+							Block blockGG = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetGG), distance);
+							Block blockHH = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetHH), distance);
 
-								if (blockAA == null || blockAA.getType().equals(state.getBlock().getType())
-										|| blockBB == null || blockBB.getType().equals(state.getBlock().getType())
-										|| blockCC == null || blockCC.getType().equals(state.getBlock().getType())
-										|| blockDD == null || blockDD.getType().equals(state.getBlock().getType())
-										|| blockEE == null || blockEE.getType().equals(state.getBlock().getType())
-										|| blockFF == null || blockFF.getType().equals(state.getBlock().getType())
-										|| blockGG == null || blockGG.getType().equals(state.getBlock().getType())
-										|| blockHH == null || blockHH.getType().equals(state.getBlock().getType())) {
-									showBlock(a, state.getLocation());
-								}
-								else {
-									hideBlock(a, state.getLocation());
-								}
-							}
-							catch (IllegalStateException ignored) {
+							if (blockAA == null || blockAA.getType().equals(state.getBlock().getType())
+									|| blockBB == null || blockBB.getType().equals(state.getBlock().getType())
+									|| blockCC == null || blockCC.getType().equals(state.getBlock().getType())
+									|| blockDD == null || blockDD.getType().equals(state.getBlock().getType())
+									|| blockEE == null || blockEE.getType().equals(state.getBlock().getType())
+									|| blockFF == null || blockFF.getType().equals(state.getBlock().getType())
+									|| blockGG == null || blockGG.getType().equals(state.getBlock().getType())
+									|| blockHH == null || blockHH.getType().equals(state.getBlock().getType())) {
+								showBlock(a, state.getLocation());
+							} else {
+								hideBlock(a, state.getLocation());
 							}
 
 						}

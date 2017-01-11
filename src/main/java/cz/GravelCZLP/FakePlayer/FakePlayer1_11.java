@@ -5,33 +5,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.packetwrapper.WrapperPlayServerAnimation;
 import com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
-import com.comphenix.packetwrapper.WrapperPlayServerEntityEquipment;
 import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
-import com.comphenix.packetwrapper.WrapperPlayServerEntityTeleport;
 import com.comphenix.packetwrapper.WrapperPlayServerNamedEntitySpawn;
 import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
 import com.comphenix.packetwrapper.WrapperPlayServerRelEntityMoveLook;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 
 public class FakePlayer1_11 extends AbstractFakePlayer {
-
+	
 	public FakePlayer1_11(Plugin plugin, Location location) {
 		super(plugin, location);
 	}
@@ -105,7 +100,7 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 		move.setDy(serverLocation.getY() - clientLocation.getY());
 		move.setDz(serverLocation.getZ() - clientLocation.getZ());
 
-		Location loc = new Location(Bukkit.getWorld("world"), move.getDx(), move.getDy(), move.getDz());
+		Location loc = new Location(observers.get(0).getWorld(), move.getDx(), move.getDy(), move.getDz());
 		Block b = loc.getWorld().getBlockAt(loc);
 		boolean onGround = b.getRelative(BlockFace.DOWN).getType() != Material.AIR;
 
@@ -114,60 +109,18 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 		move.setYaw(getRandomYaw());
 		move.setPitch(getRandomPitch());
 
-		WrapperPlayServerEntityTeleport tp = null;
-
-		if (isTooFar(move)) {
-			tp = new WrapperPlayServerEntityTeleport();
-			tp.setEntityID(entityId);
-			tp.setOnGround(move.getOnGround());
-			tp.setX(move.getDx());
-			tp.setY(move.getDy());
-			tp.setZ(move.getDz());
-			tp.setPitch(move.getPitch());
-			tp.setYaw(move.getYaw());
-			move = null;
-		}
-
-		WrapperPlayServerEntityEquipment equipment = new WrapperPlayServerEntityEquipment();
-
-		equipment.setEntityID(entityId);
-
-		Random r = new Random();
-
-		Material[] swords = new Material[] { Material.WOOD_SWORD, Material.STONE_SWORD, Material.IRON_SWORD,
-				Material.GOLD_SWORD, Material.DIAMOND_SWORD };
-
-		Material[] helmets = new Material[] { Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.GOLD_HELMET,
-				Material.IRON_HELMET, Material.DIAMOND_HELMET, Material.AIR };
-		Material[] chestplates = new Material[] { Material.LEATHER_CHESTPLATE, Material.CHAINMAIL_CHESTPLATE,
-				Material.GOLD_CHESTPLATE, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE, Material.AIR };
-		Material[] leggings = new Material[] { Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS,
-				Material.GOLD_LEGGINGS, Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.AIR };
-		Material[] boots = new Material[] { Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.GOLD_BOOTS,
-				Material.IRON_BOOTS, Material.DIAMOND_BOOTS, Material.AIR };
-
-		equipment.setSlot(ItemSlot.FEET);
-		equipment.setItem(new ItemStack(boots[r.nextInt(boots.length)]));
-
-		equipment.setSlot(ItemSlot.LEGS);
-		equipment.setItem(new ItemStack(leggings[r.nextInt(leggings.length)]));
-
-		equipment.setSlot(ItemSlot.CHEST);
-		equipment.setItem(new ItemStack(chestplates[r.nextInt(chestplates.length)]));
-
-		equipment.setSlot(ItemSlot.HEAD);
-		equipment.setItem(new ItemStack(helmets[r.nextInt(helmets.length)]));
-
-		equipment.setSlot(ItemSlot.MAINHAND);
-		equipment.setItem(new ItemStack(swords[r.nextInt(swords.length)]));
-
 		WrapperPlayServerAnimation animation = new WrapperPlayServerAnimation();
 		animation.setEntityID(entityId);
 		animation.setAnimation(getRandomAnimation());
 
 		WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
 		WrappedDataWatcher watcher = new WrappedDataWatcher();
-		watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
+		if (new Random().nextInt(10) == 0) {
+			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
+		}
+		if (new Random().nextInt(10) == 0) {
+			
+		}
 		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), (float) randomHealth());
 		watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());
 		metadata.setEntityID(entityId);
@@ -177,24 +130,8 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 			if (move != null) {
 				move.sendPacket(player);
 			}
-			equipment.sendPacket(player);
 			animation.sendPacket(player);
 			metadata.sendPacket(player);
-			if (tp != null) {
-				tp.sendPacket(player);
-			}
-		}
-	}
-
-	protected boolean isTooFar(WrapperPlayServerRelEntityMoveLook packet) {
-		double x = packet.getDx();
-		double y = packet.getDy();
-		double z = packet.getDz();
-		if (x > 2.0 || y > 2.0 || z > 2.0) {
-			return true;
-		}
-		else {
-			return false;
 		}
 	}
 

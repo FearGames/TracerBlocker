@@ -48,7 +48,7 @@ public class MathUtils {
 		return loc;
 	}
 	
-	public Block getTargetBlock(Location direction, int maxDistance) throws IllegalStateException {
+	public Block getTargetBlock(Location direction, int maxDistance) {
 		direction = direction.clone();
 		if (direction.getY() > direction.getWorld().getMaxHeight()) {
 			direction.setY(direction.getWorld().getMaxHeight());

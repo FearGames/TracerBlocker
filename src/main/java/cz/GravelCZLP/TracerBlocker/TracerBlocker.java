@@ -23,6 +23,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 import cz.GravelCZLP.ChestHider.AbstractChestHider;
 import cz.GravelCZLP.ChestHider.ChestHider1_11;
+import cz.GravelCZLP.ChestHider.PacketChestHider;
 import cz.GravelCZLP.FakePlayer.FakePlayer1_11;
 import cz.GravelCZLP.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.PlayerHider.PlayerHider1_11;
@@ -34,6 +35,7 @@ public class TracerBlocker extends JavaPlugin {
 	private AbstractChestHider chestHider;
 	private ProtocolManager manager;
 	private MathUtils mathUtils;
+	private PacketChestHider packetChestHider;
 	
 	@Override
 	public void onEnable() {
@@ -67,6 +69,8 @@ public class TracerBlocker extends JavaPlugin {
 		if (Settings.ChestHider.enabled) {
 			if (server.getVersion().contains("1.11")) {
 				chestHider = new ChestHider1_11(mathUtils);
+				packetChestHider = new PacketChestHider(manager, this);
+				packetChestHider.setup();
 			}
 			server.getScheduler().runTaskTimer(this, new Runnable() {
 				@Override
@@ -171,7 +175,7 @@ public class TracerBlocker extends JavaPlugin {
 		catch (IOException e) {
 			e.printStackTrace();
 			System.err.println(
-					"Error occuren when tying to save config for tracer Blocker, all settings set in game have been not saved ?:(");
+					"Error occuren when tying to save config for Tracer Blocker, all settings set in game have been not saved ?:(");
 		}
 	}
 

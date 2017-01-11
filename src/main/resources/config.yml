@@ -18,7 +18,7 @@ chesthider:
   #the max distance. It will ignore everything that's farther away than the specified distance.
   #the cpu usage is exponential, the further it goes, the more CPU it uses. If you notice lag, lower the distance.
   #should be in increments of 16
-  max-distance: 80
+  max-distance: 48
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: []
 #spawns invisible fake client-side players for every player. Can be quite CPU intensive. If you get a low TPS, then you should disable this.

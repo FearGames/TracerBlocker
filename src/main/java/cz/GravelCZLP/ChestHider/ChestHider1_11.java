@@ -13,7 +13,7 @@ import cz.GravelCZLP.TracerBlocker.MathUtils;
 public class ChestHider1_11 extends AbstractChestHider {
 
 	public ChestHider1_11(MathUtils mathUtils) {
-		super(mathUtils);
+		super(mathUtils); 
 	}
 
 	@Override
