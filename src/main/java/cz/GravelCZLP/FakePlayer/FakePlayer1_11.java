@@ -96,23 +96,28 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 	protected void broadcastMoveEntity() {
 		WrapperPlayServerRelEntityMoveLook move = new WrapperPlayServerRelEntityMoveLook();
 		move.setEntityID(entityId);
-		move.setDx(serverLocation.getX() - clientLocation.getX());
-		move.setDy(serverLocation.getY() - clientLocation.getY());
-		move.setDz(serverLocation.getZ() - clientLocation.getZ());
-
+		
+		double xChange = (serverLocation.getX() * 32 - previousServerLocation.getX() * 32) * 128;
+		double yChange = (serverLocation.getY() * 32 - previousServerLocation.getY() * 32) * 128;
+		double zChange = (serverLocation.getZ() * 32 - previousServerLocation.getZ() * 32) * 128;
+		
+		move.setDx(xChange);
+		move.setDy(yChange);
+		move.setDz(zChange);
+		
+		move.setYaw(getRandomYaw());
+		move.setPitch(getRandomPitch());
+		
 		Location loc = new Location(observers.get(0).getWorld(), move.getDx(), move.getDy(), move.getDz());
 		Block b = loc.getWorld().getBlockAt(loc);
 		boolean onGround = b.getRelative(BlockFace.DOWN).getType() != Material.AIR;
 
 		move.setOnGround(onGround);
-
-		move.setYaw(getRandomYaw());
-		move.setPitch(getRandomPitch());
-
+		
 		WrapperPlayServerAnimation animation = new WrapperPlayServerAnimation();
 		animation.setEntityID(entityId);
 		animation.setAnimation(getRandomAnimation());
-
+		
 		WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
 		WrappedDataWatcher watcher = new WrappedDataWatcher();
 		if (new Random().nextInt(10) == 0) {

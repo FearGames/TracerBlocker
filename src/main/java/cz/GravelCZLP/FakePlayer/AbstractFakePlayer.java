@@ -45,6 +45,10 @@ public abstract class AbstractFakePlayer {
 	 */
 	protected Location serverLocation;
 	/**
+	 * Previous Location of Client-Side Player
+	 */
+	protected Location previousServerLocation;
+	/**
 	 * id for this entity
 	 */
 	protected int entityId;
@@ -111,6 +115,7 @@ public abstract class AbstractFakePlayer {
 	}
 
 	private void moveEntity() {
+		previousServerLocation = serverLocation.clone();
 		serverLocation.add(vector.getX() / 100, vector.getY() / 100, vector.getZ() / 100);
 	}
 
