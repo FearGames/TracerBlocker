@@ -1,5 +1,6 @@
 package cz.GravelCZLP.ChestHider;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +50,9 @@ public class PacketChestHider {
 							|| bs.getType() != Material.TRAPPED_CHEST) {
 						continue;
 					}
-					if (bs.getLocation().distance(event.getPlayer().getLocation()) > Settings.ChestHider.maxDistance) {
-						locs.add(bs.getLocation());	
+					double distance = bs.getLocation().distance(event.getPlayer().getLocation());
+					if (distance > Settings.ChestHider.ignoreDistance) {
+						locs.add(bs.getLocation());
 					}
 				}
 				for (Location loc : locs) {
@@ -58,6 +60,12 @@ public class PacketChestHider {
 					BlockPosition pos = new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 					change.setLocation(pos);
 					change.setBlockData(WrappedBlockData.createData(Material.STONE));
+					try {
+						manager.sendServerPacket(event.getPlayer(), chunk.getHandle());
+					}
+					catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		};

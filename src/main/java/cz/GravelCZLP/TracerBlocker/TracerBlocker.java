@@ -103,7 +103,7 @@ public class TracerBlocker extends JavaPlugin {
 				
 				int eid = metadata.getEntityID();
 				Player reciever = event.getPlayer();
-				if (eid != reciever.getEntityId()) {
+				if (eid == reciever.getEntityId()) { // not != i am a fool !
 					return;
 				}
 				
