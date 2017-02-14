@@ -107,7 +107,7 @@ public abstract class AbstractFakePlayer {
 			if (!player.getLocation().getWorld().equals(serverLocation.getWorld())) {
 				continue;
 			}
-			if (player.getLocation().distance(serverLocation) < 16) {
+			if (player.getLocation().distance(serverLocation) < 20) {
 				destroy();
 				return;
 			}
