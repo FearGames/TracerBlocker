@@ -8,7 +8,10 @@ playerhider:
   #the max distance. It will ignore everything that's farther away than the specified distance.
   max-distance: 120
   #list the worlds this feature shouldn't be used in. Case sensitive
-  disabledWorlds: []
+  disabledWorlds: [
+  Example_World1,
+  ExampleWoRlD2
+  ]
 #Hides chests that are behind objects. You can't physically see them, so they are not rendered.
 chesthider:
   enabled: true
@@ -18,10 +21,13 @@ chesthider:
   #the max distance. It will ignore everything that's farther away than the specified distance.
   #the cpu usage is exponential, the further it goes, the more CPU it uses. If you notice lag, lower the distance.
   #should be in increments of 16
-  max-distance: 48
+  max-distance: 16
   #list the worlds this feature shouldn't be used in. Case sensitive
-  disabledWorlds: []
-#spawns invisible fake client-side players for every player. Can be quite CPU intensive. If you get a low TPS, then you should disable this.
+  disabledWorlds: [
+  Example_World1,
+  ExampleWoRlD2
+  ]
+#spawns invisible fake client-side players for every player. Can be quite CPU intensive(Not really). If you get a low TPS, then you should disable this.
 fakeplayers:
   enabled: true
   #If the fake players should be moving or not.
@@ -33,7 +39,10 @@ fakeplayers:
   #the amount of seconds the fake players should exist for.
   seconds-alive: 5
   # The update speed of the fake player entities in ticks. 1 tick = 50ms
-  speed: 5
+  speed: 10
   #list the worlds this feature shouldn't be used in. Case sensitive
-  disabledWorlds: []
+  disabledWorlds: [
+  Example_World1,
+  ExampleWoRlD2
+  ]
 
