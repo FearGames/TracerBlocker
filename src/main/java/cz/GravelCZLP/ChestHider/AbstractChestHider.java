@@ -97,6 +97,10 @@ public abstract class AbstractChestHider {
 	public abstract void changeBlock(Player player, Location location, Material type, byte data);
 
 	private void hideBlock(Player player, Location location) {
-		changeBlock(player, location, Material.AIR, (byte) 0);
+		Material mat = Material.AIR;
+		if (location.getBlock().getType() == Material.ENDER_CHEST) {
+			mat = Material.REDSTONE_TORCH_ON;
+		}
+		changeBlock(player, location, mat, (byte) 0);
 	}
 }
