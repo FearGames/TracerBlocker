@@ -163,6 +163,6 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 	}
 
 	public int randomArrows() {
-		return new Random().nextInt(20);
+		return new Random().nextInt(5);
 	}
 }

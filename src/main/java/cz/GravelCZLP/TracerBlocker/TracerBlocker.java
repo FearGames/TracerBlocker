@@ -12,8 +12,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 import cz.GravelCZLP.ChestHider.AbstractChestHider;
 import cz.GravelCZLP.ChestHider.ChestHider1_11;
@@ -83,7 +89,7 @@ public class TracerBlocker extends JavaPlugin {
 		}
 	}
 
-	/*private void setupProtocol() {
+	public void setupProtocol() {
 		PacketAdapter adapter = new PacketAdapter(this, ListenerPriority.HIGHEST,
 				PacketType.Play.Server.ENTITY_METADATA) {
 
@@ -109,7 +115,7 @@ public class TracerBlocker extends JavaPlugin {
 			}
 		};
 		manager.addPacketListener(adapter);
-	}*/
+	}
 
 	public void onDisable() {
 		saveConfig();
@@ -248,8 +254,7 @@ public class TracerBlocker extends JavaPlugin {
 						else {
 							playerHider.hidePlayer(a, b);
 						}
-					}
-					catch (IllegalStateException ignored) {
+					} catch (IllegalStateException ignored) {
 
 					}
 				}
