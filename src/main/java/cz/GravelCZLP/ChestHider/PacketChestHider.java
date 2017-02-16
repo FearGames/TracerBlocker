@@ -59,7 +59,7 @@ public class PacketChestHider {
 					WrapperPlayServerBlockChange change = new WrapperPlayServerBlockChange();
 					BlockPosition pos = new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 					change.setLocation(pos);
-					change.setBlockData(WrappedBlockData.createData(Material.STONE));
+					change.setBlockData(WrappedBlockData.createData(Material.AIR));
 					try {
 						manager.sendServerPacket(event.getPlayer(), chunk.getHandle());
 					}
