@@ -16,7 +16,8 @@ playerhider:
 chesthider:
   enabled: true
   #how often it checks if a chest is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
-  every-ticks: 2
+  every-ticks: 1
+  #minimal distance needed to see the chest if it is behind a wall
   ignore-distance: 7
   #the max distance. It will ignore everything that's farther away than the specified distance.
   #the cpu usage is exponential, the further it goes, the more CPU it uses. If you notice lag, lower the distance.

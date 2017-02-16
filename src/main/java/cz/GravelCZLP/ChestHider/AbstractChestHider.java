@@ -56,7 +56,7 @@ public abstract class AbstractChestHider {
 								continue;
 							}
 
-							if (distance <= Settings.ChestHider.ignoreDistance) {
+							if (distance < Settings.ChestHider.ignoreDistance) {
 								showBlock(a, state.getLocation());
 								continue;
 							}
