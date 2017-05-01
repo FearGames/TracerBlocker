@@ -40,8 +40,13 @@ public class TracerBlocker extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		if (!getServer().getVersion().contains("1.11")) {
-			this.getServer().getPluginManager().disablePlugin(this);
 			getLogger().warning("PrimoTracerBlocker currently only supports 1.11.x");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		if (getServer().getPluginManager().getPlugin("PacketWrapper") == null) {
+			getLogger().warning("TracerBlocker depends on PacketWrapper.");
+			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 		mathUtils = new MathUtils();
