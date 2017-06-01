@@ -49,6 +49,11 @@ public class TracerBlocker extends JavaPlugin {
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+		if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
+			getLogger().warning("TracerBlocker depends on ProtocolLib");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		mathUtils = new MathUtils();
 		manager = ProtocolLibrary.getProtocolManager();
 		loadConfig();
@@ -56,8 +61,9 @@ public class TracerBlocker extends JavaPlugin {
 		Server server = getServer();
 
 		server.getPluginCommand("tracerblocker").setExecutor(new TracerBlockerCommand(this));
-		
-		//setupProtocol();
+		if (Settings.Test.antiHealthTags) {
+			setupProtocol();	
+		}
 
 		getLogger().info(server.getVersion());
 		if (Settings.PlayerHider.enabled) {
@@ -71,11 +77,13 @@ public class TracerBlocker extends JavaPlugin {
 				}
 			}, 1, Settings.PlayerHider.everyTicks);
 		}
-		if (Settings.ChestHider.enabled) {
+		if (Settings.ChestHider.enabled ) {
 			if (server.getVersion().contains("1.11")) {
 				chestHider = new ChestHider1_11(mathUtils);
-				packetChestHider = new PacketChestHider(manager, this);
-				packetChestHider.setup();
+				if (Settings.Test.packetAntiChestEsp) {
+					packetChestHider = new PacketChestHider(manager, this);
+					packetChestHider.setup();	
+				}
 			}
 			server.getScheduler().runTaskTimer(this, new Runnable() {
 				@Override
@@ -108,7 +116,7 @@ public class TracerBlocker extends JavaPlugin {
 				
 				int eid = metadata.getEntityID();
 				Player reciever = event.getPlayer();
-				if (eid == reciever.getEntityId()) { // not != i am a fool !
+				if (eid == reciever.getEntityId()) {
 					return;
 				}
 				
@@ -123,6 +131,7 @@ public class TracerBlocker extends JavaPlugin {
 	}
 
 	public void onDisable() {
+		ProtocolLibrary.getProtocolManager().removePacketListeners(this);
 		saveConfig();
 	}
 
@@ -146,6 +155,9 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.FakePlayers.secondsAlive = getConfig().getInt("fakeplayers.seconds-alive");
 		Settings.FakePlayers.speed = getConfig().getInt("fakeplayers.speed");
 		Settings.FakePlayers.disabledWorlds = getConfig().getStringList("fakeplayers.disabledWorlds");
+		
+		Settings.Test.antiHealthTags = getConfig().getBoolean("antihealthTags", false);
+		Settings.Test.packetAntiChestEsp = getConfig().getBoolean("packetAntiChestEsp", false);
 	}
 
 	public void saveConfig() {

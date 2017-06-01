@@ -44,4 +44,8 @@ public class Settings {
 		public static int speed = 3;
 		public static List<String> disabledWorlds = new ArrayList<>();
 	}
+	public static class Test {
+		public static boolean antiHealthTags = false;
+		public static boolean packetAntiChestEsp = false;
+	}
 }

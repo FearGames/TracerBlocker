@@ -120,11 +120,8 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 		
 		WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
 		WrappedDataWatcher watcher = new WrappedDataWatcher();
-		if (new Random().nextInt(10) == 0) {
-			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
-		}
-		if (new Random().nextInt(10) == 0) {
-			
+		if (new Random().nextInt(10) != 0) {
+			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);	
 		}
 		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), (float) randomHealth());
 		watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());

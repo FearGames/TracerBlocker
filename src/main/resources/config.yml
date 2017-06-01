@@ -1,0 +1,53 @@
+#hides players that are behind objects. You can't physically see them, so they shouldn't be rendered.
+playerhider:
+  enabled: true
+  #how often it checks if someone is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
+  every-ticks: 1
+  #The distance from the player that should be ignored. It won't hide anyone within the specified distance from the player.
+  ignore-distance: 10
+  #the max distance. It will ignore everything that's farther away than the specified distance.
+  max-distance: 120
+  #list the worlds this feature shouldn't be used in. Case sensitive
+  disabledWorlds: [
+  Example_World1,
+  ExampleWoRlD2
+  ]
+#Hides chests that are behind objects. You can't physically see them, so they are not rendered.
+chesthider:
+  enabled: true
+  #how often it checks if a chest is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
+  every-ticks: 1
+  #minimal distance needed to see the chest if it is behind a wall
+  ignore-distance: 7
+  #the max distance. It will ignore everything that's farther away than the specified distance.
+  #the cpu usage is exponential, the further it goes, the more CPU it uses. If you notice lag, lower the distance.
+  #should be in increments of 16
+  max-distance: 16
+  #list the worlds this feature shouldn't be used in. Case sensitive
+  disabledWorlds: [
+  Example_World1,
+  ExampleWoRlD2
+  ]
+#spawns invisible fake client-side players for every player. Can be quite CPU intensive(Not really). If you get a low TPS, then you should disable this.
+fakeplayers:
+  enabled: true
+  #If the fake players should be moving or not.
+  #Setting this to false will make the "speed" option useless.
+  #If you have lag problems, both FPS(clientside) and TPS(serverside) this might lower it.
+  moving: true
+  #how often it checks if someone is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
+  every-ticks: 5
+  #the amount of seconds the fake players should exist for.
+  seconds-alive: 5
+  # The update speed of the fake player entities in ticks. 1 tick = 50ms
+  speed: 10
+  #list the worlds this feature shouldn't be used in. Case sensitive
+  disabledWorlds: [
+  Example_World1,
+  ExampleWoRlD2
+  ]
+#WIP
+#Do not touch this part of config unless you want to test the featues.
+#i do not guarantee you that everything will be working on 100%
+antihealthTags: false
+packetAntiChestEsp: false
