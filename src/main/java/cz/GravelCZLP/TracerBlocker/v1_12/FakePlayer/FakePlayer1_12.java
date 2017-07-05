@@ -1,10 +1,9 @@
+package cz.GravelCZLP.TracerBlocker.v1_12.FakePlayer;
 
-package cz.GravelCZLP.FakePlayer;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import com.comphenix.packetwrapper.*;
+import com.comphenix.protocol.utility.MinecraftReflection;
+import com.comphenix.protocol.wrappers.*;
+import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,22 +11,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.comphenix.packetwrapper.WrapperPlayServerAnimation;
-import com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
-import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
-import com.comphenix.packetwrapper.WrapperPlayServerNamedEntitySpawn;
-import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
-import com.comphenix.packetwrapper.WrapperPlayServerRelEntityMoveLook;
-import com.comphenix.protocol.utility.MinecraftReflection;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-public class FakePlayer1_11 extends AbstractFakePlayer {
-	
-	public FakePlayer1_11(Plugin plugin, Location location) {
+public class FakePlayer1_12 extends AbstractFakePlayer {
+
+	public FakePlayer1_12(Plugin plugin, Location location) {
 		super(plugin, location);
 	}
 
@@ -45,7 +35,7 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 	protected void removeObserver(Player player) {
 		sendRemovePlayerTab(player);
 		WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
-		destroy.setEntityIds(new int[] { entityId });
+		destroy.setEntityIds(new int[]{entityId});
 		destroy.sendPacket(player);
 		observers.remove(player);
 	}
@@ -96,40 +86,40 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 	protected void broadcastMoveEntity() {
 		WrapperPlayServerRelEntityMoveLook move = new WrapperPlayServerRelEntityMoveLook();
 		move.setEntityID(entityId);
-		
+
 		double xChange = (serverLocation.getX() * 32 - previousServerLocation.getX() * 32) * 128;
 		double yChange = (serverLocation.getY() * 32 - previousServerLocation.getY() * 32) * 128;
 		double zChange = (serverLocation.getZ() * 32 - previousServerLocation.getZ() * 32) * 128;
-		
+
 		move.setDx(xChange);
 		move.setDy(yChange);
 		move.setDz(zChange);
-		
+
 		move.setYaw(getRandomYaw());
 		move.setPitch(getRandomPitch());
-		
+
 		Location loc = new Location(observers.get(0).getWorld(), move.getDx(), move.getDy(), move.getDz());
 		Block b = loc.getWorld().getBlockAt(loc);
 		boolean onGround = b.getRelative(BlockFace.DOWN).getType() != Material.AIR;
 
 		move.setOnGround(onGround);
-		
+
 		WrapperPlayServerAnimation animation = new WrapperPlayServerAnimation();
 		animation.setEntityID(entityId);
 		animation.setAnimation(getRandomAnimation());
-		
+
 		WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
 		WrappedDataWatcher watcher = new WrappedDataWatcher();
-		if (new Random().nextInt(10) != 0) {
-			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);	
+		if(new Random().nextInt(10) != 0) {
+			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
 		}
-		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), (float) randomHealth());
+		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), randomHealth());
 		watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());
 		metadata.setEntityID(entityId);
 		metadata.setMetadata(watcher.getWatchableObjects());
 
-		for (Player player : observers) {
-			if (move != null) {
+		for(Player player : observers) {
+			if(move != null) {
 				move.sendPacket(player);
 			}
 			animation.sendPacket(player);
@@ -140,15 +130,15 @@ public class FakePlayer1_11 extends AbstractFakePlayer {
 	protected int getRandomAnimation() {
 		Random r = new Random();
 		int i = r.nextInt(2);
-		switch (i) {
-		case 0:
-			return 0;
-		case 1:
-			return 1;
-		case 2:
-			return 3;
-		default:
-			return 0;
+		switch(i) {
+			case 0:
+				return 0;
+			case 1:
+				return 1;
+			case 2:
+				return 3;
+			default:
+				return 0;
 		}
 	}
 

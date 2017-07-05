@@ -1,15 +1,4 @@
-package cz.GravelCZLP.ChestHider;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.BlockState;
-import org.bukkit.plugin.java.JavaPlugin;
+package cz.GravelCZLP.TracerBlocker.v1_11.ChestHider;
 
 import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
 import com.comphenix.packetwrapper.WrapperPlayServerMapChunk;
@@ -20,19 +9,30 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
-
+import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractPacketChestHider;
 import cz.GravelCZLP.TracerBlocker.Settings;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class PacketChestHider {
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PacketChestHider1_11 extends AbstractPacketChestHider {
 
 	private ProtocolManager manager;
 	private JavaPlugin pl;
-	
-	public PacketChestHider(ProtocolManager manager, JavaPlugin pl) {
+
+	public PacketChestHider1_11(ProtocolManager manager, JavaPlugin pl) {
 		this.manager = manager;
 		this.pl = pl;
 	}
-	
+
+	@Override
 	public void setup() {
 		PacketAdapter adapter = new PacketAdapter(pl, ListenerPriority.HIGHEST, PacketType.
 				Play.Server.MAP_CHUNK) {

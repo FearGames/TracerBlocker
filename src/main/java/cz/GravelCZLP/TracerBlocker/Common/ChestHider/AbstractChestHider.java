@@ -1,16 +1,11 @@
-package cz.GravelCZLP.ChestHider;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
+package cz.GravelCZLP.TracerBlocker.Common.ChestHider;
 
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.Settings;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 
 @SuppressWarnings("deprecation")
 public abstract class AbstractChestHider {

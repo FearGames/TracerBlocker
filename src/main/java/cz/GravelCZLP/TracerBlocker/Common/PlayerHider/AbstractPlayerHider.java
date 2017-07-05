@@ -1,5 +1,4 @@
-
-package cz.GravelCZLP.PlayerHider;
+package cz.GravelCZLP.TracerBlocker.Common.PlayerHider;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -36,21 +35,9 @@ import java.util.Map;
 
 public abstract class AbstractPlayerHider {
 	protected Table<Integer, Integer, Boolean> observerEntityMap = HashBasedTable.create();
-
-	public void hidePlayer(Player a, Player b) {
-		hideEntity(a, b);
-	}
-
-	public void showPlayer(Player a, Player b) {
-		showEntity(a, b);
-	}
-
 	protected ProtocolManager manager;
-
 	// Listeners
 	protected PacketAdapter protocolListener;
-
-	// Current policy
 
 	/**
 	 * Construct a new entity hider.
@@ -67,6 +54,16 @@ public abstract class AbstractPlayerHider {
 		// Register events and packet listener
 		Bukkit.getServer().getPluginManager().registerEvents(constructBukkit(), plugin);
 		manager.addPacketListener(protocolListener = constructProtocol(plugin));
+	}
+
+	public void hidePlayer(Player a, Player b) {
+		hideEntity(a, b);
+	}
+
+	// Current policy
+
+	public void showPlayer(Player a, Player b) {
+		showEntity(a, b);
 	}
 
 	/**
@@ -203,7 +200,7 @@ public abstract class AbstractPlayerHider {
 	 *            - the entity to hide.
 	 * @return TRUE if the entity was previously visible, FALSE otherwise.
 	 */
-	abstract boolean hideEntity(Player observer, Entity entity);
+	public abstract boolean hideEntity(Player observer, Entity entity);
 
 	/**
 	 * Determine if the given entity has been hidden from an observer.

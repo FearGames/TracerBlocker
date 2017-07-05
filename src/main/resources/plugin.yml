@@ -1,6 +1,6 @@
 name: TracerBlocker
 main: cz.GravelCZLP.TracerBlocker.TracerBlocker
-version: 2.0.1
+version: 3.0.0
 authors: [kukelekuuk00, GravelCZLP]
 depend: [ProtocolLib, PacketWrapper]
 commands:

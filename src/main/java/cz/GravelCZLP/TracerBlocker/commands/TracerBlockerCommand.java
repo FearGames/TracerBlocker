@@ -1,16 +1,15 @@
 
 package cz.GravelCZLP.TracerBlocker.commands;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import cz.GravelCZLP.TracerBlocker.TracerBlocker;
+import cz.GravelCZLP.TracerBlocker.v1_11.FakePlayer.FakePlayer1_11;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import cz.GravelCZLP.FakePlayer.FakePlayer1_11;
-import cz.GravelCZLP.TracerBlocker.TracerBlocker;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class TracerBlockerCommand implements CommandExecutor {
 

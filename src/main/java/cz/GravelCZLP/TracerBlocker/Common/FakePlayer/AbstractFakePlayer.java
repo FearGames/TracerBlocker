@@ -1,15 +1,12 @@
-
-package cz.GravelCZLP.FakePlayer;
+package cz.GravelCZLP.TracerBlocker.Common.FakePlayer;
 
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
 import cz.GravelCZLP.TracerBlocker.RandomNameGenerator;
 import cz.GravelCZLP.TracerBlocker.Settings;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
