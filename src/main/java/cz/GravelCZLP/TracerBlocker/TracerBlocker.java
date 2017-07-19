@@ -4,6 +4,7 @@ package cz.GravelCZLP.TracerBlocker;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import cz.GravelCZLP.TracerBlocker.commands.TracerBlockerCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,18 +29,19 @@ public class TracerBlocker extends JavaPlugin {
 			return;
 		}
 
-		String v = getServer().getVersion().toString();
+		String ver = Bukkit.getBukkitVersion();
+		ver = ver.substring(0, ver.indexOf("-") - 1);
 
-		boolean versionb = Version.isVersionSupported(v);
+		boolean versionb = Version.isVersionSupported(ver);
 		if(!versionb) {
-			getServer().getLogger().warning("TracerBlocker does not support version " + v);
+			getServer().getLogger().warning("TracerBlocker does not support version " + ver);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 
 		manager = ProtocolLibrary.getProtocolManager();
 
-		currentLoader = Version.getLoaderByVersion(v, this, manager);
+		currentLoader = Version.getLoaderByVersion(ver, this, manager);
 
 		loadConfig();
 
@@ -49,7 +51,9 @@ public class TracerBlocker extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		currentLoader.onDisable();
+		if(currentLoader != null) {
+			currentLoader.onDisable();
+		}
 		ProtocolLibrary.getProtocolManager().removePacketListeners(this);
 		saveConfig();
 	}

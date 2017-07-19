@@ -20,7 +20,7 @@ public enum Version {
 
 	public static boolean isVersionSupported(String v) {
 		for(Version ver : values()) {
-			if(ver.getVersion().equalsIgnoreCase(v)) {
+			if(ver.getVersion().contains(v)) {
 				return true;
 			}
 		}
@@ -29,7 +29,7 @@ public enum Version {
 
 	public static Loader getLoaderByVersion(String version, TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
 		for(Version ver : values()) {
-			if(ver.getVersion().equalsIgnoreCase(version)) {
+			if(ver.getVersion().contains(version)) {
 				return ver.getLoader(tracerBlocker, protocolManager);
 			}
 		}
