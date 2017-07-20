@@ -1,7 +1,5 @@
 package cz.GravelCZLP.TracerBlocker.v1_11.ChestHider;
 
-import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
-import com.comphenix.packetwrapper.WrapperPlayServerMapChunk;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -11,6 +9,8 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractPacketChestHider;
 import cz.GravelCZLP.TracerBlocker.Settings;
+import cz.GravelCZLP.TracerBlocker.v1_11.Packets.WrapperPlayServerBlockChange;
+import cz.GravelCZLP.TracerBlocker.v1_11.Packets.WrapperPlayServerMapChunk;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;

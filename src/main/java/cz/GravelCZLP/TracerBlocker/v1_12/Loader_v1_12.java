@@ -1,6 +1,5 @@
 package cz.GravelCZLP.TracerBlocker.v1_12;
 
-import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -16,6 +15,7 @@ import cz.GravelCZLP.TracerBlocker.TracerBlocker;
 import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.ChestHider1_12;
 import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.PacketChestHider1_12;
 import cz.GravelCZLP.TracerBlocker.v1_12.FakePlayer.FakePlayer1_12;
+import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityMetadata;
 import cz.GravelCZLP.TracerBlocker.v1_12.PlayerHider.PlayerHider1_12;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

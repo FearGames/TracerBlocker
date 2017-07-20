@@ -1,8 +1,8 @@
 name: TracerBlocker
 main: cz.GravelCZLP.TracerBlocker.TracerBlocker
-version: 3.0.0
+version: BETA-1.5.0-PRE
 authors: [kukelekuuk00, GravelCZLP]
-depend: [ProtocolLib, PacketWrapper]
+depend: ProtocolLib
 commands:
   tracerblocker:
     aliasses: [antitracer,tracer, antiesp, antiplayeresp, antichestesp]

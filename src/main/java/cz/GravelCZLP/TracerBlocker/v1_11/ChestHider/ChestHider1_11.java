@@ -1,10 +1,10 @@
 package cz.GravelCZLP.TracerBlocker.v1_11.ChestHider;
 
-import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
 import cz.GravelCZLP.TracerBlocker.MathUtils;
+import cz.GravelCZLP.TracerBlocker.v1_11.Packets.WrapperPlayServerBlockChange;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

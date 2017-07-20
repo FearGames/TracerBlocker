@@ -3,7 +3,6 @@ package cz.GravelCZLP.TracerBlocker;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import cz.GravelCZLP.TracerBlocker.commands.TracerBlockerCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,11 +17,6 @@ public class TracerBlocker extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		if (getServer().getPluginManager().getPlugin("PacketWrapper") == null) {
-			getLogger().warning("TracerBlocker depends on PacketWrapper.");
-			this.getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
 		if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
 			getLogger().warning("TracerBlocker depends on ProtocolLib");
 			this.getServer().getPluginManager().disablePlugin(this);
@@ -44,8 +38,6 @@ public class TracerBlocker extends JavaPlugin {
 		currentLoader = Version.getLoaderByVersion(ver, this, manager);
 
 		loadConfig();
-
-		getServer().getPluginCommand("tracerblocker").setExecutor(new TracerBlockerCommand(this));
 
 		currentLoader.onEnable();
 	}

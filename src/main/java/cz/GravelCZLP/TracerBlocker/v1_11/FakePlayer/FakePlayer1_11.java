@@ -1,9 +1,9 @@
 package cz.GravelCZLP.TracerBlocker.v1_11.FakePlayer;
 
-import com.comphenix.packetwrapper.*;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.*;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
+import cz.GravelCZLP.TracerBlocker.v1_11.Packets.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
