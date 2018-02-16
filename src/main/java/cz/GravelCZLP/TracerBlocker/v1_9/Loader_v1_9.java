@@ -1,4 +1,10 @@
-package cz.GravelCZLP.TracerBlocker.v1_11;
+package cz.GravelCZLP.TracerBlocker.v1_9;
+
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -7,37 +13,32 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
-import cz.GravelCZLP.TracerBlocker.Common.Loader;
-import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
-import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
-import cz.GravelCZLP.TracerBlocker.v1_11.ChestHider.ChestHider1_11;
-import cz.GravelCZLP.TracerBlocker.v1_11.ChestHider.PacketChestHider1_11;
-import cz.GravelCZLP.TracerBlocker.v1_11.FakePlayer.FakePlayer1_11;
-import cz.GravelCZLP.TracerBlocker.v1_11.Packets.WrapperPlayServerEntityMetadata;
-import cz.GravelCZLP.TracerBlocker.v1_11.PlayerHider.PlayerHider1_11;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import java.util.Random;
+import cz.GravelCZLP.TracerBlocker.Common.Loader;
+import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
+import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
+import cz.GravelCZLP.TracerBlocker.v1_9.ChestHider.ChestHider1_9;
+import cz.GravelCZLP.TracerBlocker.v1_9.ChestHider.PacketChestHider1_9;
+import cz.GravelCZLP.TracerBlocker.v1_9.FakePlayer.FakePlayer1_9;
+import cz.GravelCZLP.TracerBlocker.v1_9.Packets.WrapperPlayServerEntityMetadata;
+import cz.GravelCZLP.TracerBlocker.v1_9.PlayerHider.PlayerHider1_9;
 
 /**
  * Created by GravelCZLP on 4.7.17.
  */
-public class Loader_v1_11 extends Loader {
+public class Loader_v1_9 extends Loader {
 
 	private static final Random rand = new Random();
 	private TracerBlocker tracerBlocker;
 	private ProtocolManager protocolManager;
 	private MathUtils mathUtils;
-	private PacketChestHider1_11 packetChestHider;
+	private PacketChestHider1_9 packetChestHider;
 	private AbstractPlayerHider playerHider;
 	private AbstractChestHider chestHider;
 
-	public Loader_v1_11(TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
+	public Loader_v1_9(TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
 		this.tracerBlocker = tracerBlocker;
 		this.protocolManager = protocolManager;
 	}
@@ -55,7 +56,7 @@ public class Loader_v1_11 extends Loader {
 		mathUtils = new MathUtils();
 
 		if(Settings.PlayerHider.enabled) {
-			playerHider = new PlayerHider1_11(tracerBlocker);
+			playerHider = new PlayerHider1_9(tracerBlocker);
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
 				@Override
 				public void run() {
@@ -64,9 +65,9 @@ public class Loader_v1_11 extends Loader {
 			}, 1, Settings.PlayerHider.everyTicks);
 		}
 		if(Settings.ChestHider.enabled) {
-			chestHider = new ChestHider1_11(mathUtils);
+			chestHider = new ChestHider1_9(mathUtils);
 			if(Settings.Test.packetAntiChestEsp) {
-				packetChestHider = new PacketChestHider1_11(protocolManager, tracerBlocker);
+				packetChestHider = new PacketChestHider1_9(protocolManager, tracerBlocker);
 				packetChestHider.setup();
 			}
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
@@ -142,7 +143,7 @@ public class Loader_v1_11 extends Loader {
 	}
 
 	private void newFakePlayer(Location fakeLocation, Player player) {
-		new FakePlayer1_11(tracerBlocker, fakeLocation).addObserver(player);
+		new FakePlayer1_9(tracerBlocker, fakeLocation).addObserver(player);
 	}
 
 	private void checkVisibility() {

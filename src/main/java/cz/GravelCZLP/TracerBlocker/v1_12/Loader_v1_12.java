@@ -6,9 +6,10 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+
+import cz.GravelCZLP.TracerBlocker.Common.Loader;
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
 import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
-import cz.GravelCZLP.TracerBlocker.Loader;
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;

@@ -3,6 +3,9 @@ package cz.GravelCZLP.TracerBlocker;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+
+import cz.GravelCZLP.TracerBlocker.Common.Loader;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
