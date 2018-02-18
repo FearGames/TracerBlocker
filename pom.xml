@@ -35,4 +35,13 @@
         <scope>provided</scope>
         </dependency>
     </dependencies>
+    <packaging>pom</packaging>
+    <modules>
+    	<module>TVB-1.8</module>
+    	<module>TBV-1.9</module>
+    	<module>TBV-1.10</module>
+    	<module>TBV-1.11</module>
+    	<module>TBV-1.12</module>
+    	<module>TBCommon</module>
+    </modules>
 </project>
