@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -55,7 +55,15 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 	protected void notifySpawnEntity(Player player) {
 		sendAddPlayerTab(player);
 		WrapperPlayServerNamedEntitySpawn spawned = new WrapperPlayServerNamedEntitySpawn();
-		org.bukkit.entity.Entity e = Bukkit.getEntity(uuid);
+		Entity e = null;
+		for (Entity ent : getLocation().getWorld().getEntities()) {
+			if (ent != null) {
+				if (ent.getEntityId() == entityId) {
+					e = ent;
+					break;
+				}
+			}
+		}
 		spawned.setEntityId(e.getEntityId());
 		spawned.setPosition(serverLocation.toVector());
 		spawned.setPlayerUuid(uuid);

@@ -11,30 +11,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    <repositories>
-    <repository>
-    <id>spigot-repo</id>
-    <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-    </repository>
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>
-    </repositories>
-    <dependencies>
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>4.3.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-        <groupId>org.bukkit</groupId>
-        <artifactId>bukkit</artifactId>
-        <version>1.11-R0.1-SNAPSHOT</version>
-        <scope>provided</scope>
-        </dependency>
-    </dependencies>
     <packaging>pom</packaging>
     <modules>
     	<module>TVB-1.8</module>
@@ -42,6 +18,62 @@
     	<module>TBV-1.10</module>
     	<module>TBV-1.11</module>
     	<module>TBV-1.12</module>
-    	<module>TBCommon</module>
     </modules>
+    
+    <dependencies>
+    	<dependency>
+			<groupId>cz.GravelCZLP</groupId>
+			<artifactId>TBCommon</artifactId>
+			<version>BETA-1.5.1-PRE</version>
+			<scope>compile</scope>    	
+    	</dependency>
+    </dependencies>
+    
+    <build>
+    	<finalName>TracerBlocker-${project.version}-MULTIVER.jar</finalName>
+        <defaultGoal>clean package install</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+               
+                <configuration>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>shaded</shadedClassifierName>
+                </configuration>
+            </plugin>
+           	<plugin>
+           		  <artifactId>maven-assembly-plugin</artifactId>
+				  <configuration>
+				    <archive>
+				      <manifest>
+				        <mainClass>fully.qualified.MainClass</mainClass>
+				      </manifest>
+				    </archive>
+				    <descriptorRefs>
+				      <descriptorRef>jar-with-dependencies</descriptorRef>
+				    </descriptorRefs>
+				  </configuration>
+				  <executions>
+				    <execution>
+				      <id>make-assembly</id> <!-- this is used for inheritance merges -->
+				      <phase>package</phase> <!-- bind to the packaging phase -->
+				      <goals>
+				        <goal>single</goal>
+				      </goals>
+				    </execution>
+				  </executions>
+           	</plugin>
+          </plugins>
+    </build>
+    
 </project>
