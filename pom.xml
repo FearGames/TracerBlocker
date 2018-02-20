@@ -13,58 +13,17 @@
     </properties>
     <packaging>pom</packaging>
     <modules>
-    	<module>TVB-1.8</module>
+    	<module>TBV-1.8</module>
     	<module>TBV-1.9</module>
     	<module>TBV-1.10</module>
     	<module>TBV-1.11</module>
     	<module>TBV-1.12</module>
     	<module>TBCommon</module>
+    	<module>FinalBuild</module>
     </modules>
-    
+   	
     <build>
         <defaultGoal>clean package install</defaultGoal>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-               
-                <configuration>
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <shadedClassifierName>shaded</shadedClassifierName>
-                </configuration>
-            </plugin>
-           	<plugin>
-           		  <artifactId>maven-assembly-plugin</artifactId>
-				  <configuration>
-				    <archive>
-				      <manifest>
-				        <mainClass>fully.qualified.MainClass</mainClass>
-				      </manifest>
-				    </archive>
-				    <descriptorRefs>
-				      <descriptorRef>jar-with-dependencies</descriptorRef>
-				    </descriptorRefs>
-				  </configuration>
-				  <executions>
-				    <execution>
-				      <id>make-assembly</id> <!-- this is used for inheritance merges -->
-				      <phase>package</phase> <!-- bind to the packaging phase -->
-				      <goals>
-				        <goal>single</goal>
-				      </goals>
-				    </execution>
-				  </executions>
-           	</plugin>
-          </plugins>
     </build>
     
 </project>

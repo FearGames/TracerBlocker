@@ -5,7 +5,7 @@
     <artifactId>TracerBlocker</artifactId>
     <version>BETA-1.5.1-PRE</version>
   </parent>
-  <artifactId>TVB-1.8</artifactId>
+  <artifactId>TBV-1.8</artifactId>
   <packaging>jar</packaging>
   
   <dependencies>
