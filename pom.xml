@@ -18,19 +18,10 @@
     	<module>TBV-1.10</module>
     	<module>TBV-1.11</module>
     	<module>TBV-1.12</module>
+    	<module>TBCommon</module>
     </modules>
     
-    <dependencies>
-    	<dependency>
-			<groupId>cz.GravelCZLP</groupId>
-			<artifactId>TBCommon</artifactId>
-			<version>BETA-1.5.1-PRE</version>
-			<scope>compile</scope>    	
-    	</dependency>
-    </dependencies>
-    
     <build>
-    	<finalName>TracerBlocker-${project.version}-MULTIVER.jar</finalName>
         <defaultGoal>clean package install</defaultGoal>
         <plugins>
             <plugin>
