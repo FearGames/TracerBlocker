@@ -3,7 +3,7 @@
   <parent>
     <groupId>cz.GravelCZLP</groupId>
     <artifactId>TracerBlocker</artifactId>
-    <version>BETA-1.5.1-PRE</version>
+    <version>BETA-2.0.0-PRE</version>
   </parent>
   <artifactId>TBV-1.10</artifactId>
   
@@ -23,7 +23,7 @@
         	<dependency>
 			<groupId>cz.GravelCZLP</groupId>
 			<artifactId>TBCommon</artifactId>
-			<version>BETA-1.5.1-PRE</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>    	
     	</dependency>
   </dependencies>
