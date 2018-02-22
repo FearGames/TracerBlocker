@@ -1,10 +1,10 @@
 package cz.GravelCZLP.TracerBlocker;
 
+import java.lang.reflect.Constructor;
+
 import com.comphenix.protocol.ProtocolManager;
 
 import cz.GravelCZLP.TracerBlocker.Common.Loader;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Created by GravelCZLP on 5.7.17.
@@ -26,7 +26,7 @@ public enum Version {
 
 	public static boolean isVersionSupported(String v) {
 		for(Version ver : values()) {
-			if(ver.getVersion().contains(v)) {
+			if(v.contains(ver.getVersion())) {
 				return true;
 			}
 		}
@@ -35,7 +35,7 @@ public enum Version {
 
 	public static Loader getLoaderByVersion(String version, TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
 		for(Version ver : values()) {
-			if(ver.getVersion().contains(version)) {
+			if(version.contains(ver.getVersion())) {
 				return ver.getLoader(tracerBlocker, protocolManager);
 			}
 		}

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>TracerBlocker</artifactId>
     <groupId>cz.GravelCZLP</groupId>
-    <version>BETA-2.0.0-PRE</version>
+    <version>BETA-2.0.2-PRE</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>FinalBuild</artifactId>

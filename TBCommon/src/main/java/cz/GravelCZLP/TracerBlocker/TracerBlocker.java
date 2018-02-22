@@ -18,6 +18,8 @@ public class TracerBlocker extends JavaPlugin {
 
 	private Loader currentLoader;
 
+	public boolean debug = false;
+	
 	@Override
 	public void onEnable() {
 		if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
@@ -26,13 +28,18 @@ public class TracerBlocker extends JavaPlugin {
 			return;
 		}
 
-		System.out.println(Bukkit.getVersion());
-		System.out.println(Bukkit.getBukkitVersion());
+		debug = false;
+		
+		if (debug) {
+			System.out.println(Bukkit.getVersion());
+			System.out.println(Bukkit.getBukkitVersion());	
+		}
 		
 		String ver = Bukkit.getBukkitVersion();
 		ver = ver.substring(0, ver.indexOf("-"));
-		
-		System.out.println(ver);
+		if (debug) {
+			System.out.println(ver);
+		}
 		
 		boolean versionb = Version.isVersionSupported(ver);
 		if(!versionb) {
@@ -44,9 +51,14 @@ public class TracerBlocker extends JavaPlugin {
 		manager = ProtocolLibrary.getProtocolManager();
 
 		currentLoader = Version.getLoaderByVersion(ver, this, manager);
-
+		
 		loadConfig();
-
+		
+		if (currentLoader == null) {
+			getServer().getLogger().warning("Tracer blocker did not found any Version Loader for " + ver);
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		currentLoader.onEnable();
 	}
 
