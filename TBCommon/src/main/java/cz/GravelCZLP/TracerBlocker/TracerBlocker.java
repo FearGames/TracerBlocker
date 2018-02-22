@@ -26,9 +26,14 @@ public class TracerBlocker extends JavaPlugin {
 			return;
 		}
 
+		System.out.println(Bukkit.getVersion());
+		System.out.println(Bukkit.getBukkitVersion());
+		
 		String ver = Bukkit.getBukkitVersion();
-		ver = ver.substring(0, ver.indexOf("-") - 1);
-
+		ver = ver.substring(0, ver.indexOf("-"));
+		
+		System.out.println(ver);
+		
 		boolean versionb = Version.isVersionSupported(ver);
 		if(!versionb) {
 			getServer().getLogger().warning("TracerBlocker does not support version " + ver);
