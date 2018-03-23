@@ -28,7 +28,7 @@ public class TracerBlocker extends JavaPlugin {
 			return;
 		}
 
-		debug = true;
+		debug = false;
 		
 		if (debug) {
 			System.out.println(Bukkit.getVersion());
