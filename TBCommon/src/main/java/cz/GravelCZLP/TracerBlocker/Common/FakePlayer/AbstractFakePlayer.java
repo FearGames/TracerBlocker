@@ -65,6 +65,8 @@ public abstract class AbstractFakePlayer {
 	// Update task
 	private BukkitTask task;
 
+	protected Plugin plugin;
+	
 	public AbstractFakePlayer(final Plugin plugin, Location location) {
 		this.clientLocation = Preconditions.checkNotNull(location, "Location cannot be NULL");
 		this.serverLocation = clientLocation.clone();
@@ -97,6 +99,7 @@ public abstract class AbstractFakePlayer {
 				i++;
 			}
 		}.runTaskTimer(plugin, 1, Settings.FakePlayers.speed);
+		this.plugin = plugin;
 	}
 
 	private void maybeDestroyEntity() {

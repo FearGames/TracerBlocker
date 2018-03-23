@@ -1,9 +1,9 @@
 package cz.GravelCZLP.TracerBlocker.v1_12.FakePlayer;
 
-import com.comphenix.protocol.utility.MinecraftReflection;
-import com.comphenix.protocol.wrappers.*;
-import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
-import cz.GravelCZLP.TracerBlocker.v1_12.Packets.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,9 +11,20 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import com.comphenix.protocol.utility.MinecraftReflection;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+
+import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
+import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerAnimation;
+import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityDestroy;
+import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityMetadata;
+import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerNamedEntitySpawn;
+import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerPlayerInfo;
+import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerRelEntityMoveLook;
 
 public class FakePlayer1_12 extends AbstractFakePlayer {
 
@@ -109,10 +120,14 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 		animation.setAnimation(getRandomAnimation());
 
 		WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
-		WrappedDataWatcher watcher = new WrappedDataWatcher();
-		if(new Random().nextInt(10) != 0) {
-			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
+		WrappedDataWatcher watcher = new WrappedDataWatcher();	
+		
+		if (new Random().nextInt(100) != 50) {
+			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x22);	
+		} else {
+			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x20);
 		}
+		
 		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), randomHealth());
 		watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());
 		metadata.setEntityID(entityId);
