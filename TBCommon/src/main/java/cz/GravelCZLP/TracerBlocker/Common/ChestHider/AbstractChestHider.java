@@ -64,46 +64,6 @@ public abstract class AbstractChestHider {
 							Block blockFF = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetFF), distance);
 							Block blockGG = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetGG), distance);
 							Block blockHH = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetHH), distance);
-
-							if (!blockAA.getType().isSolid() || blockAA.isLiquid() || blockAA.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
-							
-							if (!blockBB.getType().isSolid() || blockBB.isLiquid() || blockBB.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
-							
-							if (!blockCC.getType().isSolid() || blockCC.isLiquid() || blockCC.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
-							
-							if (!blockDD.getType().isSolid() || blockDD.isLiquid() || blockDD.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
-							
-							if (!blockEE.getType().isSolid() || blockEE.isLiquid() || blockEE.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
-							
-							if (!blockFF.getType().isSolid() || blockFF.isLiquid() || blockFF.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
-							
-							if (!blockGG.getType().isSolid() || blockGG.isLiquid() || blockGG.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
-							
-							if (!blockHH.getType().isSolid() || blockHH.isLiquid() || blockHH.getType().isTransparent()) {
-								showBlock(a, state.getLocation());
-								continue;
-							}
 							
 							if (blockAA == null || blockAA.getType().equals(state.getBlock().getType())
 									|| blockBB == null || blockBB.getType().equals(state.getBlock().getType())

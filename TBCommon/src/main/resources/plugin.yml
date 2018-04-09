@@ -3,6 +3,3 @@ main: cz.GravelCZLP.TracerBlocker.TracerBlocker
 version: BETA-2.0.3-PRE
 authors: [kukelekuuk00, GravelCZLP]
 depend: [ProtocolLib]
-commands:
-  tracerblocker:
-    aliasses: [antitracer,tracer, antiesp, antiplayeresp, antichestesp]

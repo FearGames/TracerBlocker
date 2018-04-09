@@ -43,6 +43,9 @@ public class Settings {
 		public static int secondsAlive = 5;
 		public static int speed = 3;
 		public static List<String> disabledWorlds = new ArrayList<>();
+		public static boolean showArrows = true;
+		public static boolean showIfCantSee = true;
+		public static double maxDistance;
 	}
 	public static class Test {
 		public static boolean antiHealthTags = false;

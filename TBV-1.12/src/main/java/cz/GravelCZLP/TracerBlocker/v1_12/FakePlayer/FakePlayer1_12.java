@@ -18,6 +18,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 
+import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
 import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerAnimation;
 import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityDestroy;
@@ -37,7 +38,7 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 
 		watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x20);
 		watcher.setObject(1, WrappedDataWatcher.Registry.get(Integer.class), 300);
-		watcher.setObject(3, WrappedDataWatcher.Registry.get(String.class), name);
+		watcher.setObject(2, WrappedDataWatcher.Registry.get(String.class), name);
 		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);
 		return watcher;
 	}
@@ -48,14 +49,19 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 		WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
 		destroy.setEntityIds(new int[]{entityId});
 		destroy.sendPacket(player);
-		observers.remove(player);
+		observer = null;
 	}
 
 	protected void notifySpawnEntity(Player player) {
+		if (observer == null) {
+			return;
+		}
 		sendAddPlayerTab(player);
 		WrapperPlayServerNamedEntitySpawn spawned = new WrapperPlayServerNamedEntitySpawn();
 		spawned.setEntityID(entityId);
-		spawned.setPosition(serverLocation.toVector());
+		spawned.setX(serverLocation.getX());
+		spawned.setY(serverLocation.getY());
+		spawned.setZ(serverLocation.getZ());
 		spawned.setPlayerUUID(uuid);
 		spawned.setYaw(serverLocation.getYaw());
 		spawned.setPitch(serverLocation.getPitch());
@@ -65,6 +71,9 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 	}
 
 	protected void sendAddPlayerTab(Player player) {
+		if (observer == null) {
+			return;
+		}
 		WrapperPlayServerPlayerInfo info = new WrapperPlayServerPlayerInfo();
 		info.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
 		List<PlayerInfoData> dataList = new ArrayList<>();
@@ -80,6 +89,9 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 	}
 
 	protected void sendRemovePlayerTab(Player player) {
+		if (observer == null) {
+			return;
+		}
 		WrapperPlayServerPlayerInfo info = new WrapperPlayServerPlayerInfo();
 		info.setAction(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
 		List<PlayerInfoData> dataList = new ArrayList<>();
@@ -88,33 +100,34 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 
 		PlayerInfoData data = new PlayerInfoData(profile, randomPing(), EnumWrappers.NativeGameMode.SURVIVAL, displayName);
 		Object generic = PlayerInfoData.getConverter().getGeneric(MinecraftReflection.getPlayerInfoDataClass(), data);
+		
 		PlayerInfoData back = PlayerInfoData.getConverter().getSpecific(generic);
 		dataList.add(back);
 		info.setData(dataList);
 		info.sendPacket(player);
 	}
 
-	protected void broadcastMoveEntity() {
+	protected void broadcastMoveEntity(Player player) {
 		WrapperPlayServerRelEntityMoveLook move = new WrapperPlayServerRelEntityMoveLook();
 		move.setEntityID(entityId);
 
 		double xChange = (serverLocation.getX() * 32 - previousServerLocation.getX() * 32) * 128;
 		double yChange = (serverLocation.getY() * 32 - previousServerLocation.getY() * 32) * 128;
 		double zChange = (serverLocation.getZ() * 32 - previousServerLocation.getZ() * 32) * 128;
-
+		
 		move.setDx(xChange);
 		move.setDy(yChange);
 		move.setDz(zChange);
-
+		
 		move.setYaw(getRandomYaw());
 		move.setPitch(getRandomPitch());
-
-		Location loc = new Location(observers.get(0).getWorld(), move.getDx(), move.getDy(), move.getDz());
+		
+		Location loc = new Location(player.getWorld(), serverLocation.getX(), serverLocation.getY(), serverLocation.getZ());
 		Block b = loc.getWorld().getBlockAt(loc);
 		boolean onGround = b.getRelative(BlockFace.DOWN).getType() != Material.AIR;
 
 		move.setOnGround(onGround);
-
+		
 		WrapperPlayServerAnimation animation = new WrapperPlayServerAnimation();
 		animation.setEntityID(entityId);
 		animation.setAnimation(getRandomAnimation());
@@ -122,24 +135,26 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 		WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
 		WrappedDataWatcher watcher = new WrappedDataWatcher();	
 		
-		if (new Random().nextInt(100) != 50) {
-			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x22);	
+		//http://wiki.vg/Entity_metadata#Entity_Metadata_Format
+		boolean sneaking = new Random().nextInt(10) == 10; 
+		if (sneaking) {
+			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x22);	// crouched and invisible
 		} else {
-			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x20);
+			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x20); // only invisible
 		}
 		
 		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), randomHealth());
-		watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());
+		if (Settings.FakePlayers.showArrows) {
+			watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());	
+		} else {
+			watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), 0);
+		}
 		metadata.setEntityID(entityId);
 		metadata.setMetadata(watcher.getWatchableObjects());
-
-		for(Player player : observers) {
-			if(move != null) {
-				move.sendPacket(player);
-			}
-			animation.sendPacket(player);
-			metadata.sendPacket(player);
-		}
+		
+		move.sendPacket(player);
+		animation.sendPacket(player);
+		metadata.sendPacket(player);
 	}
 
 	protected int getRandomAnimation() {
@@ -155,16 +170,5 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 			default:
 				return 0;
 		}
-	}
-
-	public void printInfo(Player toWho) {
-		toWho.sendMessage("Entity Spawned !");
-		toWho.sendMessage("Name: " + name);
-		toWho.sendMessage("UUID: " + uuid);
-		toWho.sendMessage("Entity ID: " + entityId);
-	}
-
-	public int randomArrows() {
-		return new Random().nextInt(5);
 	}
 }

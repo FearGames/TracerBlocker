@@ -19,6 +19,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 
+import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
 import cz.GravelCZLP.TracerBlocker.v1_8.Packets.WrapperPlayServerAnimation;
 import cz.GravelCZLP.TracerBlocker.v1_8.Packets.WrapperPlayServerEntityDestroy;
@@ -36,7 +37,6 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 	protected WrappedDataWatcher getWatcher() {
 		WrappedDataWatcher watcher = new WrappedDataWatcher();
 
-		watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x20);
 		//watcher.setObject(1, WrappedDataWatcher.Registry.get(Integer.class), 300);
 		watcher.setObject(2, WrappedDataWatcher.Registry.get(String.class), name);
 		watcher.setObject(6, WrappedDataWatcher.Registry.get(Float.class), 0.1F);
@@ -49,7 +49,7 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 		WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
 		destroy.setEntityIds(new int[] { entityId });
 		destroy.sendPacket(player);
-		observers.remove(player);
+		observer = null;
 	}
 
 	protected void notifySpawnEntity(Player player) {
@@ -104,7 +104,7 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 		info.sendPacket(player);
 	}
 
-	protected void broadcastMoveEntity() {
+	protected void broadcastMoveEntity(Player player) {
 		WrapperPlayServerRelEntityMove move = new WrapperPlayServerRelEntityMove();
 		move.setEntityId(entityId);
 
@@ -116,7 +116,7 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 		move.setDy(yChange);
 		move.setDz(zChange);
 
-		Location loc = new Location(observers.get(0).getWorld(), move.getDx(), move.getDy(), move.getDz());
+		Location loc = new Location(player.getWorld(), move.getDx(), move.getDy(), move.getDz());
 		Block b = loc.getWorld().getBlockAt(loc);
 		boolean onGround = b.getRelative(BlockFace.DOWN).getType() != Material.AIR;
 
@@ -132,17 +132,17 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
 		}
 		watcher.setObject(6, WrappedDataWatcher.Registry.get(Float.class), randomHealth());
-		watcher.setObject(9, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());
+		if (Settings.FakePlayers.showArrows) {
+			watcher.setObject(9, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());	
+		} else {
+			watcher.setObject(9, WrappedDataWatcher.Registry.get(Integer.class), 0);
+		}
 		metadata.setEntityId(entityId);
 		metadata.setMetadata(watcher.getWatchableObjects());
 
-		for (Player player : observers) {
-			if (move != null) {
-				move.sendPacket(player);
-			}
-			animation.sendPacket(player);
-			metadata.sendPacket(player);
-		}
+		move.sendPacket(player);
+		animation.sendPacket(player);
+		metadata.sendPacket(player);
 	}
 
 	protected int getRandomAnimation() {
@@ -165,9 +165,5 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 		toWho.sendMessage("Name: " + name);
 		toWho.sendMessage("UUID: " + uuid);
 		toWho.sendMessage("Entity ID: " + entityId);
-	}
-
-	public int randomArrows() {
-		return new Random().nextInt(5);
 	}
 }

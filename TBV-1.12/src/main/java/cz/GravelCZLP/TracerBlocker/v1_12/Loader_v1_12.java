@@ -1,5 +1,9 @@
 package cz.GravelCZLP.TracerBlocker.v1_12;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -7,29 +11,24 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
-import cz.GravelCZLP.TracerBlocker.Common.Loader;
-import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
-import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
+import cz.GravelCZLP.TracerBlocker.Common.Loader;
+import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
+import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
+import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.ChestHider1_12;
 import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.PacketChestHider1_12;
 import cz.GravelCZLP.TracerBlocker.v1_12.FakePlayer.FakePlayer1_12;
 import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityMetadata;
 import cz.GravelCZLP.TracerBlocker.v1_12.PlayerHider.PlayerHider1_12;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import java.util.Random;
 
 /**
  * Created by GravelCZLP on 4.7.17.
  */
 public class Loader_v1_12 extends Loader {
 
-	private static final Random rand = new Random();
 	private TracerBlocker tracerBlocker;
 	private ProtocolManager protocolManager;
 	private MathUtils mathUtils;
@@ -42,16 +41,12 @@ public class Loader_v1_12 extends Loader {
 		this.protocolManager = protocolManager;
 	}
 
-	public static int rand(int min, int max) {
-		return min + (rand).nextInt(max - min);
-	}
-
 	@Override
 	public void onEnable() {
 		if(Settings.Test.antiHealthTags) {
 			setupProtocol();
 		}
-
+		
 		mathUtils = new MathUtils();
 
 		if(Settings.PlayerHider.enabled) {
@@ -86,6 +81,7 @@ public class Loader_v1_12 extends Loader {
 		}
 	}
 
+	@Override
 	public void setupProtocol() {
 		PacketAdapter adapter = new PacketAdapter(tracerBlocker, ListenerPriority.HIGHEST, PacketType.Play.Server.ENTITY_METADATA) {
 
@@ -97,6 +93,8 @@ public class Loader_v1_12 extends Loader {
 					return;
 				}
 
+				System.out.println("Data Sent.");
+				
 				int eid = metadata.getEntityID();
 				Player reciever = event.getPlayer();
 				if(eid == reciever.getEntityId()) {
@@ -118,7 +116,8 @@ public class Loader_v1_12 extends Loader {
 
 	}
 
-	private void spawnFakePlayers() {
+	@Override
+	public void spawnFakePlayers() {
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			if(Settings.FakePlayers.disabledWorlds.contains(player.getLocation().getWorld().getName())) {
 				continue;
@@ -136,16 +135,23 @@ public class Loader_v1_12 extends Loader {
 					z = rand(-40, 40);
 				}
 				fakeLocation = player.getLocation().clone().add(x, y, z);
-			} while(fakeLocation.distance(player.getLocation()) < 16);
+			} while(fakeLocation.distance(player.getLocation()) < Settings.FakePlayers.maxDistance);
 			newFakePlayer(fakeLocation, player);
 		}
 	}
 
-	private void newFakePlayer(Location fakeLocation, Player player) {
-		new FakePlayer1_12(tracerBlocker, fakeLocation).addObserver(player);
+	@Override
+	public AbstractFakePlayer newFakePlayer(Location fakeLocation, Player player) {
+		if (player == null) {
+			System.out.println("Player cannot be null.");
+		}
+		AbstractFakePlayer afp = new FakePlayer1_12(tracerBlocker, fakeLocation);
+		afp.addObserver(player);
+		return afp; 
 	}
 
-	private void checkVisibility() {
+	@Override
+	public void checkVisibility() {
 		for(Player a : Bukkit.getOnlinePlayers()) {
 			for(Player b : Bukkit.getOnlinePlayers()) {
 				if(a.equals(b)) {

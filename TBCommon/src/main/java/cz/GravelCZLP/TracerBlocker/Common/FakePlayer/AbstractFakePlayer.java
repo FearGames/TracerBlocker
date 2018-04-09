@@ -1,23 +1,21 @@
 package cz.GravelCZLP.TracerBlocker.Common.FakePlayer;
 
+import java.util.Random;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
+
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+
 import cz.GravelCZLP.TracerBlocker.RandomNameGenerator;
 import cz.GravelCZLP.TracerBlocker.Settings;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 public abstract class AbstractFakePlayer {
 	/**
@@ -26,12 +24,12 @@ public abstract class AbstractFakePlayer {
 	protected static final FieldAccessor ENTITY_ID = Accessors.getFieldAccessor(
 			MinecraftReflection.getEntityClass(),
 			"entityCount", true);
-	protected final Vector vector;
+	protected final int moveDir;
 
 	/**
-	 * List of Players that will see the entity
+	 * Player that will see this entity.
 	 */
-	public List<Player> observers = Lists.newArrayList();
+	public Player observer;
 
 	/**
 	 * Client (Player) location
@@ -63,26 +61,25 @@ public abstract class AbstractFakePlayer {
 	protected boolean changed;
 
 	// Update task
-	private BukkitTask task;
-
+	private Runnable task;
+	// Update task id
+	private final int taskId;
+	
 	protected Plugin plugin;
 	
 	public AbstractFakePlayer(final Plugin plugin, Location location) {
-		this.clientLocation = Preconditions.checkNotNull(location, "Location cannot be NULL");
+		this.clientLocation = Preconditions.checkNotNull(location, "Location cannot be null");
 		this.serverLocation = clientLocation.clone();
-		Vector v = Vector.getRandom(); // This makes a random vector but it
-										// doesn't shoot all ways //
-		v.setX(v.getX() - 0.5f);
-		v.setZ(v.getZ() - 0.5f); // Now it does //
-		v.setY(v.getY() / 5);
-		vector = v.clone();
+		
+		this.moveDir = new Random().nextInt(3);
+		
 		this.name = RandomNameGenerator.getRandomName();
 		this.uuid = UUID.randomUUID();
 		this.entityId = (Integer) ENTITY_ID.get(null);
 		// Increment next entity ID
 		ENTITY_ID.set(null, entityId + 1);
 		// Background worker
-		task = new BukkitRunnable() {
+		task = new Runnable() {
 			int i = 0;
 
 			@Override
@@ -98,44 +95,87 @@ public abstract class AbstractFakePlayer {
 				maybeDestroyEntity();
 				i++;
 			}
-		}.runTaskTimer(plugin, 1, Settings.FakePlayers.speed);
+		};
+		BukkitTask bt = Bukkit.getScheduler().runTaskTimer(plugin, task, 1, Settings.FakePlayers.speed);
+		taskId = bt.getTaskId();
 		this.plugin = plugin;
 	}
 
 	private void maybeDestroyEntity() {
-		for (Player player : observers) {
-			if (!player.getLocation().getWorld().equals(serverLocation.getWorld())) {
-				continue;
-			}
-			if (player.getLocation().distance(serverLocation) < 20) {
+		if (observer == null) {
+			destroy();
+			return;
+		}
+		if (observer.getLocation().getWorld().equals(serverLocation.getWorld())) {
+			if (Math.sqrt(observer.getLocation().distanceSquared(serverLocation)) < Settings.FakePlayers.maxDistance) {
 				destroy();
-				return;
 			}
 		}
 	}
 
 	private void moveEntity() {
 		previousServerLocation = serverLocation.clone();
-		serverLocation.add(vector.getX() / 100, vector.getY() / 100, vector.getZ() / 100);
+		
+		double i = 1.5;
+		
+		boolean y = new Random().nextBoolean();
+		if (moveDir == 0) {
+			if (y) {
+				serverLocation.setX(serverLocation.getX() + i);
+				serverLocation.setY(serverLocation.getY() + i);
+			} else {
+				serverLocation.setX(serverLocation.getX() + i);
+				serverLocation.setY(serverLocation.getY() - i);
+			}
+		} else if (moveDir == 1) {
+			if (y) {
+				serverLocation.setZ(serverLocation.getZ() + i);
+				serverLocation.setY(serverLocation.getY() + i);
+			} else {
+				serverLocation.setZ(serverLocation.getZ() + i);
+				serverLocation.setY(serverLocation.getY() - i);
+			}
+		} else if (moveDir == 2) {
+			if (y) {
+				serverLocation.setX(serverLocation.getX() - i);
+				serverLocation.setY(serverLocation.getY() + i);
+			} else {
+				serverLocation.setX(serverLocation.getX() - i);
+				serverLocation.setY(serverLocation.getY() - i);
+			}
+		} else if (moveDir == 3) {
+			if (y) {
+				serverLocation.setZ(serverLocation.getZ() - i);
+				serverLocation.setY(serverLocation.getY() + i);
+			} else {
+				serverLocation.setZ(serverLocation.getZ() - i);
+				serverLocation.setY(serverLocation.getY() - i);
+			}
+		} else {
+			if (y) {
+				serverLocation.setX(serverLocation.getX() + i);
+				serverLocation.setY(serverLocation.getY() + i);
+			} else {
+				serverLocation.setX(serverLocation.getX() + i);
+				serverLocation.setY(serverLocation.getY() - i);
+			}
+		}
 	}
 
 	public void addObserver(Player player) {
+		observer = player;
 		notifySpawnEntity(player);
-		observers.add(player);
+		changed = true;
 	}
 
 	private void updateEntity() {
 		// Detect changes
 		if (changed) {
-			for (Player player : observers) {
-				notifySpawnEntity(player);
-			}
+			notifySpawnEntity(observer);
 			changed = false;
 
-			// Update location
-		}
-		else if (!serverLocation.equals(clientLocation)) {
-			broadcastMoveEntity();
+		} else if (!serverLocation.equals(clientLocation)) {
+			broadcastMoveEntity(observer);
 			clientLocation = serverLocation.clone();
 		}
 	}
@@ -146,7 +186,7 @@ public abstract class AbstractFakePlayer {
 
 	protected abstract void sendRemovePlayerTab(Player player);
 
-	protected abstract void broadcastMoveEntity();
+	protected abstract void broadcastMoveEntity(Player player);
 
 	protected abstract void removeObserver(Player player);
 
@@ -154,24 +194,17 @@ public abstract class AbstractFakePlayer {
 	 * Destroy the current entity.
 	 */
 	public void destroy() {
-		task.cancel();
+		Bukkit.getScheduler().cancelTask(taskId);
 
-		for (Player player : Lists.newArrayList(observers)) {
-			removeObserver(player);
-		}
+		removeObserver(observer);
 	}
 
 	public int getEntityId() {
 		return entityId;
 	}
 
-	/**
-	 * Retrieve an immutable view of every player observing this entity.
-	 *
-	 * @return Every observer.
-	 */
-	public List<Player> getObservers() {
-		return Collections.unmodifiableList(observers);
+	public Player getObserver() {
+		return observer;
 	}
 
 	public Location getLocation() {
@@ -200,14 +233,13 @@ public abstract class AbstractFakePlayer {
 	}
 
 	protected float randomHealth() {
-		return 0.1F;
+		return new Random().nextFloat();
 	}
 
 	protected int randomPing() {
 		return new Random().nextInt(1000);
 	}
-	
-	public void stopRunnble() {
-		task.cancel();
+	protected int randomArrows() {
+		return new Random().nextInt(5);
 	}
 }

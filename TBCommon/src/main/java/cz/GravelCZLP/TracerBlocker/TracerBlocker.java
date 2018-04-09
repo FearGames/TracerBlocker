@@ -1,17 +1,17 @@
 
 package cz.GravelCZLP.TracerBlocker;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-
-import cz.GravelCZLP.TracerBlocker.Common.Loader;
+import java.io.File;
+import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+
+import cz.GravelCZLP.TracerBlocker.Common.Loader;
 
 public class TracerBlocker extends JavaPlugin {
 	private ProtocolManager manager;
@@ -90,6 +90,9 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.FakePlayers.secondsAlive = getConfig().getInt("fakeplayers.seconds-alive");
 		Settings.FakePlayers.speed = getConfig().getInt("fakeplayers.speed");
 		Settings.FakePlayers.disabledWorlds = getConfig().getStringList("fakeplayers.disabledWorlds");
+		Settings.FakePlayers.showArrows = getConfig().getBoolean("fakeplayers.showArrows");
+		Settings.FakePlayers.showIfCantSee = getConfig().getBoolean("fakeplayers.showifcantsee");
+		Settings.FakePlayers.maxDistance = getConfig().getDouble("fakeplayers.maxDistance");
 		
 		Settings.Test.antiHealthTags = getConfig().getBoolean("antihealthTags", false);
 		Settings.Test.packetAntiChestEsp = getConfig().getBoolean("packetAntiChestEsp", false);
@@ -119,6 +122,7 @@ public class TracerBlocker extends JavaPlugin {
 		config.set("fakeplayers.seconds-alive", Settings.FakePlayers.secondsAlive);
 		config.set("fakeplayers.speed", Settings.FakePlayers.speed);
 		config.set("fakeplayers.disabledWorlds", Settings.FakePlayers.disabledWorlds);
+		config.set("fakeplayers.maxDistance", Settings.FakePlayers.maxDistance);
 
 		File configFile = new File(getDataFolder() + "/config.yml");
 		try {

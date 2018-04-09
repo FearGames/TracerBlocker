@@ -24,6 +24,7 @@ public class MathUtils {
 	 * @param lookat
 	 *            - the position to look at.
 	 * @return The look at vector.
+	 * 
 	 */
 	public Location lookAt(Location loc, Location lookat) {
 		double dx = lookat.getX() - loc.getX();
@@ -42,8 +43,7 @@ public class MathUtils {
 				yaw = 0.5 * Math.PI;
 			}
 			yaw -= Math.atan(dz / dx);
-		}
-		else if (dz < 0) {
+		} else if (dz < 0) {
 			yaw = Math.PI;
 		}
 
@@ -113,8 +113,12 @@ public class MathUtils {
 		return false; //Player cannot see the block
 	}
 	
+	public static double squared(double d) {
+		return d * d;
+	}
+	
 	public static final HashSet<Integer> TRANSPARENT_MATERIALS = new HashSet<>();
-
+	
 	static {
 		for (Material m : Material.values()) {
 			if (m.isBlock()) {

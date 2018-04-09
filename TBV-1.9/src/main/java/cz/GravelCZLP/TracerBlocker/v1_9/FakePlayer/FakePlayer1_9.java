@@ -18,6 +18,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 
+import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
 import cz.GravelCZLP.TracerBlocker.v1_9.Packets.WrapperPlayServerNamedEntitySpawn;
 import cz.GravelCZLP.TracerBlocker.v1_9.Packets.WrapperPlayServerPlayerInfo;
@@ -48,7 +49,7 @@ public class FakePlayer1_9 extends AbstractFakePlayer {
 		WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
 		destroy.setEntityIds(new int[] { entityId });
 		destroy.sendPacket(player);
-		observers.remove(player);
+		observer = null;
 	}
 
 	protected void notifySpawnEntity(Player player) {
@@ -94,7 +95,7 @@ public class FakePlayer1_9 extends AbstractFakePlayer {
 		info.sendPacket(player);
 	}
 
-	protected void broadcastMoveEntity() {
+	protected void broadcastMoveEntity(Player player) {
 		WrapperPlayServerRelEntityMoveLook move = new WrapperPlayServerRelEntityMoveLook();
 		move.setEntityID(entityId);
 
@@ -109,7 +110,7 @@ public class FakePlayer1_9 extends AbstractFakePlayer {
 		move.setYaw(getRandomYaw());
 		move.setPitch(getRandomPitch());
 
-		Location loc = new Location(observers.get(0).getWorld(), move.getDx(), move.getDy(), move.getDz());
+		Location loc = new Location(observer.getWorld(), move.getDx(), move.getDy(), move.getDz());
 		Block b = loc.getWorld().getBlockAt(loc);
 		boolean onGround = b.getRelative(BlockFace.DOWN).getType() != Material.AIR;
 
@@ -125,17 +126,17 @@ public class FakePlayer1_9 extends AbstractFakePlayer {
 			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x02);
 		}
 		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), randomHealth());
-		watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());
+		if (Settings.FakePlayers.showArrows) {
+			watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());	
+		} else {
+			watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), 0);
+		}
 		metadata.setEntityID(entityId);
 		metadata.setMetadata(watcher.getWatchableObjects());
 
-		for (Player player : observers) {
-			if (move != null) {
-				move.sendPacket(player);
-			}
-			animation.sendPacket(player);
-			metadata.sendPacket(player);
-		}
+		move.sendPacket(player);
+		animation.sendPacket(player);
+		metadata.sendPacket(player);
 	}
 
 	protected int getRandomAnimation() {
@@ -158,9 +159,5 @@ public class FakePlayer1_9 extends AbstractFakePlayer {
 		toWho.sendMessage("Name: " + name);
 		toWho.sendMessage("UUID: " + uuid);
 		toWho.sendMessage("Entity ID: " + entityId);
-	}
-
-	public int randomArrows() {
-		return new Random().nextInt(5);
 	}
 }

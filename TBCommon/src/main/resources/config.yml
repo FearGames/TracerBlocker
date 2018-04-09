@@ -40,7 +40,13 @@ fakeplayers:
   #the amount of seconds the fake players should exist for.
   seconds-alive: 5
   # The update speed of the fake player entities in ticks. 1 tick = 50ms
-  speed: 10
+  speed: 5
+  #Should Fake Players have arrows in them ?
+  showArrows: true
+  #Should the plugin make fake players visible if the player cant see them ?
+  showifcantsee: true
+  #Maximum distance the fake player should get to the player observing it, if the FP gets after this value, it will just disappear.
+  maxDistance: 16.0
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,

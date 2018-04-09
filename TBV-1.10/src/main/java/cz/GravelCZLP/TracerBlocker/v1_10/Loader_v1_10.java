@@ -1,5 +1,9 @@
 package cz.GravelCZLP.TracerBlocker.v1_10;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -7,29 +11,24 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
-import cz.GravelCZLP.TracerBlocker.Common.Loader;
-import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
-import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
+import cz.GravelCZLP.TracerBlocker.Common.Loader;
+import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
+import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
+import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
 import cz.GravelCZLP.TracerBlocker.v1_10.ChestHider.ChestHider1_10;
 import cz.GravelCZLP.TracerBlocker.v1_10.ChestHider.PacketChestHider1_10;
 import cz.GravelCZLP.TracerBlocker.v1_10.FakePlayer.FakePlayer1_10;
 import cz.GravelCZLP.TracerBlocker.v1_10.Packets.WrapperPlayServerEntityMetadata;
 import cz.GravelCZLP.TracerBlocker.v1_10.PlayerHider.PlayerHider1_10;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import java.util.Random;
 
 /**
  * Created by GravelCZLP on 4.7.17.
  */
 public class Loader_v1_10 extends Loader {
 
-	private static final Random rand = new Random();
 	private TracerBlocker tracerBlocker;
 	private ProtocolManager protocolManager;
 	private MathUtils mathUtils;
@@ -40,10 +39,6 @@ public class Loader_v1_10 extends Loader {
 	public Loader_v1_10(TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
 		this.tracerBlocker = tracerBlocker;
 		this.protocolManager = protocolManager;
-	}
-
-	public static int rand(int min, int max) {
-		return min + (rand).nextInt(max - min);
 	}
 
 	@Override
@@ -118,7 +113,7 @@ public class Loader_v1_10 extends Loader {
 
 	}
 
-	private void spawnFakePlayers() {
+	public void spawnFakePlayers() {
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			if(Settings.FakePlayers.disabledWorlds.contains(player.getLocation().getWorld().getName())) {
 				continue;
@@ -141,11 +136,13 @@ public class Loader_v1_10 extends Loader {
 		}
 	}
 
-	private void newFakePlayer(Location fakeLocation, Player player) {
-		new FakePlayer1_10(tracerBlocker, fakeLocation).addObserver(player);
+	public AbstractFakePlayer newFakePlayer(Location fakeLocation, Player player) {
+		AbstractFakePlayer afp = new FakePlayer1_10(tracerBlocker, fakeLocation);
+		afp.addObserver(player);
+		return afp;
 	}
 
-	private void checkVisibility() {
+	public void checkVisibility() {
 		for(Player a : Bukkit.getOnlinePlayers()) {
 			for(Player b : Bukkit.getOnlinePlayers()) {
 				if(a.equals(b)) {
