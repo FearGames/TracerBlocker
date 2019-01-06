@@ -1,11 +1,18 @@
 package cz.GravelCZLP.TracerBlocker.Common.ChestHider;
 
-import cz.GravelCZLP.TracerBlocker.MathUtils;
-import cz.GravelCZLP.TracerBlocker.Settings;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+
+import cz.GravelCZLP.TracerBlocker.MathUtils;
+import cz.GravelCZLP.TracerBlocker.RayTrace;
+import cz.GravelCZLP.TracerBlocker.Settings;
+import cz.GravelCZLP.TracerBlocker.Utils;
+import cz.GravelCZLP.TracerBlocker.Vector3D;
 
 @SuppressWarnings("deprecation")
 public abstract class AbstractChestHider {
@@ -24,17 +31,24 @@ public abstract class AbstractChestHider {
 				continue;
 			}
 			int chunkRadius = Settings.ChestHider.maxDistance / 16;
+			
 			int minX = loc.getChunk().getX() - chunkRadius;
 			int maxX = loc.getChunk().getX() + chunkRadius;
 			int minZ = loc.getChunk().getZ() - chunkRadius;
 			int maxZ = loc.getChunk().getZ() + chunkRadius;
+			
 			for (int x = minX; x < maxX; x++) {
 				for (int z = minZ; z < maxZ; z++) {
+					
 					Chunk chunk = world.getChunkAt(x, z);
+					
 					for (BlockState state : chunk.getTileEntities()) {
 						if (state.getType().equals(Material.CHEST) || state.getType().equals(Material.TRAPPED_CHEST)
 								|| state.getType().equals(Material.ENDER_CHEST)) {
+							
+							
 							double size = .90;
+							
 							Location targetAA = state.getLocation().clone().add(0, 0, 0);
 							Location targetBB = state.getLocation().clone().add(size, 0, 0);
 							Location targetCC = state.getLocation().clone().add(size, 0, size);
@@ -48,6 +62,7 @@ public abstract class AbstractChestHider {
 
 							// No need to check this
 							if (distance > Settings.ChestHider.maxDistance) {
+								hideBlock(a, state.getLocation());
 								continue;
 							}
 
@@ -56,26 +71,28 @@ public abstract class AbstractChestHider {
 								continue;
 							}
 
-							Block blockAA = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetAA), distance);
-							Block blockBB = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetBB), distance);
-							Block blockCC = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetCC), distance);
-							Block blockDD = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetDD), distance);
-							Block blockEE = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetEE), distance);
-							Block blockFF = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetFF), distance);
-							Block blockGG = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetGG), distance);
-							Block blockHH = math.getTargetBlock(math.lookAt(a.getEyeLocation(), targetHH), distance);
+							RayTrace rt = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetAA));
+							RayTrace rt1 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetBB));
+							RayTrace rt2 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetCC));
+							RayTrace rt3 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetDD));
+							RayTrace rt4 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetEE));
+							RayTrace rt5 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetFF));
+							RayTrace rt6 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetGG));
+							RayTrace rt7 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetHH));
 							
-							if (blockAA == null || blockAA.getType().equals(state.getBlock().getType())
-									|| blockBB == null || blockBB.getType().equals(state.getBlock().getType())
-									|| blockCC == null || blockCC.getType().equals(state.getBlock().getType())
-									|| blockDD == null || blockDD.getType().equals(state.getBlock().getType())
-									|| blockEE == null || blockEE.getType().equals(state.getBlock().getType())
-									|| blockFF == null || blockFF.getType().equals(state.getBlock().getType())
-									|| blockGG == null || blockGG.getType().equals(state.getBlock().getType())
-									|| blockHH == null || blockHH.getType().equals(state.getBlock().getType())) {
-								showBlock(a, state.getLocation());
-							} else {
+							boolean result1 = Utils.rayTractResult(rt.raytrace(0.5), a.getWorld());
+							boolean result2 = Utils.rayTractResult(rt1.raytrace(0.5), a.getWorld());
+							boolean result3 = Utils.rayTractResult(rt2.raytrace(0.5), a.getWorld());
+							boolean result4 = Utils.rayTractResult(rt3.raytrace(0.5), a.getWorld());
+							boolean result5 = Utils.rayTractResult(rt4.raytrace(0.5), a.getWorld());
+							boolean result6 = Utils.rayTractResult(rt5.raytrace(0.5), a.getWorld());
+							boolean result7 = Utils.rayTractResult(rt6.raytrace(0.5), a.getWorld());
+							boolean result8 = Utils.rayTractResult(rt7.raytrace(0.5), a.getWorld());
+							
+							if (!(result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8)) {
 								hideBlock(a, state.getLocation());
+							} else {
+								showBlock(a, state.getLocation());
 							}
 
 						}
@@ -84,7 +101,7 @@ public abstract class AbstractChestHider {
 			}
 		}
 	}
-
+	
 	private void showBlock(Player player, Location location) {
 		changeBlock(player, location, location.getBlock().getType(), location.getBlock().getData());
 	}

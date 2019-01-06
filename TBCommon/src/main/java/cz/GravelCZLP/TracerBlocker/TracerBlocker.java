@@ -91,7 +91,6 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.FakePlayers.speed = getConfig().getInt("fakeplayers.speed");
 		Settings.FakePlayers.disabledWorlds = getConfig().getStringList("fakeplayers.disabledWorlds");
 		Settings.FakePlayers.showArrows = getConfig().getBoolean("fakeplayers.showArrows");
-		Settings.FakePlayers.showIfCantSee = getConfig().getBoolean("fakeplayers.showifcantsee");
 		Settings.FakePlayers.maxDistance = getConfig().getDouble("fakeplayers.maxDistance");
 		
 		Settings.Test.antiHealthTags = getConfig().getBoolean("antihealthTags", false);

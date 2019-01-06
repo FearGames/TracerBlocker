@@ -10,15 +10,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.12/craftbukkit-1.12.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.12/spigot-1.12.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.11/craftbukkit-1.11.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.11/spigot-1.11.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.10/craftbukkit-1.10.2.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.10/spigot-1.10.2.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.9/craftbukkit-1.9.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.9/spigot-1.9.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.8/craftbukkit-1.8.jar"/>
-	<classpathentry kind="lib" path="/home/jindra/libs/1.8/spigot-1.8.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

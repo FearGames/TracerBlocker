@@ -261,7 +261,7 @@ public class RandomNameGenerator {
 			"Prepylahoe", "Presseyan", "Prolevertme", "Prouderwe", "RacerCincoVintage", "RadiantTopics", "Readtenzol",
 			"ReadyCandy", "Rheembrig", "Ridabaughs", "RollGroupActually", "Rollianoff", "RomanceGossip", "Rosescale",
 			"RozMr", "Sandetiz", "ScanMon", "Seldeedo", "Shanghyte", "ShatUnow", "SlayerFun", "SlimChi", "Soliviat",
-			"SpyderMon", "md_5", "GravelCZLP", "YoMama", "BigSmoke", "CJJJJ");
+			"SpyderMon");
 	private static final Random rand = new Random();
 
 	private static String getRandomNameFromList() {

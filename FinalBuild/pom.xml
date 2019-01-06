@@ -15,26 +15,6 @@
   	</dependency>
   	<dependency>
   		<groupId>cz.GravelCZLP</groupId>
-  		<artifactId>TBV-1.8</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>cz.GravelCZLP</groupId>
-  		<artifactId>TBV-1.9</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>cz.GravelCZLP</groupId>
-  		<artifactId>TBV-1.10</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>cz.GravelCZLP</groupId>
-  		<artifactId>TBV-1.11</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>cz.GravelCZLP</groupId>
   		<artifactId>TBV-1.12</artifactId>
   		<version>${project.version}</version>
   	</dependency>

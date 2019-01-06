@@ -2,11 +2,11 @@
 playerhider:
   enabled: true
   #how often it checks if someone is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
-  every-ticks: 1
+  every-ticks: 2
   #The distance from the player that should be ignored. It won't hide anyone within the specified distance from the player.
-  ignore-distance: 10
+  ignore-distance: 8
   #the max distance. It will ignore everything that's farther away than the specified distance.
-  max-distance: 120
+  max-distance: 50
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,
@@ -16,19 +16,19 @@ playerhider:
 chesthider:
   enabled: true
   #how often it checks if a chest is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
-  every-ticks: 1
+  every-ticks: 5
   #minimal distance needed to see the chest if it is behind a wall
-  ignore-distance: 7
+  ignore-distance: 8
   #the max distance. It will ignore everything that's farther away than the specified distance.
   #the cpu usage is exponential, the further it goes, the more CPU it uses. If you notice lag, lower the distance.
-  #should be in increments of 16
+  #should be in increments of 16, if not false positives may occur. do not go below 16
   max-distance: 16
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,
   ExampleWoRlD2
   ]
-#spawns invisible fake client-side players for every player. Can be quite CPU intensive(Not really). If you get a low TPS, then you should disable this.
+#spawns invisible fake client-side players for every player. If you get a low TPS, then you should disable this.
 fakeplayers:
   enabled: true
   #If the fake players should be moving or not.
@@ -40,11 +40,9 @@ fakeplayers:
   #the amount of seconds the fake players should exist for.
   seconds-alive: 5
   # The update speed of the fake player entities in ticks. 1 tick = 50ms
-  speed: 5
+  speed: 3
   #Should Fake Players have arrows in them ?
   showArrows: true
-  #Should the plugin make fake players visible if the player cant see them ?
-  showifcantsee: true
   #Maximum distance the fake player should get to the player observing it, if the FP gets after this value, it will just disappear.
   maxDistance: 16.0
   #list the worlds this feature shouldn't be used in. Case sensitive
@@ -54,6 +52,8 @@ fakeplayers:
   ]
 #WIP
 #Do not touch this part of config unless you want to test the featues.
-#i do not guarantee you that everything will be working on 100%
-antihealthTags: false
+#i do not guarantee you that everything will be working 100%
+#This one should be working
+antihealthTags: true
+#This one is not working.
 packetAntiChestEsp: false

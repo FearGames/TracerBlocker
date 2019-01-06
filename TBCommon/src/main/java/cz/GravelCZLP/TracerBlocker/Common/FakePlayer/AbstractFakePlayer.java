@@ -102,7 +102,7 @@ public abstract class AbstractFakePlayer {
 	}
 
 	private void maybeDestroyEntity() {
-		if (observer == null) {
+		if (observer == null || !observer.isOnline()) {
 			destroy();
 			return;
 		}
@@ -116,7 +116,7 @@ public abstract class AbstractFakePlayer {
 	private void moveEntity() {
 		previousServerLocation = serverLocation.clone();
 		
-		double i = 1.5;
+		double i = 0.1 + (Math.random() / 5);
 		
 		boolean y = new Random().nextBoolean();
 		if (moveDir == 0) {
@@ -157,7 +157,7 @@ public abstract class AbstractFakePlayer {
 				serverLocation.setY(serverLocation.getY() + i);
 			} else {
 				serverLocation.setX(serverLocation.getX() + i);
-				serverLocation.setY(serverLocation.getY() - i);
+				serverLocation.setY(serverLocation.getY() + i);
 			}
 		}
 	}
@@ -173,7 +173,6 @@ public abstract class AbstractFakePlayer {
 		if (changed) {
 			notifySpawnEntity(observer);
 			changed = false;
-
 		} else if (!serverLocation.equals(clientLocation)) {
 			broadcastMoveEntity(observer);
 			clientLocation = serverLocation.clone();

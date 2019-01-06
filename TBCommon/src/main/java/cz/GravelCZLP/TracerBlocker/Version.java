@@ -10,12 +10,8 @@ import cz.GravelCZLP.TracerBlocker.Common.Loader;
  * Created by GravelCZLP on 5.7.17.
  */
 public enum Version {
-
-	TBV1_11("1.11", "cz.GravelCZLP.TracerBlocker.v1_11.Loader_v1_11"), 
-	TBV1_12("1.12", "cz.GravelCZLP.TracerBlocker.v1_12.Loader_v1_12"),
-	TBV1_10("1.10", "cz.GravelCZLP.TracerBlocker.v1_10.Loader_v1_10"),
-	TBV1_9("1.9", "cz.GravelCZLP.TracerBlocker.v1_9.Loader_v1_9"),
-	TBV1_8("1.8", "cz.GravelCZLP.TracerBlocker.v1_8.Loader_v1_8");
+ 
+	TBV1_12("1.12", "cz.GravelCZLP.TracerBlocker.v1_12.Loader_v1_12");
 
 	private String version, className;
 

@@ -21,34 +21,34 @@ import java.util.List;
  */
 public class Settings {
 	public static class PlayerHider {
-		public static boolean enabled = false;
-		public static int everyTicks = 1;
-		public static int ignoreDistance = 7;
-		public static int maxDistance = 120;
+		public static boolean enabled = true;
+		public static int everyTicks = 2;
+		public static int ignoreDistance = 8;
+		public static int maxDistance = 50;
 		public static List<String> disabledWorlds = new ArrayList<>();
 	}
 
 	public static class ChestHider {
-		public static boolean enabled = false;
-		public static int everyTicks = 3;
-		public static int ignoreDistance = 7;
-		public static int maxDistance = 80;
+		public static boolean enabled = true;
+		public static int everyTicks = 5;
+		public static int ignoreDistance = 8;
+		public static int maxDistance = 24;
 		public static List<String> disabledWorlds = new ArrayList<>();
 	}
 
 	public static class FakePlayers {
-		public static boolean enabled = false;
+		public static boolean enabled = true;
 		public static boolean moving = true;
 		public static int everyTicks = 40;
 		public static int secondsAlive = 5;
 		public static int speed = 3;
 		public static List<String> disabledWorlds = new ArrayList<>();
 		public static boolean showArrows = true;
-		public static boolean showIfCantSee = true;
-		public static double maxDistance;
+		public static double maxDistance = 16;
 	}
+	
 	public static class Test {
-		public static boolean antiHealthTags = false;
+		public static boolean antiHealthTags = true;
 		public static boolean packetAntiChestEsp = false;
 	}
 }
