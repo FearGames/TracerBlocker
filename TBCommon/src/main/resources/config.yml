@@ -22,7 +22,10 @@ chesthider:
   #the max distance. It will ignore everything that's farther away than the specified distance.
   #the cpu usage is exponential, the further it goes, the more CPU it uses. If you notice lag, lower the distance.
   #should be in increments of 16, if not false positives may occur. do not go below 16
-  max-distance: 16
+  max-distance: 32
+  #If this is set to true, the plugin will check if the player can see the chest from f5 mode.
+  #This will use more CPU if enabled. (Calculates both f5 perspectives)
+  calculatef5: false
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,
@@ -35,8 +38,8 @@ fakeplayers:
   #Setting this to false will make the "speed" option useless.
   #If you have lag problems, both FPS(clientside) and TPS(serverside) this might lower it.
   moving: true
-  #how often it checks if someone is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
-  every-ticks: 5
+  #How often to spawn fake player in ticks
+  every-ticks: 40
   #the amount of seconds the fake players should exist for.
   seconds-alive: 5
   # The update speed of the fake player entities in ticks. 1 tick = 50ms
@@ -57,3 +60,7 @@ fakeplayers:
 antihealthTags: true
 #This one is not working.
 packetAntiChestEsp: false
+
+#DEBUG
+#do not enable this unless you are a delevloper, this spawns particles and can lag both the server and the client
+debug: false

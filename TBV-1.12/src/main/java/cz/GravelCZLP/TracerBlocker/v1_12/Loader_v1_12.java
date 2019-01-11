@@ -12,7 +12,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
-import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.RayTrace;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
@@ -35,7 +34,6 @@ public class Loader_v1_12 extends Loader {
 
 	private TracerBlocker tracerBlocker;
 	private ProtocolManager protocolManager;
-	private MathUtils mathUtils;
 	private PacketChestHider1_12 packetChestHider;
 	private AbstractPlayerHider playerHider;
 	private AbstractChestHider chestHider;
@@ -51,8 +49,6 @@ public class Loader_v1_12 extends Loader {
 			setupProtocol();
 		}
 
-		mathUtils = new MathUtils();
-
 		if (Settings.PlayerHider.enabled) {
 			playerHider = new PlayerHider1_12(tracerBlocker);
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
@@ -63,9 +59,9 @@ public class Loader_v1_12 extends Loader {
 			}, 1, Settings.PlayerHider.everyTicks);
 		}
 		if (Settings.ChestHider.enabled) {
-			chestHider = new ChestHider1_12(mathUtils);
+			chestHider = new ChestHider1_12();
 			if (Settings.Test.packetAntiChestEsp) {
-				packetChestHider = new PacketChestHider1_12(protocolManager, tracerBlocker);
+				packetChestHider = new PacketChestHider1_12(protocolManager);
 				packetChestHider.setup();
 			}
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {

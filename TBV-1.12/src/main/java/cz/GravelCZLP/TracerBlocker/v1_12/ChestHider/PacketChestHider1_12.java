@@ -1,86 +1,59 @@
 package cz.GravelCZLP.TracerBlocker.v1_12.ChestHider;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.BlockState;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
+import com.comphenix.protocol.wrappers.nbt.NbtBase;
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 
+import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractPacketChestHider;
-import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerBlockChange;
-import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerMapChunk;
 
 public class PacketChestHider1_12 extends AbstractPacketChestHider {
 
 	private ProtocolManager manager;
-	private JavaPlugin pl;
 
-	public PacketChestHider1_12(ProtocolManager manager, JavaPlugin pl) {
+	public PacketChestHider1_12(ProtocolManager manager) {
 		this.manager = manager;
-		this.pl = pl;
 	}
 
 	@Override
 	public void setup() {
-		PacketAdapter adapter = new PacketAdapter(pl, ListenerPriority.HIGHEST, PacketType.
+		PacketAdapter adapter = new PacketAdapter(TracerBlocker.getInstance(), ListenerPriority.HIGHEST, PacketType.
 				Play.Server.MAP_CHUNK) {
 
 			@Override
-			public void onPacketSending(PacketEvent event) {
-				boolean debug = false;
-				if (pl instanceof TracerBlocker) {
-					TracerBlocker tb = (TracerBlocker) pl;
-					debug = tb.debug;
-				}
-				if (debug) {
-					System.out.println("Sending Chunk packet.");
-				}
-				WrapperPlayServerMapChunk chunk = new WrapperPlayServerMapChunk(event.getPacket());
-				World w = event.getPlayer().getWorld();
-				if(debug) {
-					System.out.println(w.getName());
-				}
-				Chunk c = w.getChunkAt(chunk.getChunkX(), chunk.getChunkZ());
-				if(debug) {
-					System.out.println("Chunk X: " + chunk.getChunkX() + " Chunk Z: " + chunk.getChunkZ());
-				}
-				BlockState[] tileEnts = c.getTileEntities();
-				List<Location> locs = new ArrayList<>();
-				for(BlockState bs : tileEnts) {
-					if(bs.getType() == Material.CHEST || bs.getType() == Material.ENDER_CHEST || bs.getType() == Material.TRAPPED_CHEST) {
-						locs.add(bs.getLocation());
+			public void onPacketSending(PacketEvent event) {//FIXME: this causes client side chest bug. TODO: how to fix: Remove the chest from the chunk data as well. The problem is parsing byte[] to usable data.
+				List<NbtBase<?>> tileEnts = event.getPacket().getListNbtModifier().read(0);
+				
+				Iterator<NbtBase<?>> iter = tileEnts.iterator();
+				while (iter.hasNext()) {
+					NbtCompound compound = (NbtCompound) iter.next();
+					int x = compound.getInteger("x");
+					int y = compound.getInteger("x");
+					int z = compound.getInteger("x");
+					Location ploc = event.getPlayer().getLocation();
+					double distanceSqrt = ploc.distanceSquared(new Location(ploc.getWorld(), x, y, z));
+					
+					String id = compound.getString("id");
+					String name = id.split(":")[1];
+					if (name.equalsIgnoreCase("chest") || name.equalsIgnoreCase("ender_chest") && distanceSqrt > Settings.ChestHider.maxDistance * 2) {
+						iter.remove();
 					}
 				}
-				if(debug) {
-					System.out.println("Is variable locs empty ? : " + locs.isEmpty());
-				}
-				for(Location loc : locs) {
-					WrapperPlayServerBlockChange change = new WrapperPlayServerBlockChange();
-					BlockPosition pos = new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-					change.setLocation(pos);
-					change.setBlockData(WrappedBlockData.createData(Material.AIR));
-					try {
-						manager.sendServerPacket(event.getPlayer(), change.getHandle());
-					} catch(InvocationTargetException e) {
-						e.printStackTrace();
-					}
-				}
+				
+				event.getPacket().getListNbtModifier().write(0, tileEnts);
 			}
 		};
 		manager.addPacketListener(adapter);
 	}
+	
 }

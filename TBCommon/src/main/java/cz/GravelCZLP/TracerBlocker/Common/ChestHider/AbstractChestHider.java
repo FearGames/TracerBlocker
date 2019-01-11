@@ -8,20 +8,12 @@ import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
-import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.RayTrace;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.Utils;
 import cz.GravelCZLP.TracerBlocker.Vector3D;
 
-@SuppressWarnings("deprecation")
 public abstract class AbstractChestHider {
-
-	protected MathUtils math;
-	
-	public AbstractChestHider(MathUtils mathUtils) {
-		math = mathUtils;
-	}
 
 	public void checkChestVisibility() {
 		for (Player a : Bukkit.getOnlinePlayers()) {
@@ -46,19 +38,7 @@ public abstract class AbstractChestHider {
 						if (state.getType().equals(Material.CHEST) || state.getType().equals(Material.TRAPPED_CHEST)
 								|| state.getType().equals(Material.ENDER_CHEST)) {
 							
-							
-							double size = .90;
-							
-							Location targetAA = state.getLocation().clone().add(0, 0, 0);
-							Location targetBB = state.getLocation().clone().add(size, 0, 0);
-							Location targetCC = state.getLocation().clone().add(size, 0, size);
-							Location targetDD = state.getLocation().clone().add(0, 0, size);
-							Location targetEE = state.getLocation().clone().add(0, size, 0);
-							Location targetFF = state.getLocation().clone().add(size, size, 0);
-							Location targetGG = state.getLocation().clone().add(size, size, size);
-							Location targetHH = state.getLocation().clone().add(0, size, size);
-
-							int distance = (int) a.getLocation().distance(targetAA);
+							int distance = (int) a.getLocation().distance(state.getLocation());
 
 							// No need to check this
 							if (distance > Settings.ChestHider.maxDistance) {
@@ -70,31 +50,28 @@ public abstract class AbstractChestHider {
 								showBlock(a, state.getLocation());
 								continue;
 							}
-
-							RayTrace rt = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetAA));
-							RayTrace rt1 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetBB));
-							RayTrace rt2 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetCC));
-							RayTrace rt3 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetDD));
-							RayTrace rt4 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetEE));
-							RayTrace rt5 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetFF));
-							RayTrace rt6 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetGG));
-							RayTrace rt7 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetHH));
 							
-							boolean result1 = Utils.rayTractResult(rt.raytrace(0.5), a.getWorld());
-							boolean result2 = Utils.rayTractResult(rt1.raytrace(0.5), a.getWorld());
-							boolean result3 = Utils.rayTractResult(rt2.raytrace(0.5), a.getWorld());
-							boolean result4 = Utils.rayTractResult(rt3.raytrace(0.5), a.getWorld());
-							boolean result5 = Utils.rayTractResult(rt4.raytrace(0.5), a.getWorld());
-							boolean result6 = Utils.rayTractResult(rt5.raytrace(0.5), a.getWorld());
-							boolean result7 = Utils.rayTractResult(rt6.raytrace(0.5), a.getWorld());
-							boolean result8 = Utils.rayTractResult(rt7.raytrace(0.5), a.getWorld());
+							boolean backResult = false;
+							boolean frontResult = false;
 							
-							if (!(result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8)) {
+							if (Settings.ChestHider.calulatef5) {
+								Location eyeLoc = a.getEyeLocation();
+								
+								RayTrace front = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw(), eyeLoc.getPitch(), 5);
+								RayTrace back = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw() - 180, -eyeLoc.getPitch(), 5);
+								
+								backResult = Utils.chestCheck(back.getEnd(), state.getLocation());
+								frontResult = Utils.chestCheck(front.getEnd(), state.getLocation());
+							}
+							
+							boolean normalReult = Utils.chestCheck(Vector3D.fromLocation(a.getEyeLocation()), state.getLocation());
+							
+							if (!(normalReult || backResult || frontResult)) {
 								hideBlock(a, state.getLocation());
 							} else {
 								showBlock(a, state.getLocation());
 							}
-
+							
 						}
 					}
 				}
@@ -102,6 +79,7 @@ public abstract class AbstractChestHider {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void showBlock(Player player, Location location) {
 		changeBlock(player, location, location.getBlock().getType(), location.getBlock().getData());
 	}

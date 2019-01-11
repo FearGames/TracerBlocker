@@ -14,11 +14,12 @@ import com.comphenix.protocol.ProtocolManager;
 import cz.GravelCZLP.TracerBlocker.Common.Loader;
 
 public class TracerBlocker extends JavaPlugin {
+	
 	private ProtocolManager manager;
 
 	private Loader currentLoader;
-
-	public boolean debug = false;
+	
+	private static TracerBlocker instance;
 	
 	@Override
 	public void onEnable() {
@@ -27,17 +28,25 @@ public class TracerBlocker extends JavaPlugin {
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-
-		debug = false;
 		
-		if (debug) {
+		loadConfig();
+		
+		if (Settings.Test.debug) {
+			System.out.println("##############################");
+			System.out.println("#Tracer Blocker Debug Enabled#");
+			System.out.println("##############################");
+		}
+		
+		if (Settings.Test.debug) {
 			System.out.println(Bukkit.getVersion());
 			System.out.println(Bukkit.getBukkitVersion());	
 		}
 		
+		instance = this;
+		
 		String ver = Bukkit.getBukkitVersion();
 		ver = ver.substring(0, ver.indexOf("-"));
-		if (debug) {
+		if (Settings.Test.debug) {
 			System.out.println(ver);
 		}
 		
@@ -51,8 +60,6 @@ public class TracerBlocker extends JavaPlugin {
 		manager = ProtocolLibrary.getProtocolManager();
 
 		currentLoader = Version.getLoaderByVersion(ver, this, manager);
-		
-		loadConfig();
 		
 		if (currentLoader == null) {
 			getServer().getLogger().warning("Tracer blocker did not found any Version Loader for " + ver);
@@ -72,29 +79,31 @@ public class TracerBlocker extends JavaPlugin {
 
 	public void loadConfig() {
 		saveDefaultConfig();
-		Settings.PlayerHider.enabled = getConfig().getBoolean("playerhider.enabled");
-		Settings.PlayerHider.everyTicks = getConfig().getInt("playerhider.every-ticks");
-		Settings.PlayerHider.ignoreDistance = getConfig().getInt("playerhider.ignore-distance");
-		Settings.PlayerHider.maxDistance = getConfig().getInt("playerhider.max-distance");
+		Settings.PlayerHider.enabled = getConfig().getBoolean("playerhider.enabled", true);
+		Settings.PlayerHider.everyTicks = getConfig().getInt("playerhider.every-ticks", 2);
+		Settings.PlayerHider.ignoreDistance = getConfig().getInt("playerhider.ignore-distance", 8);
+		Settings.PlayerHider.maxDistance = getConfig().getInt("playerhider.max-distance", 50);
 		Settings.PlayerHider.disabledWorlds = getConfig().getStringList("playerhider.disabledWorlds");
 
-		Settings.ChestHider.enabled = getConfig().getBoolean("chesthider.enabled");
-		Settings.ChestHider.everyTicks = getConfig().getInt("chesthider.every-ticks");
-		Settings.ChestHider.ignoreDistance = getConfig().getInt("chesthider.ignore-distance");
-		Settings.ChestHider.maxDistance = getConfig().getInt("chesthider.max-distance");
+		Settings.ChestHider.enabled = getConfig().getBoolean("chesthider.enabled", true);
+		Settings.ChestHider.everyTicks = getConfig().getInt("chesthider.every-ticks", 5);
+		Settings.ChestHider.ignoreDistance = getConfig().getInt("chesthider.ignore-distance", 8);
+		Settings.ChestHider.maxDistance = getConfig().getInt("chesthider.max-distance", 32);
 		Settings.ChestHider.disabledWorlds = getConfig().getStringList("chesthider.disabledWorlds");
-
-		Settings.FakePlayers.enabled = getConfig().getBoolean("fakeplayers.enabled");
-		Settings.FakePlayers.moving = getConfig().getBoolean("fakeplayers.moving");
-		Settings.FakePlayers.everyTicks = getConfig().getInt("fakeplayers.every-ticks");
-		Settings.FakePlayers.secondsAlive = getConfig().getInt("fakeplayers.seconds-alive");
-		Settings.FakePlayers.speed = getConfig().getInt("fakeplayers.speed");
-		Settings.FakePlayers.disabledWorlds = getConfig().getStringList("fakeplayers.disabledWorlds");
-		Settings.FakePlayers.showArrows = getConfig().getBoolean("fakeplayers.showArrows");
-		Settings.FakePlayers.maxDistance = getConfig().getDouble("fakeplayers.maxDistance");
+		Settings.ChestHider.calulatef5 = getConfig().getBoolean("calculatef5", false);
 		
-		Settings.Test.antiHealthTags = getConfig().getBoolean("antihealthTags", false);
+		Settings.FakePlayers.enabled = getConfig().getBoolean("fakeplayers.enabled", true);
+		Settings.FakePlayers.moving = getConfig().getBoolean("fakeplayers.moving", true);
+		Settings.FakePlayers.everyTicks = getConfig().getInt("fakeplayers.every-ticks", 40);
+		Settings.FakePlayers.secondsAlive = getConfig().getInt("fakeplayers.seconds-alive", 5);
+		Settings.FakePlayers.speed = getConfig().getInt("fakeplayers.speed", 3);
+		Settings.FakePlayers.disabledWorlds = getConfig().getStringList("fakeplayers.disabledWorlds");
+		Settings.FakePlayers.showArrows = getConfig().getBoolean("fakeplayers.showArrows", true);
+		Settings.FakePlayers.maxDistance = getConfig().getDouble("fakeplayers.maxDistance", 16);
+		
+		Settings.Test.antiHealthTags = getConfig().getBoolean("antihealthTags", true);
 		Settings.Test.packetAntiChestEsp = getConfig().getBoolean("packetAntiChestEsp", false);
+		Settings.Test.debug = getConfig().getBoolean("debug", false);
 	}
 
 	public void saveConfig() {
@@ -123,6 +132,8 @@ public class TracerBlocker extends JavaPlugin {
 		config.set("fakeplayers.disabledWorlds", Settings.FakePlayers.disabledWorlds);
 		config.set("fakeplayers.maxDistance", Settings.FakePlayers.maxDistance);
 
+		config.set("debug", Settings.Test.debug);
+		
 		File configFile = new File(getDataFolder() + "/config.yml");
 		try {
 			config.save(configFile);
@@ -131,5 +142,9 @@ public class TracerBlocker extends JavaPlugin {
 			e.printStackTrace();
 			System.err.println("Error occured when tying to save config for Tracer Blocker, all settings set in game have been not saved ?:(");
 		}
+	}
+	
+	public static TracerBlocker getInstance() {
+		return instance;
 	}
 }

@@ -32,8 +32,9 @@ public class Settings {
 		public static boolean enabled = true;
 		public static int everyTicks = 5;
 		public static int ignoreDistance = 8;
-		public static int maxDistance = 24;
+		public static int maxDistance = 32;
 		public static List<String> disabledWorlds = new ArrayList<>();
+		public static boolean calulatef5 = false;
 	}
 
 	public static class FakePlayers {
@@ -50,5 +51,6 @@ public class Settings {
 	public static class Test {
 		public static boolean antiHealthTags = true;
 		public static boolean packetAntiChestEsp = false;
+		public static boolean debug = false;
 	}
 }

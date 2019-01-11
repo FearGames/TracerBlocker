@@ -3,6 +3,7 @@ package cz.GravelCZLP.TracerBlocker;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -81,11 +82,59 @@ public class Utils {
 		transparentMaterials.add(Material.STANDING_BANNER);
 		transparentMaterials.add(Material.WALL_BANNER);
 		transparentMaterials.add(Material.SKULL);
+		transparentMaterials.add(Material.SEEDS);
+		transparentMaterials.add(Material.BEETROOT_SEEDS);
+		transparentMaterials.add(Material.MELON_SEEDS);
+		transparentMaterials.add(Material.PUMPKIN_SEEDS);
+		transparentMaterials.add(Material.MELON_STEM);
+		transparentMaterials.add(Material.PUMPKIN_STEM);
+		transparentMaterials.add(Material.SUGAR_CANE_BLOCK);
+	}
+	
+	public static boolean chestCheck(Vector3D from, Location chestLoc) {
+		double size = 0.90;
+		
+		Location targetAA = chestLoc.clone().add(0, 0, 0);
+		Location targetBB = chestLoc.clone().add(size, 0, 0);
+		Location targetCC = chestLoc.clone().add(size, 0, size);
+		Location targetDD = chestLoc.clone().add(0, 0, size);
+		Location targetEE = chestLoc.clone().add(0, size, 0);
+		Location targetFF = chestLoc.clone().add(size, size, 0);
+		Location targetGG = chestLoc.clone().add(size, size, size);
+		Location targetHH = chestLoc.clone().add(0, size, size);
+		
+		RayTrace rt = new RayTrace(from, Vector3D.fromLocation(targetAA));
+		RayTrace rt1 = new RayTrace(from, Vector3D.fromLocation(targetBB));
+		RayTrace rt2 = new RayTrace(from, Vector3D.fromLocation(targetCC));
+		RayTrace rt3 = new RayTrace(from, Vector3D.fromLocation(targetDD));
+		RayTrace rt4 = new RayTrace(from, Vector3D.fromLocation(targetEE));
+		RayTrace rt5 = new RayTrace(from, Vector3D.fromLocation(targetFF));
+		RayTrace rt6 = new RayTrace(from, Vector3D.fromLocation(targetGG));
+		RayTrace rt7 = new RayTrace(from, Vector3D.fromLocation(targetHH));
+		
+		boolean result1 = Utils.rayTractResult(rt.raytrace(0.5), chestLoc.getWorld());
+		boolean result2 = Utils.rayTractResult(rt1.raytrace(0.5), chestLoc.getWorld());
+		boolean result3 = Utils.rayTractResult(rt2.raytrace(0.5), chestLoc.getWorld());
+		boolean result4 = Utils.rayTractResult(rt3.raytrace(0.5), chestLoc.getWorld());
+		boolean result5 = Utils.rayTractResult(rt4.raytrace(0.5), chestLoc.getWorld());
+		boolean result6 = Utils.rayTractResult(rt5.raytrace(0.5), chestLoc.getWorld());
+		boolean result7 = Utils.rayTractResult(rt6.raytrace(0.5), chestLoc.getWorld());
+		boolean result8 = Utils.rayTractResult(rt7.raytrace(0.5), chestLoc.getWorld());
+		
+		return (result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8);
+	}
+	
+	public static void showParticle(List<Vector3D> list, World w)  {
+		for (Vector3D vec : list) {
+			if (Settings.Test.debug) {
+				w.spawnParticle(Particle.REDSTONE, vec.toLocation(w), 1);	
+			}	
+		}
 	}
 	
 	public static boolean rayTractResult(List<Vector3D> list, World w) {
+		showParticle(list, w);
 		for (Vector3D vec : list) {
-			w.spawnParticle(Particle.REDSTONE, vec.toLocation(w), 1);
 			if (!Utils.isTransparent(vec.toLocation(w).getBlock())) {
 				return false;
 			}
