@@ -90,7 +90,7 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.ChestHider.ignoreDistance = getConfig().getInt("chesthider.ignore-distance", 8);
 		Settings.ChestHider.maxDistance = getConfig().getInt("chesthider.max-distance", 32);
 		Settings.ChestHider.disabledWorlds = getConfig().getStringList("chesthider.disabledWorlds");
-		Settings.ChestHider.calulatef5 = getConfig().getBoolean("calculatef5", false);
+		Settings.ChestHider.calulatef5 = getConfig().getBoolean("chesthider.calculatef5", false);
 		
 		Settings.FakePlayers.enabled = getConfig().getBoolean("fakeplayers.enabled", true);
 		Settings.FakePlayers.moving = getConfig().getBoolean("fakeplayers.moving", true);

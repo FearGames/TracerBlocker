@@ -28,5 +28,4 @@ public abstract class Loader {
 	
 	public abstract AbstractFakePlayer newFakePlayer(Location fakeLocation, Player player);
 	
-	public abstract void checkVisibility();
 }

@@ -22,6 +22,7 @@ public class RayTrace {
 		yaw *= -1;
 		pitch *= -1;
 		
+		//This creates unit vector from the 2 angles.
 		double yOff = Math.sin(Math.toRadians(pitch));
 		double xOff = Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
 		double zOff = Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));

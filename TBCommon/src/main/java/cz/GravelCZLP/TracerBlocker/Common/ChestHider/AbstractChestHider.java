@@ -2,9 +2,11 @@ package cz.GravelCZLP.TracerBlocker.Common.ChestHider;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
@@ -12,11 +14,15 @@ import cz.GravelCZLP.TracerBlocker.RayTrace;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.Utils;
 import cz.GravelCZLP.TracerBlocker.Vector3D;
+import net.minecraft.server.v1_12_R1.EntityDragonFireball;
 
 public abstract class AbstractChestHider {
 
 	public void checkChestVisibility() {
 		for (Player a : Bukkit.getOnlinePlayers()) {
+			if (a.getGameMode() == GameMode.SPECTATOR) {
+				continue;
+			}
 			Location loc = a.getLocation();
 			World world = loc.getWorld();
 			if (Settings.ChestHider.disabledWorlds.contains(world.getName())) {
@@ -57,11 +63,29 @@ public abstract class AbstractChestHider {
 							if (Settings.ChestHider.calulatef5) {
 								Location eyeLoc = a.getEyeLocation();
 								
-								RayTrace front = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw(), eyeLoc.getPitch(), 5);
-								RayTrace back = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw() - 180, -eyeLoc.getPitch(), 5);
+								RayTrace front = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw(), eyeLoc.getPitch(), 4.1);
+								RayTrace back = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw() + 180, -eyeLoc.getPitch(), 4.1);
 								
-								backResult = Utils.chestCheck(back.getEnd(), state.getLocation());
-								frontResult = Utils.chestCheck(front.getEnd(), state.getLocation());
+								Vector3D endFront = front.getEnd();
+								Vector3D endBack = back.getEnd();
+								
+								for (Vector3D vec : front.raytrace(0.1)) {
+									Block b = vec.toLocation(world).getBlock();
+									if (!Utils.isTransparent(b)) {
+										endFront = vec;
+										break;
+									}
+								}
+								for (Vector3D vec : back.raytrace(0.1)) {
+									Block b = vec.toLocation(world).getBlock();
+									if (!Utils.isTransparent(b)) {
+										endBack = vec;
+										break;
+									}
+								}
+								
+								backResult = Utils.chestCheck(endBack, state.getLocation());
+								frontResult = Utils.chestCheck(endFront, state.getLocation());
 							}
 							
 							boolean normalReult = Utils.chestCheck(Vector3D.fromLocation(a.getEyeLocation()), state.getLocation());
@@ -71,7 +95,6 @@ public abstract class AbstractChestHider {
 							} else {
 								showBlock(a, state.getLocation());
 							}
-							
 						}
 					}
 				}

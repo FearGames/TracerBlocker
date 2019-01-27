@@ -18,7 +18,9 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 
+import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.Settings;
+import cz.GravelCZLP.TracerBlocker.Vector3D;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
 import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerAnimation;
 import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityDestroy;
@@ -119,8 +121,8 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 		move.setDy(yChange);
 		move.setDz(zChange);
 		
-		move.setYaw(getRandomYaw());
-		move.setPitch(getRandomPitch());
+		move.setYaw((float) (MathUtils.getAngleYaw(Vector3D.fromLocation(serverLocation), Vector3D.fromLocation(player.getEyeLocation())) + 180));
+		move.setPitch((float) MathUtils.getAnglePitch(Vector3D.fromLocation(serverLocation), Vector3D.fromLocation(player.getEyeLocation())));
 		
 		Location loc = new Location(player.getWorld(), serverLocation.getX(), serverLocation.getY(), serverLocation.getZ());
 		Block b = loc.getWorld().getBlockAt(loc);
@@ -128,32 +130,44 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 
 		move.setOnGround(onGround);
 		
-		WrapperPlayServerAnimation animation = new WrapperPlayServerAnimation();
-		animation.setEntityID(entityId);
-		animation.setAnimation(getRandomAnimation());
+		boolean animate = new Random().nextInt(10) == 5;
+		WrapperPlayServerAnimation animation = null;
+		if (animate) {
+			animation = new WrapperPlayServerAnimation();
+			animation.setEntityID(entityId);
+			animation.setAnimation(getRandomAnimation());
+		}
 
 		WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata();
 		WrappedDataWatcher watcher = new WrappedDataWatcher();	
 		
 		//http://wiki.vg/Entity_metadata#Entity_Metadata_Format
-		boolean sneaking = new Random().nextInt(10) == 10; 
+		byte toSet = 0x20;
+		boolean sneaking = new Random().nextInt(5) == 3;
+		boolean visible = new Random().nextInt(50) == 1;
 		if (sneaking) {
-			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x22);	// crouched and invisible
-		} else {
-			watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), (byte) 0x20); // only invisible
+			toSet += 0x02;
 		}
+		if (visible) {
+			toSet -= 0x20;
+		}
+		watcher.setObject(0, WrappedDataWatcher.Registry.get(Byte.class), toSet);
 		
-		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), randomHealth());
+		watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), randomHealth()); // not needed when anti health tags are enabled
+		
 		if (Settings.FakePlayers.showArrows) {
 			watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), randomArrows());	
 		} else {
 			watcher.setObject(10, WrappedDataWatcher.Registry.get(Integer.class), 0);
 		}
+		
 		metadata.setEntityID(entityId);
 		metadata.setMetadata(watcher.getWatchableObjects());
 		
 		move.sendPacket(player);
-		animation.sendPacket(player);
+		if (animate) {
+			animation.sendPacket(player);
+		}
 		metadata.sendPacket(player);
 	}
 

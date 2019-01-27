@@ -1,9 +1,12 @@
 package cz.GravelCZLP.TracerBlocker.v1_12;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -12,11 +15,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
-import cz.GravelCZLP.TracerBlocker.RayTrace;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
-import cz.GravelCZLP.TracerBlocker.Utils;
-import cz.GravelCZLP.TracerBlocker.Vector3D;
 import cz.GravelCZLP.TracerBlocker.Common.Loader;
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
@@ -45,25 +45,27 @@ public class Loader_v1_12 extends Loader {
 
 	@Override
 	public void onEnable() {
-		if (Settings.Test.antiHealthTags) {
-			setupProtocol();
-		}
+		setupProtocol();
 
 		if (Settings.PlayerHider.enabled) {
 			playerHider = new PlayerHider1_12(tracerBlocker);
+			
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
 				@Override
 				public void run() {
-					checkVisibility();
+					playerHider.checkVisibility();
 				}
 			}, 1, Settings.PlayerHider.everyTicks);
+			
 		}
 		if (Settings.ChestHider.enabled) {
 			chestHider = new ChestHider1_12();
+			
 			if (Settings.Test.packetAntiChestEsp) {
 				packetChestHider = new PacketChestHider1_12(protocolManager);
 				packetChestHider.setup();
 			}
+			
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
 				@Override
 				public void run() {
@@ -72,12 +74,14 @@ public class Loader_v1_12 extends Loader {
 			}, 1, Settings.ChestHider.everyTicks);
 		}
 		if (Settings.FakePlayers.enabled) {
+			
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
 				@Override
 				public void run() {
 					spawnFakePlayers();
 				}
 			}, 1, Settings.FakePlayers.everyTicks);
+			
 		}
 	}
 
@@ -90,21 +94,32 @@ public class Loader_v1_12 extends Loader {
 			public void onPacketSending(PacketEvent event) {
 				WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
 
-				if (event.getPlayer().getEntityId() == metadata.getEntityID()) {
-					event.setCancelled(true);
-					return;
+				int eid = metadata.getEntityID();
+				
+				List<Entity> ents = event.getPlayer().getWorld().getEntities();
+				
+				for (Entity ent : ents) {
+					if (ent.getEntityId() == eid) {
+						if (ent.getType() != EntityType.PLAYER) {
+							return; // Not a player, ignore the data.
+						}
+					}
 				}
-
-				WrappedDataWatcher watcher = new WrappedDataWatcher(metadata.getMetadata());
 				
-				watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);
-				
-				metadata.setMetadata(watcher.getWatchableObjects());
-				
-				event.setPacket(metadata.getHandle());
+				if (event.getPlayer().getEntityId() != eid) {	
+					WrappedDataWatcher watcher = new WrappedDataWatcher(metadata.getMetadata());
+					
+					watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);
+					
+					metadata.setMetadata(watcher.getWatchableObjects());
+					
+					event.setPacket(metadata.getHandle());
+				}
 			}
 		};
-		protocolManager.addPacketListener(adapter);
+		if (Settings.Test.antiHealthTags) {
+			protocolManager.addPacketListener(adapter);	
+		}
 	}
 
 	@Override
@@ -139,83 +154,10 @@ public class Loader_v1_12 extends Loader {
 	@Override
 	public AbstractFakePlayer newFakePlayer(Location fakeLocation, Player player) {
 		if (player == null) {
-			System.out.println("Player cannot be null.");
+			return null;
 		}
 		AbstractFakePlayer afp = new FakePlayer1_12(tracerBlocker, fakeLocation);
 		afp.addObserver(player);
 		return afp;
-	}
-
-	@Override
-	public void checkVisibility() {
-		for (Player a : Bukkit.getOnlinePlayers()) {
-			for (Player b : Bukkit.getOnlinePlayers()) {
-				if (a.equals(b)) {
-					continue;
-				}
-				if (a.getWorld().equals(b.getWorld())) {
-					if (Settings.PlayerHider.disabledWorlds.contains(a.getWorld().getName())) {
-						continue;
-					}
-					double width = 0.48;
-					Location targetAA = b.getLocation().clone().add(-width, 0, -width);
-					Location targetBB = b.getLocation().clone().add(-width, 0, width);
-					Location targetCC = b.getLocation().clone().add(width, 0, -width);
-					Location targetDD = b.getLocation().clone().add(width, 0, width);
-					
-					Location targetEE = b.getLocation().clone().add(-width, 1.9, -width);
-					Location targetFF = b.getLocation().clone().add(-width, 1.9, width);
-					Location targetGG = b.getLocation().clone().add(width, 1.9, -width);
-					Location targetHH = b.getLocation().clone().add(width, 1.9, width);
-					
-					Location targetII = b.getLocation().clone().add(0, 1.1, 0);
-					
-					double distance = a.getLocation().distance(targetAA);
-					
-					if (distance > Settings.PlayerHider.maxDistance) {
-						continue;
-					}
-					if (!a.canSee(b)) {
-						continue;
-					}
-
-					if (distance <= Settings.PlayerHider.ignoreDistance) {
-						playerHider.showPlayer(a, b);
-						continue;
-					}
-					
-					if (a.hasPotionEffect(PotionEffectType.GLOWING) || b.hasPotionEffect(PotionEffectType.GLOWING)) {
-						playerHider.showPlayer(a, b);
-						continue;
-					}
-					
-					RayTrace rt1 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetAA));
-					RayTrace rt2 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetBB));
-					RayTrace rt3 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetCC));
-					RayTrace rt4 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetDD));
-					RayTrace rt5 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetEE));
-					RayTrace rt6 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetFF));
-					RayTrace rt7 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetGG));
-					RayTrace rt8 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetHH));
-					RayTrace rt9 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetII));
-
-					boolean result1 = Utils.rayTractResult(rt1.raytrace(0.5), a.getWorld());
-					boolean result2 = Utils.rayTractResult(rt2.raytrace(0.5), a.getWorld());
-					boolean result3 = Utils.rayTractResult(rt3.raytrace(0.5), a.getWorld());
-					boolean result4 = Utils.rayTractResult(rt4.raytrace(0.5), a.getWorld());
-					boolean result5 = Utils.rayTractResult(rt5.raytrace(0.5), a.getWorld());
-					boolean result6 = Utils.rayTractResult(rt6.raytrace(0.5), a.getWorld());
-					boolean result7 = Utils.rayTractResult(rt7.raytrace(0.5), a.getWorld());
-					boolean result8 = Utils.rayTractResult(rt8.raytrace(0.5), a.getWorld());
-					boolean result9 = Utils.rayTractResult(rt9.raytrace(0.5), a.getWorld());
-
-					if (!(result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8 || result9)) {
-						playerHider.hidePlayer(a, b);
-					} else {
-						playerHider.showPlayer(a, b);
-					}
-				}
-			}
-		}
 	}
 }

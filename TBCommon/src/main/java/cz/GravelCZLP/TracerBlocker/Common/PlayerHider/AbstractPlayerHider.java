@@ -6,13 +6,25 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+
+import cz.GravelCZLP.TracerBlocker.RayTrace;
+import cz.GravelCZLP.TracerBlocker.Settings;
+import cz.GravelCZLP.TracerBlocker.Utils;
+import cz.GravelCZLP.TracerBlocker.Vector3D;
+import cz.GravelCZLP.TracerBlocker.Events.PlayerHideEvent;
+import cz.GravelCZLP.TracerBlocker.Events.PlayerShowEvent;
+import cz.GravelCZLP.TracerBlocker.Events.PlayerShowEvent.ShowReason;
+
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -56,6 +68,94 @@ public abstract class AbstractPlayerHider {
 		manager.addPacketListener(protocolListener = constructProtocol(plugin));
 	}
 
+	public void checkVisibility() {
+		for (Player a : Bukkit.getOnlinePlayers()) {
+			for (Player b : Bukkit.getOnlinePlayers()) {
+				if (a.getUniqueId().toString().equals(a.getUniqueId().toString())) {
+					continue;
+				}
+				if (a.getGameMode() == GameMode.SPECTATOR || b.getGameMode() == GameMode.SPECTATOR) {
+					continue;
+				}
+				if (a.getWorld().equals(b.getWorld())) {
+					if (Settings.PlayerHider.disabledWorlds.contains(a.getWorld().getName())) {
+						continue;
+					}
+					double width = 0.48;
+					Location targetAA = b.getLocation().clone().add(-width, 0, -width);
+					Location targetBB = b.getLocation().clone().add(-width, 0, width);
+					Location targetCC = b.getLocation().clone().add(width, 0, -width);
+					Location targetDD = b.getLocation().clone().add(width, 0, width);
+					
+					Location targetEE = b.getLocation().clone().add(-width, 1.9, -width);
+					Location targetFF = b.getLocation().clone().add(-width, 1.9, width);
+					Location targetGG = b.getLocation().clone().add(width, 1.9, -width);
+					Location targetHH = b.getLocation().clone().add(width, 1.9, width);
+					
+					Location targetII = b.getLocation().clone().add(0, b.getHeight() / 2, 0);
+					
+					double distance = a.getLocation().distance(targetAA);
+					
+					if (distance > Settings.PlayerHider.maxDistance) {
+						continue;
+					}
+
+					if (distance <= Settings.PlayerHider.ignoreDistance) {
+						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.IGNORE_DISTANCE, new boolean[] {});
+						Bukkit.getPluginManager().callEvent(e);
+						if (!e.isCancelled()) {
+							showPlayer(a, b);	
+						}
+						continue;
+					}
+					
+					if (b.hasPotionEffect(PotionEffectType.GLOWING)) {
+						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[] {});
+						Bukkit.getPluginManager().callEvent(e);
+						if (!e.isCancelled()) {
+							showPlayer(a, b);	
+						}
+						continue;
+					}
+					
+					RayTrace rt1 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetAA));
+					RayTrace rt2 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetBB));
+					RayTrace rt3 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetCC));
+					RayTrace rt4 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetDD));
+					RayTrace rt5 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetEE));
+					RayTrace rt6 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetFF));
+					RayTrace rt7 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetGG));
+					RayTrace rt8 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetHH));
+					RayTrace rt9 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetII));
+
+					boolean result1 = Utils.rayTractResult(rt1.raytrace(0.5), a.getWorld());
+					boolean result2 = Utils.rayTractResult(rt2.raytrace(0.5), a.getWorld());
+					boolean result3 = Utils.rayTractResult(rt3.raytrace(0.5), a.getWorld());
+					boolean result4 = Utils.rayTractResult(rt4.raytrace(0.5), a.getWorld());
+					boolean result5 = Utils.rayTractResult(rt5.raytrace(0.5), a.getWorld());
+					boolean result6 = Utils.rayTractResult(rt6.raytrace(0.5), a.getWorld());
+					boolean result7 = Utils.rayTractResult(rt7.raytrace(0.5), a.getWorld());
+					boolean result8 = Utils.rayTractResult(rt8.raytrace(0.5), a.getWorld());
+					boolean result9 = Utils.rayTractResult(rt9.raytrace(0.5), a.getWorld());
+
+					if (!(result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8 || result9)) {
+						PlayerHideEvent e = new PlayerHideEvent(a, b, new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8, result9 });
+						Bukkit.getPluginManager().callEvent(e);
+						if (!e.isCancelled()) {
+							hidePlayer(a, b);
+						}
+					} else {
+						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8, result9 });
+						Bukkit.getPluginManager().callEvent(e);
+						if (!e.isCancelled()) {
+							showPlayer(a, b);	
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	public void hidePlayer(Player a, Player b) {
 		hideEntity(a, b);
 	}

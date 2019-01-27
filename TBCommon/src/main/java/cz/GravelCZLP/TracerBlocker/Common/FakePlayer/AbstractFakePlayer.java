@@ -24,8 +24,11 @@ public abstract class AbstractFakePlayer {
 	protected static final FieldAccessor ENTITY_ID = Accessors.getFieldAccessor(
 			MinecraftReflection.getEntityClass(),
 			"entityCount", true);
+	
 	protected final int moveDir;
-
+	
+	protected final boolean y;
+	
 	/**
 	 * Player that will see this entity.
 	 */
@@ -72,6 +75,7 @@ public abstract class AbstractFakePlayer {
 		this.serverLocation = clientLocation.clone();
 		
 		this.moveDir = new Random().nextInt(3);
+		this.y = new Random().nextBoolean();
 		
 		this.name = RandomNameGenerator.getRandomName();
 		this.uuid = UUID.randomUUID();
@@ -88,11 +92,11 @@ public abstract class AbstractFakePlayer {
 					destroy();
 					return;
 				}
+				maybeDestroyEntity();
 				if (Settings.FakePlayers.moving) {
 					moveEntity();
 					updateEntity();
 				}
-				maybeDestroyEntity();
 				i++;
 			}
 		};
@@ -116,9 +120,8 @@ public abstract class AbstractFakePlayer {
 	private void moveEntity() {
 		previousServerLocation = serverLocation.clone();
 		
-		double i = 0.1 + (Math.random() / 5);
+		double i = 0.01;
 		
-		boolean y = new Random().nextBoolean();
 		if (moveDir == 0) {
 			if (y) {
 				serverLocation.setX(serverLocation.getX() + i);
@@ -159,6 +162,12 @@ public abstract class AbstractFakePlayer {
 				serverLocation.setX(serverLocation.getX() + i);
 				serverLocation.setY(serverLocation.getY() + i);
 			}
+		}
+		if (serverLocation.getY() < 5) {
+			destroy();
+		}
+		if (serverLocation.getY() > 250) {
+			destroy();
 		}
 	}
 
@@ -222,15 +231,7 @@ public abstract class AbstractFakePlayer {
 		this.name = name;
 		this.changed = true;
 	}
-
-	protected int getRandomYaw() {
-		return new Random().nextInt(360);
-	}
-
-	protected int getRandomPitch() {
-		return new Random().nextInt(180) - 90;
-	}
-
+	
 	protected float randomHealth() {
 		return new Random().nextFloat();
 	}

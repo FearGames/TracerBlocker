@@ -60,6 +60,10 @@ public class Vector3D {
 		return this;
 	}
 
+	public Vector3D clone() {
+		return new Vector3D(x, y, z);
+	}
+	
 	public Location toLocation(World w) {
 		return new Location(w, x, y, z);
 	}
