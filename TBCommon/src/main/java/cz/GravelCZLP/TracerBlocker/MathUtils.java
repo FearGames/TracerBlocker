@@ -1,6 +1,5 @@
 package cz.GravelCZLP.TracerBlocker;
 
-import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 
@@ -125,36 +124,16 @@ public class MathUtils {
 		}
 	}
 
-	public static double getAngleYaw(Vector3D start, Vector3D end) {//FIXME: does not return correct angle in all 4 quadrants
-		double dx = start.getX() - end.getX();
-		double dz = start.getZ() - end.getZ();
-		
-		double yaw = (float) (Math.atan2(dz, dx) * 180.0D / Math.PI) - 90.0;
-		
-		return yaw;
-	}
-
-	public static double warpDegrees(double value) {
-		if ((value %= 360.0) >= 180.0) {
-			value -= 360.0;
-		}
-		if (value < -180.0) {
-			value += 360.0;
-		}
-		return value;
-	}
-	
-	public static double getAnglePitch(Vector3D start, Vector3D end) {
-
+	public static float[] getAngles(Vector3D start, Vector3D end) {
 		double dx = start.getX() - end.getX();
 		double dy = start.getY() - end.getY();
 		double dz = start.getZ() - end.getZ();
-
-		double dxz = Math.sqrt(dx * dx + dz * dz);
-
-		double pitch = Math.atan2(dy, dxz);
-
-		return Math.toDegrees(pitch);
+		
+		double dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dz, 2));
+		
+		float yaw = (float) (Math.atan2(dx, dz) * 180.0 / Math.PI);
+		float pitch = (float) (Math.atan2(dist, dy) * 180.0 / Math.PI);
+		return new float[] { yaw, pitch};
 	}
 
 }

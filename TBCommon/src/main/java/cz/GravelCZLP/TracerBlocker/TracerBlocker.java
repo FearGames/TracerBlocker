@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -23,8 +24,15 @@ public class TracerBlocker extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
+		Plugin pl = getServer().getPluginManager().getPlugin("ProtocolLib");
+		if (pl == null) {
 			getLogger().warning("TracerBlocker depends on ProtocolLib");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		
+		if (!pl.getDescription().getVersion().equals("4.3.0")) {
+			getLogger().warning("ProtocolLib found but yo uare using incorrect version, you need to use 4.3.0");
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -35,9 +43,6 @@ public class TracerBlocker extends JavaPlugin {
 			System.out.println("##############################");
 			System.out.println("#Tracer Blocker Debug Enabled#");
 			System.out.println("##############################");
-		}
-		
-		if (Settings.Test.debug) {
 			System.out.println(Bukkit.getVersion());
 			System.out.println(Bukkit.getBukkitVersion());	
 		}
@@ -137,10 +142,8 @@ public class TracerBlocker extends JavaPlugin {
 		File configFile = new File(getDataFolder() + "/config.yml");
 		try {
 			config.save(configFile);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("Error occured when tying to save config for Tracer Blocker, all settings set in game have been not saved ?:(");
 		}
 	}
 	

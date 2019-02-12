@@ -12,34 +12,34 @@ import org.bukkit.block.Block;
 public class Utils {
 
 	private static List<Material> transparentMaterials = new ArrayList<>();
-	
+
 	static {
 		transparentMaterials.add(Material.CHEST);
 		transparentMaterials.add(Material.TRAPPED_CHEST);
 		transparentMaterials.add(Material.ENDER_CHEST);
-		
+
 		transparentMaterials.add(Material.AIR);
 		transparentMaterials.add(Material.BEACON);
-		
+
 		transparentMaterials.add(Material.GLASS);
 		transparentMaterials.add(Material.THIN_GLASS);
 		transparentMaterials.add(Material.STAINED_GLASS);
 		transparentMaterials.add(Material.STAINED_GLASS_PANE);
-		
+
 		transparentMaterials.add(Material.STATIONARY_WATER);
 		transparentMaterials.add(Material.WATER);
-		
+
 		transparentMaterials.add(Material.BED_BLOCK);
 		transparentMaterials.add(Material.CARPET);
 		transparentMaterials.add(Material.BARRIER);
-		
+
 		transparentMaterials.add(Material.STONE_BUTTON);
 		transparentMaterials.add(Material.WOOD_BUTTON);
 		transparentMaterials.add(Material.LEVER);
 		transparentMaterials.add(Material.TORCH);
 		transparentMaterials.add(Material.REDSTONE_TORCH_OFF);
 		transparentMaterials.add(Material.REDSTONE_TORCH_ON);
-		
+
 		transparentMaterials.add(Material.CACTUS);
 		transparentMaterials.add(Material.LONG_GRASS);
 		transparentMaterials.add(Material.GRASS_PATH);
@@ -53,7 +53,7 @@ public class Utils {
 		transparentMaterials.add(Material.SAPLING);
 		transparentMaterials.add(Material.ICE);
 		transparentMaterials.add(Material.PACKED_ICE);
-		//transparentMaterials.add(Material.FROSTED_ICE);
+		// transparentMaterials.add(Material.FROSTED_ICE);
 		transparentMaterials.add(Material.WEB);
 		transparentMaterials.add(Material.SLIME_BLOCK);
 		transparentMaterials.add(Material.IRON_BARDING);
@@ -90,10 +90,10 @@ public class Utils {
 		transparentMaterials.add(Material.PUMPKIN_STEM);
 		transparentMaterials.add(Material.SUGAR_CANE_BLOCK);
 	}
-	
+
 	public static boolean chestCheck(Vector3D from, Location chestLoc) {
 		double size = 0.90;
-		
+
 		Location targetAA = chestLoc.clone().add(0, 0, 0);
 		Location targetBB = chestLoc.clone().add(size, 0, 0);
 		Location targetCC = chestLoc.clone().add(size, 0, size);
@@ -102,7 +102,7 @@ public class Utils {
 		Location targetFF = chestLoc.clone().add(size, size, 0);
 		Location targetGG = chestLoc.clone().add(size, size, size);
 		Location targetHH = chestLoc.clone().add(0, size, size);
-		
+
 		RayTrace rt = new RayTrace(from, Vector3D.fromLocation(targetAA));
 		RayTrace rt1 = new RayTrace(from, Vector3D.fromLocation(targetBB));
 		RayTrace rt2 = new RayTrace(from, Vector3D.fromLocation(targetCC));
@@ -111,7 +111,7 @@ public class Utils {
 		RayTrace rt5 = new RayTrace(from, Vector3D.fromLocation(targetFF));
 		RayTrace rt6 = new RayTrace(from, Vector3D.fromLocation(targetGG));
 		RayTrace rt7 = new RayTrace(from, Vector3D.fromLocation(targetHH));
-		
+
 		boolean result1 = Utils.rayTractResult(rt.raytrace(0.5), chestLoc.getWorld());
 		boolean result2 = Utils.rayTractResult(rt1.raytrace(0.5), chestLoc.getWorld());
 		boolean result3 = Utils.rayTractResult(rt2.raytrace(0.5), chestLoc.getWorld());
@@ -120,18 +120,18 @@ public class Utils {
 		boolean result6 = Utils.rayTractResult(rt5.raytrace(0.5), chestLoc.getWorld());
 		boolean result7 = Utils.rayTractResult(rt6.raytrace(0.5), chestLoc.getWorld());
 		boolean result8 = Utils.rayTractResult(rt7.raytrace(0.5), chestLoc.getWorld());
-		
+
 		return (result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8);
 	}
-	
-	public static void showParticle(List<Vector3D> list, World w)  {
-		for (Vector3D vec : list) {
-			if (Settings.Test.debug) {
-				w.spawnParticle(Particle.REDSTONE, vec.toLocation(w), 1);	
-			}	
+
+	public static void showParticle(List<Vector3D> list, World w) {
+		if (Settings.Test.debug) {
+			for (Vector3D vec : list) {
+				w.spawnParticle(Particle.REDSTONE, vec.toLocation(w), 1);
+			}
 		}
 	}
-	
+
 	public static boolean rayTractResult(List<Vector3D> list, World w) {
 		showParticle(list, w);
 		for (Vector3D vec : list) {
@@ -141,14 +141,11 @@ public class Utils {
 		}
 		return true;
 	}
-	
+
 	public static boolean isTransparent(Block b) {
 		Material mat = b.getType();
-		if (mat.toString().contains("FENCE") 
-				|| mat.toString().contains("STAIRS") 
-				|| mat.toString().contains("SLAB")
-				|| mat.toString().contains("RAIL")
-				|| mat.toString().contains("DOOR")
+		if (mat.toString().contains("FENCE") || mat.toString().contains("STAIRS") || mat.toString().contains("SLAB")
+				|| mat.toString().contains("RAIL") || mat.toString().contains("DOOR")
 				|| mat.toString().contains("WALL")) {
 			return true;
 		}
@@ -157,5 +154,5 @@ public class Utils {
 		}
 		return false;
 	}
-	
+
 }

@@ -53,14 +53,15 @@ fakeplayers:
   Example_World1,
   ExampleWoRlD2
   ]
+  
 #WIP
 #Do not touch this part of config unless you want to test the featues.
 #i do not guarantee you that everything will be working 100%
 #This one should be working
-antihealthTags: true
+antihealthTags: false
 #This one is not working.
 packetAntiChestEsp: false
 
 #DEBUG
-#do not enable this unless you are a delevloper, this spawns particles and can lag both the server and the client
+#do not enable this unless you are a developer, this spawns particles and can lag both the server and the client
 debug: false

@@ -11,11 +11,12 @@ import cz.GravelCZLP.TracerBlocker.Common.Loader;
  */
 public enum Version {
  
-	TBV1_12("1.12", "cz.GravelCZLP.TracerBlocker.v1_12.Loader_v1_12");
+	TBV1_12("1.12", "cz.GravelCZLP.TracerBlocker.v1_12.Loader_v1_12"),
+	TBV1_13("1.13", "cz.GravelCZLP.TracerBlocker.v1_13.Loader_v1_13");
 
 	private String version, className;
 
-	Version(String v, String className) {
+	private Version(String v, String className) {
 		version = v;
 		this.className = className;
 	}
@@ -59,6 +60,8 @@ public enum Version {
 		}
 	}
 
-	public String getClazzName() { return className; }
+	public String getClazzName() { 
+		return className; 
+	}
 
 }

@@ -16,6 +16,7 @@
     	<module>TBV-1.12</module>
     	<module>TBCommon</module>
     	<module>FinalBuild</module>
+    	<module>TBV-1.13</module>
     </modules>
    	
     <build>

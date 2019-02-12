@@ -71,12 +71,15 @@ public abstract class AbstractPlayerHider {
 	public void checkVisibility() {
 		for (Player a : Bukkit.getOnlinePlayers()) {
 			for (Player b : Bukkit.getOnlinePlayers()) {
+				
 				if (a.getUniqueId().toString().equals(a.getUniqueId().toString())) {
 					continue;
 				}
+				
 				if (a.getGameMode() == GameMode.SPECTATOR || b.getGameMode() == GameMode.SPECTATOR) {
 					continue;
 				}
+				
 				if (a.getWorld().equals(b.getWorld())) {
 					if (Settings.PlayerHider.disabledWorlds.contains(a.getWorld().getName())) {
 						continue;

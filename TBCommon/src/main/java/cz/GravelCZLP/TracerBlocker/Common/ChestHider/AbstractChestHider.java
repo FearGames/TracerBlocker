@@ -10,24 +10,28 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
+import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.RayTrace;
 import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.Utils;
 import cz.GravelCZLP.TracerBlocker.Vector3D;
-import net.minecraft.server.v1_12_R1.EntityDragonFireball;
 
 public abstract class AbstractChestHider {
 
 	public void checkChestVisibility() {
 		for (Player a : Bukkit.getOnlinePlayers()) {
+			
 			if (a.getGameMode() == GameMode.SPECTATOR) {
 				continue;
 			}
+			
 			Location loc = a.getLocation();
 			World world = loc.getWorld();
+			
 			if (Settings.ChestHider.disabledWorlds.contains(world.getName())) {
 				continue;
 			}
+			
 			int chunkRadius = Settings.ChestHider.maxDistance / 16;
 			
 			int minX = loc.getChunk().getX() - chunkRadius;
@@ -68,6 +72,12 @@ public abstract class AbstractChestHider {
 								
 								Vector3D endFront = front.getEnd();
 								Vector3D endBack = back.getEnd();
+								
+								if (Settings.Test.debug) {
+									MathUtils.renderAxisHelper(endFront.toLocation(world), 1.5);
+									MathUtils.renderAxisHelper(endBack.toLocation(world), 1.5);
+									MathUtils.renderAxisHelper(eyeLoc, 1.5);
+								}
 								
 								for (Vector3D vec : front.raytrace(0.1)) {
 									Block b = vec.toLocation(world).getBlock();

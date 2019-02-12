@@ -1,4 +1,4 @@
-package cz.GravelCZLP.TracerBlocker.v1_12;
+package cz.GravelCZLP.TracerBlocker.v1_13;
 
 import java.util.List;
 
@@ -21,24 +21,25 @@ import cz.GravelCZLP.TracerBlocker.Common.Loader;
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
 import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
-import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.ChestHider1_12;
-import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.PacketChestHider1_12;
-import cz.GravelCZLP.TracerBlocker.v1_12.FakePlayer.FakePlayer1_12;
-import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityMetadata;
-import cz.GravelCZLP.TracerBlocker.v1_12.PlayerHider.PlayerHider1_12;
+import cz.GravelCZLP.TracerBlocker.v1_13.ChestHider.ChestHider1_13;
+import cz.GravelCZLP.TracerBlocker.v1_13.ChestHider.PacketChestHider1_13;
+import cz.GravelCZLP.TracerBlocker.v1_13.FakePlayer.FakePlayer1_13;
+import cz.GravelCZLP.TracerBlocker.v1_13.Packets.WrapperPlayServerEntityMetadata;
+import cz.GravelCZLP.TracerBlocker.v1_13.PlayerHider.PlayerHider1_13;
 
 /**
- * Created by GravelCZLP on 4.7.17.
+ * Created by GravelCZLP on 12.2.19.
  */
-public class Loader_v1_12 extends Loader {
+public class Loader_v1_13 extends Loader {
 
 	private TracerBlocker tracerBlocker;
 	private ProtocolManager protocolManager;
-	private PacketChestHider1_12 packetChestHider;
+	
+	private PacketChestHider1_13 packetChestHider;
 	private AbstractPlayerHider playerHider;
 	private AbstractChestHider chestHider;
 
-	public Loader_v1_12(TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
+	public Loader_v1_13(TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
 		this.tracerBlocker = tracerBlocker;
 		this.protocolManager = protocolManager;
 	}
@@ -48,7 +49,7 @@ public class Loader_v1_12 extends Loader {
 		setupProtocol();
 
 		if (Settings.PlayerHider.enabled) {
-			playerHider = new PlayerHider1_12(tracerBlocker);
+			playerHider = new PlayerHider1_13(tracerBlocker);
 			
 			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
 				@Override
@@ -59,10 +60,10 @@ public class Loader_v1_12 extends Loader {
 			
 		}
 		if (Settings.ChestHider.enabled) {
-			chestHider = new ChestHider1_12();
+			chestHider = new ChestHider1_13();
 			
 			if (Settings.Test.packetAntiChestEsp) {
-				packetChestHider = new PacketChestHider1_12(protocolManager);
+				packetChestHider = new PacketChestHider1_13(protocolManager);
 				packetChestHider.setup();
 			}
 			
@@ -160,7 +161,7 @@ public class Loader_v1_12 extends Loader {
 		if (player == null) {
 			return null;
 		}
-		AbstractFakePlayer afp = new FakePlayer1_12(tracerBlocker, fakeLocation);
+		AbstractFakePlayer afp = new FakePlayer1_13(tracerBlocker, fakeLocation);
 		afp.addObserver(player);
 		return afp;
 	}
