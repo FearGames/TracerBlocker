@@ -110,10 +110,14 @@ public class Loader_v1_13 extends Loader {
 				if (event.getPlayer().getEntityId() != eid) {	
 					WrappedDataWatcher watcher = new WrappedDataWatcher(metadata.getMetadata());
 					
-					watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);
+					if (watcher.hasIndex(7)) {
+						watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);	
+					}
 					
-					if (watcher.getFloat(11) != 0F) {
-						watcher.setObject(11, WrappedDataWatcher.Registry.get(Float.class), 0.0F);
+					if (watcher.hasIndex(11)) {
+						if (watcher.getFloat(11) != 0F) {
+							watcher.setObject(11, WrappedDataWatcher.Registry.get(Float.class), 0.0F);
+						}	
 					}
 					
 					metadata.setMetadata(watcher.getWatchableObjects());

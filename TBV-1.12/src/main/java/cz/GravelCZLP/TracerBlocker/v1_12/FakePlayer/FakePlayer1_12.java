@@ -110,6 +110,9 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 	}
 
 	protected void broadcastMoveEntity(Player player) {
+		if (player == null) {
+			return;
+		}
 		WrapperPlayServerRelEntityMoveLook move = new WrapperPlayServerRelEntityMoveLook();
 		move.setEntityID(entityId);
 

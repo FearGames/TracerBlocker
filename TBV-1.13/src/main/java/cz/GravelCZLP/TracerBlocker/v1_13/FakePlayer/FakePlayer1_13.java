@@ -11,7 +11,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
@@ -83,7 +82,7 @@ public class FakePlayer1_13 extends AbstractFakePlayer {
 		WrappedChatComponent displayName = WrappedChatComponent.fromText(name);
 
 		PlayerInfoData data = new PlayerInfoData(profile, 0, EnumWrappers.NativeGameMode.SURVIVAL, displayName);
-		Object generic = PlayerInfoData.getConverter().getGeneric(MinecraftReflection.getPlayerInfoDataClass(), data);
+		Object generic = PlayerInfoData.getConverter().getGeneric(data);//.getGeneric(MinecraftReflection.getPlayerInfoDataClass(), data);
 		PlayerInfoData back = PlayerInfoData.getConverter().getSpecific(generic);
 		dataList.add(back);
 		info.setData(dataList);
@@ -101,7 +100,7 @@ public class FakePlayer1_13 extends AbstractFakePlayer {
 		WrappedChatComponent displayName = WrappedChatComponent.fromText(name);
 
 		PlayerInfoData data = new PlayerInfoData(profile, randomPing(), EnumWrappers.NativeGameMode.SURVIVAL, displayName);
-		Object generic = PlayerInfoData.getConverter().getGeneric(MinecraftReflection.getPlayerInfoDataClass(), data);
+		Object generic = PlayerInfoData.getConverter().getGeneric(data);//.getGeneric(MinecraftReflection.getPlayerInfoDataClass(), data);
 		
 		PlayerInfoData back = PlayerInfoData.getConverter().getSpecific(generic);
 		dataList.add(back);
@@ -110,6 +109,9 @@ public class FakePlayer1_13 extends AbstractFakePlayer {
 	}
 
 	protected void broadcastMoveEntity(Player player) {
+		if (player == null) {
+			return;
+		}
 		WrapperPlayServerRelEntityMoveLook move = new WrapperPlayServerRelEntityMoveLook();
 		move.setEntityID(entityId);
 

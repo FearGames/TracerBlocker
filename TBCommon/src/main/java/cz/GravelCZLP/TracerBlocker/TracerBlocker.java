@@ -31,12 +31,6 @@ public class TracerBlocker extends JavaPlugin {
 			return;
 		}
 		
-		if (!pl.getDescription().getVersion().equals("4.3.0")) {
-			getLogger().warning("ProtocolLib found but yo uare using incorrect version, you need to use 4.3.0");
-			this.getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-		
 		loadConfig();
 		
 		if (Settings.Test.debug) {
