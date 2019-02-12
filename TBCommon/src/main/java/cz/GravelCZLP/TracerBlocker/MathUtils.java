@@ -19,6 +19,20 @@ public class MathUtils {
 		loc.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(x, y, z), 0, 1, 1, 0);
 	}
 
+	public static Vector3D toUnitVector(Vector3D start, double radius, double yaw, double pitch) {
+		pitch *= -1;
+		yaw *= -1;// Math.abs(yaw);
+		double x = Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
+		double y = Math.sin(Math.toRadians(pitch));
+		double z = Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
+
+		x *= radius;
+		y *= radius;
+		z *= radius;
+		
+		return start.clone().add(new Vector3D(x, y, z));
+	}
+	
 	public static void renderAxisHelper(Location loc, double radius) {
 		for (int i = 0; i < 360; i++) {
 			double xoff = 0;
@@ -50,7 +64,7 @@ public class MathUtils {
 			double z = Math.cos(angle) * radius;
 
 			Location particleLoc = loc.clone().add(xoff, y, z);
-			if (i % 2 == 0) {
+			if (i % 10 == 0) {
 				loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, r, g, b);
 			}
 		}
@@ -84,7 +98,7 @@ public class MathUtils {
 			double x = Math.cos(angle) * radius;
 
 			Location particleLoc = loc.clone().add(x, y, zoff);
-			if (i % 2 == 0) {
+			if (i % 10 == 0) {
 				loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, r, g, b);
 			}
 		}
@@ -118,7 +132,7 @@ public class MathUtils {
 			double z = Math.cos(angle) * radius;
 
 			Location particleLoc = loc.clone().add(x, yoff, z);
-			if (i % 2 == 0) {
+			if (i % 10 == 0) {
 				loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, r, g, b);
 			}
 		}

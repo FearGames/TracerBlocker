@@ -65,19 +65,13 @@ public abstract class AbstractChestHider {
 							boolean frontResult = false;
 							
 							if (Settings.ChestHider.calulatef5) {
-								Location eyeLoc = a.getEyeLocation();
+								Location eyeLoc = a.getLocation().add(0, a.getEyeHeight(), 0);
 								
 								RayTrace front = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw(), eyeLoc.getPitch(), 4.1);
 								RayTrace back = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw() + 180, -eyeLoc.getPitch(), 4.1);
 								
 								Vector3D endFront = front.getEnd();
 								Vector3D endBack = back.getEnd();
-								
-								if (Settings.Test.debug) {
-									MathUtils.renderAxisHelper(endFront.toLocation(world), 1.5);
-									MathUtils.renderAxisHelper(endBack.toLocation(world), 1.5);
-									MathUtils.renderAxisHelper(eyeLoc, 1.5);
-								}
 								
 								for (Vector3D vec : front.raytrace(0.1)) {
 									Block b = vec.toLocation(world).getBlock();
@@ -94,11 +88,18 @@ public abstract class AbstractChestHider {
 									}
 								}
 								
+								if (Settings.Test.debug) {
+									MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
+									MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
+								}
+								
 								backResult = Utils.chestCheck(endBack, state.getLocation());
 								frontResult = Utils.chestCheck(endFront, state.getLocation());
 							}
 							
-							boolean normalReult = Utils.chestCheck(Vector3D.fromLocation(a.getEyeLocation()), state.getLocation());
+							Vector3D acualEye = MathUtils.toUnitVector(Vector3D.fromLocation(a.getLocation().add(0, a.getEyeHeight(), 0)), 0.2, a.getLocation().getYaw(), a.getLocation().getPitch());
+							
+							boolean normalReult = Utils.chestCheck(acualEye, state.getLocation());
 							
 							if (!(normalReult || backResult || frontResult)) {
 								hideBlock(a, state.getLocation());
