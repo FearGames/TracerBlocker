@@ -76,7 +76,9 @@ public abstract class AbstractChestHider {
 
 								for (Vector3D vec : front.raytrace(0.1)) {
 									Block b = vec.toLocation(world).getBlock();
-									world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);
+									if (Settings.Test.debug) {
+										world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+									}
 									if (!Utils.isTransparent(b)) {
 										endFront = vec;
 										break;
@@ -84,7 +86,9 @@ public abstract class AbstractChestHider {
 								}
 								for (Vector3D vec : back.raytrace(0.1)) {
 									Block b = vec.toLocation(world).getBlock();
-									world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);
+									if (Settings.Test.debug) {
+										world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+									}
 									if (!Utils.isTransparent(b)) {
 										endBack = vec;
 										break;
