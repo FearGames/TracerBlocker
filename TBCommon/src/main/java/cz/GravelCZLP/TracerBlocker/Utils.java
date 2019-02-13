@@ -112,28 +112,82 @@ public class Utils {
 		RayTrace rt6 = new RayTrace(from, Vector3D.fromLocation(targetGG));
 		RayTrace rt7 = new RayTrace(from, Vector3D.fromLocation(targetHH));
 
-		boolean result1 = Utils.rayTractResult(rt.raytrace(0.5), chestLoc.getWorld());
-		boolean result2 = Utils.rayTractResult(rt1.raytrace(0.5), chestLoc.getWorld());
-		boolean result3 = Utils.rayTractResult(rt2.raytrace(0.5), chestLoc.getWorld());
-		boolean result4 = Utils.rayTractResult(rt3.raytrace(0.5), chestLoc.getWorld());
-		boolean result5 = Utils.rayTractResult(rt4.raytrace(0.5), chestLoc.getWorld());
-		boolean result6 = Utils.rayTractResult(rt5.raytrace(0.5), chestLoc.getWorld());
-		boolean result7 = Utils.rayTractResult(rt6.raytrace(0.5), chestLoc.getWorld());
-		boolean result8 = Utils.rayTractResult(rt7.raytrace(0.5), chestLoc.getWorld());
+		float[] c = new float[] {Float.MIN_VALUE, 0, 1};
+		
+		boolean result1 = Utils.rayTractResult(rt.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result2 = Utils.rayTractResult(rt1.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result3 = Utils.rayTractResult(rt2.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result4 = Utils.rayTractResult(rt3.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result5 = Utils.rayTractResult(rt4.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result6 = Utils.rayTractResult(rt5.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result7 = Utils.rayTractResult(rt6.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result8 = Utils.rayTractResult(rt7.raytrace(0.5), chestLoc.getWorld(), c);
 
-		return (result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8);
+		return sumBooleans(new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8 });
 	}
 
-	public static void showParticle(List<Vector3D> list, World w) {
+	public static boolean[] checkPlayer(Vector3D from, Location playerPos, double h) {
+		double width = 0.48;
+		Location targetAA = playerPos.clone().add(-width, 0, -width);
+		Location targetBB = playerPos.clone().add(-width, 0, width);
+		Location targetCC = playerPos.clone().add(width, 0, -width);
+		Location targetDD = playerPos.clone().add(width, 0, width);
+		
+		Location targetEE = playerPos.clone().add(-width, 1.9, -width);
+		Location targetFF = playerPos.clone().add(-width, 1.9, width);
+		Location targetGG = playerPos.clone().add(width, 1.9, -width);
+		Location targetHH = playerPos.clone().add(width, 1.9, width);
+		
+		Location targetII = playerPos.clone().add(0, h / 2, 0);
+		
+		Vector3D start = MathUtils.toUnitVector(from.add(new Vector3D(0, h, 0)), 0.2,  playerPos.getYaw(),  playerPos.getPitch());
+		
+		RayTrace rt1 = new RayTrace(start, Vector3D.fromLocation(targetAA));
+		RayTrace rt2 = new RayTrace(start, Vector3D.fromLocation(targetBB));
+		RayTrace rt3 = new RayTrace(start, Vector3D.fromLocation(targetCC));
+		RayTrace rt4 = new RayTrace(start, Vector3D.fromLocation(targetDD));
+		RayTrace rt5 = new RayTrace(start, Vector3D.fromLocation(targetEE));
+		RayTrace rt6 = new RayTrace(start, Vector3D.fromLocation(targetFF));
+		RayTrace rt7 = new RayTrace(start, Vector3D.fromLocation(targetGG));
+		RayTrace rt8 = new RayTrace(start, Vector3D.fromLocation(targetHH));
+		RayTrace rt9 = new RayTrace(start, Vector3D.fromLocation(targetII));
+		
+		float[] c = new float[] {Float.MIN_VALUE, 1, 0};
+		
+		boolean result1 = Utils.rayTractResult(rt1.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result2 = Utils.rayTractResult(rt2.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result3 = Utils.rayTractResult(rt3.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result4 = Utils.rayTractResult(rt4.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result5 = Utils.rayTractResult(rt5.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result6 = Utils.rayTractResult(rt6.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result7 = Utils.rayTractResult(rt7.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result8 = Utils.rayTractResult(rt8.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result9 = Utils.rayTractResult(rt9.raytrace(0.5), playerPos.getWorld(), c);
+		
+		return new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8, result9 };
+	}
+	
+	public static boolean sumBooleans(boolean[] in) {
+		if (in.length < 0) {
+			return false;
+		}
+		boolean b = in[0];
+		for (int i = 1; i < in.length; i++) {
+			b |= in[i];
+		}
+		return b;
+	}
+	
+	public static void showParticle(List<Vector3D> list, World w, float r, float g, float b) {
 		if (Settings.Test.debug) {
 			for (Vector3D vec : list) {
-				w.spawnParticle(Particle.REDSTONE, vec.toLocation(w), 1);
+				w.spawnParticle(Particle.REDSTONE, vec.toLocation(w), 0, r, g, b);
 			}
 		}
 	}
 
-	public static boolean rayTractResult(List<Vector3D> list, World w) {
-		showParticle(list, w);
+	public static boolean rayTractResult(List<Vector3D> list, World w, float[] rgb) {
+		showParticle(list, w, rgb[0], rgb[1], rgb[2]);
 		for (Vector3D vec : list) {
 			if (!Utils.isTransparent(vec.toLocation(w).getBlock())) {
 				return false;

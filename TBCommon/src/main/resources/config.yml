@@ -7,6 +7,9 @@ playerhider:
   ignore-distance: 8
   #the max distance. It will ignore everything that's farther away than the specified distance.
   max-distance: 50
+  #If this is set to true, the plugin will check if the player can see the other player from f5 mode.
+  #This will use more CPU if enabled. (Calculates both f5 perspectives)
+  calculatef5: false
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,

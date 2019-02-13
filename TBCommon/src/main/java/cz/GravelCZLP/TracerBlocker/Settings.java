@@ -26,6 +26,7 @@ public class Settings {
 		public static int ignoreDistance = 8;
 		public static int maxDistance = 50;
 		public static List<String> disabledWorlds = new ArrayList<>();
+		public static boolean calulatef5 = false;
 	}
 
 	public static class ChestHider {

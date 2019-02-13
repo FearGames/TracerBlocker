@@ -1,23 +1,14 @@
 package cz.GravelCZLP.TracerBlocker.Common.PlayerHider;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-
-import cz.GravelCZLP.TracerBlocker.RayTrace;
-import cz.GravelCZLP.TracerBlocker.Settings;
-import cz.GravelCZLP.TracerBlocker.Utils;
-import cz.GravelCZLP.TracerBlocker.Vector3D;
-import cz.GravelCZLP.TracerBlocker.Events.PlayerHideEvent;
-import cz.GravelCZLP.TracerBlocker.Events.PlayerShowEvent;
-import cz.GravelCZLP.TracerBlocker.Events.PlayerShowEvent.ShowReason;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,8 +17,21 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Arrays;
-import java.util.Map;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
+import cz.GravelCZLP.TracerBlocker.MathUtils;
+import cz.GravelCZLP.TracerBlocker.RayTrace;
+import cz.GravelCZLP.TracerBlocker.Settings;
+import cz.GravelCZLP.TracerBlocker.Utils;
+import cz.GravelCZLP.TracerBlocker.Vector3D;
+import cz.GravelCZLP.TracerBlocker.Events.PlayerHideEvent;
+import cz.GravelCZLP.TracerBlocker.Events.PlayerShowEvent;
+import cz.GravelCZLP.TracerBlocker.Events.PlayerShowEvent.ShowReason;
 
 /**
  * Copyright ${year} Luuk Jacobs
@@ -71,11 +75,9 @@ public abstract class AbstractPlayerHider {
 	public void checkVisibility() {
 		for (Player a : Bukkit.getOnlinePlayers()) {
 			for (Player b : Bukkit.getOnlinePlayers()) {
-				
-				if (a.getUniqueId().toString().equals(a.getUniqueId().toString())) {
+				if (a.getUniqueId().toString().equals(b.getUniqueId().toString())) {
 					continue;
 				}
-				
 				if (a.getGameMode() == GameMode.SPECTATOR || b.getGameMode() == GameMode.SPECTATOR) {
 					continue;
 				}
@@ -84,18 +86,8 @@ public abstract class AbstractPlayerHider {
 					if (Settings.PlayerHider.disabledWorlds.contains(a.getWorld().getName())) {
 						continue;
 					}
-					double width = 0.48;
-					Location targetAA = b.getLocation().clone().add(-width, 0, -width);
-					Location targetBB = b.getLocation().clone().add(-width, 0, width);
-					Location targetCC = b.getLocation().clone().add(width, 0, -width);
-					Location targetDD = b.getLocation().clone().add(width, 0, width);
 					
-					Location targetEE = b.getLocation().clone().add(-width, 1.9, -width);
-					Location targetFF = b.getLocation().clone().add(-width, 1.9, width);
-					Location targetGG = b.getLocation().clone().add(width, 1.9, -width);
-					Location targetHH = b.getLocation().clone().add(width, 1.9, width);
-					
-					Location targetII = b.getLocation().clone().add(0, b.getHeight() / 2, 0);
+					Location targetAA = b.getLocation().clone().add(-0.48, 0, -0.48);
 					
 					double distance = a.getLocation().distance(targetAA);
 					
@@ -104,7 +96,7 @@ public abstract class AbstractPlayerHider {
 					}
 
 					if (distance <= Settings.PlayerHider.ignoreDistance) {
-						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.IGNORE_DISTANCE, new boolean[] {});
+						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.IGNORE_DISTANCE, new boolean[0][0]);
 						Bukkit.getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
 							showPlayer(a, b);	
@@ -113,7 +105,7 @@ public abstract class AbstractPlayerHider {
 					}
 					
 					if (b.hasPotionEffect(PotionEffectType.GLOWING)) {
-						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[] {});
+						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[0][0]);
 						Bukkit.getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
 							showPlayer(a, b);	
@@ -121,34 +113,72 @@ public abstract class AbstractPlayerHider {
 						continue;
 					}
 					
-					RayTrace rt1 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetAA));
-					RayTrace rt2 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetBB));
-					RayTrace rt3 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetCC));
-					RayTrace rt4 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetDD));
-					RayTrace rt5 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetEE));
-					RayTrace rt6 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetFF));
-					RayTrace rt7 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetGG));
-					RayTrace rt8 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetHH));
-					RayTrace rt9 = new RayTrace(Vector3D.fromLocation(a.getEyeLocation()), Vector3D.fromLocation(targetII));
+					Vector3D acualEye = MathUtils.toUnitVector(
+							Vector3D.fromLocation(a.getLocation()), 0.2,
+							a.getLocation().getYaw(), a.getLocation().getPitch());
+					
+					boolean[] resultNormal = Utils.checkPlayer(acualEye, b.getLocation(), a.getHeight());
+					boolean[] resultback = new boolean[0];
+					boolean[] resultfront = new boolean[0];
+					
+					if (true) {
+						Location eyeLoc = a.getEyeLocation();
 
-					boolean result1 = Utils.rayTractResult(rt1.raytrace(0.5), a.getWorld());
-					boolean result2 = Utils.rayTractResult(rt2.raytrace(0.5), a.getWorld());
-					boolean result3 = Utils.rayTractResult(rt3.raytrace(0.5), a.getWorld());
-					boolean result4 = Utils.rayTractResult(rt4.raytrace(0.5), a.getWorld());
-					boolean result5 = Utils.rayTractResult(rt5.raytrace(0.5), a.getWorld());
-					boolean result6 = Utils.rayTractResult(rt6.raytrace(0.5), a.getWorld());
-					boolean result7 = Utils.rayTractResult(rt7.raytrace(0.5), a.getWorld());
-					boolean result8 = Utils.rayTractResult(rt8.raytrace(0.5), a.getWorld());
-					boolean result9 = Utils.rayTractResult(rt9.raytrace(0.5), a.getWorld());
+						RayTrace front = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw(), eyeLoc.getPitch(), 4.1);
+						RayTrace back = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw() + 180, -eyeLoc.getPitch(), 4.1);
 
-					if (!(result1 || result2 || result3 || result4 || result5 || result6 || result7 || result8 || result9)) {
-						PlayerHideEvent e = new PlayerHideEvent(a, b, new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8, result9 });
+						Vector3D endFront = front.getEnd();
+						Vector3D endBack = back.getEnd();
+
+						World world = a.getWorld();
+						
+						for (Vector3D vec : front.raytrace(0.1)) {
+							Block bl = vec.toLocation(world).getBlock();
+							if (Settings.Test.debug) {
+								world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+							}
+							if (!Utils.isTransparent(bl)) {
+								endFront = vec;
+								break;
+							}
+						}
+						for (Vector3D vec : back.raytrace(0.1)) {
+							Block bl = vec.toLocation(world).getBlock();
+							if (Settings.Test.debug) {
+								world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+							}
+							if (!Utils.isTransparent(bl)) {
+								endBack = vec;
+								break;
+							}
+						}
+
+						if (Settings.Test.debug) {
+							MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
+							MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
+						}
+						
+						resultback = Utils.checkPlayer(endBack, b.getLocation(), 0);
+						resultfront = Utils.checkPlayer(endFront, b.getLocation(), 0);
+					}
+					
+					if (!(Utils.sumBooleans(resultNormal) || Utils.sumBooleans(resultfront) || Utils.sumBooleans(resultback))) {
+						PlayerHideEvent e = new PlayerHideEvent(a, b, new boolean[][] {
+							resultNormal,
+							resultback,
+							resultfront
+							});
 						Bukkit.getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
 							hidePlayer(a, b);
 						}
 					} else {
-						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8, result9 });
+						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[][] {
+							resultNormal,
+							resultback,
+							resultfront
+							}
+						);
 						Bukkit.getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
 							showPlayer(a, b);	

@@ -83,7 +83,8 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.PlayerHider.ignoreDistance = getConfig().getInt("playerhider.ignore-distance", 8);
 		Settings.PlayerHider.maxDistance = getConfig().getInt("playerhider.max-distance", 50);
 		Settings.PlayerHider.disabledWorlds = getConfig().getStringList("playerhider.disabledWorlds");
-
+		Settings.PlayerHider.calulatef5 = getConfig().getBoolean("playerhider.calculatef5", false);
+		
 		Settings.ChestHider.enabled = getConfig().getBoolean("chesthider.enabled", true);
 		Settings.ChestHider.everyTicks = getConfig().getInt("chesthider.every-ticks", 5);
 		Settings.ChestHider.ignoreDistance = getConfig().getInt("chesthider.ignore-distance", 8);
@@ -100,7 +101,7 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.FakePlayers.showArrows = getConfig().getBoolean("fakeplayers.showArrows", true);
 		Settings.FakePlayers.maxDistance = getConfig().getDouble("fakeplayers.maxDistance", 16);
 		
-		Settings.Test.antiHealthTags = getConfig().getBoolean("antihealthTags", true);
+		Settings.Test.antiHealthTags = getConfig().getBoolean("antihealthTags", false);
 		Settings.Test.packetAntiChestEsp = getConfig().getBoolean("packetAntiChestEsp", false);
 		Settings.Test.debug = getConfig().getBoolean("debug", false);
 	}
