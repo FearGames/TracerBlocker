@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.FieldAccessor;
@@ -25,27 +26,14 @@ public abstract class AbstractFakePlayer {
 			MinecraftReflection.getEntityClass(),
 			"entityCount", true);
 	
-	protected final int moveDir;
-	
-	protected final boolean y;
-	
 	/**
 	 * Player that will see this entity.
 	 */
 	public Player observer;
 
-	/**
-	 * Client (Player) location
-	 */
 	protected Location clientLocation;
-	/**
-	 * Location of Client-Side Player
-	 */
+	
 	protected Location serverLocation;
-	/**
-	 * Previous Location of Client-Side Player
-	 */
-	protected Location previousServerLocation;
 	/**
 	 * id for this entity
 	 */
@@ -70,12 +58,16 @@ public abstract class AbstractFakePlayer {
 	
 	protected Plugin plugin;
 	
+	protected Vector v;
+	
 	public AbstractFakePlayer(final Plugin plugin, Location location) {
 		this.clientLocation = Preconditions.checkNotNull(location, "Location cannot be null");
 		this.serverLocation = clientLocation.clone();
 		
-		this.moveDir = new Random().nextInt(3);
-		this.y = new Random().nextBoolean();
+		v = Vector.getRandom();
+		v.setX(v.getX() - 0.5f);
+		v.setZ(v.getZ() - 0.5f);
+		v.setY(v.getY() / 5);
 		
 		this.name = RandomNameGenerator.getRandomName();
 		this.uuid = UUID.randomUUID();
@@ -111,64 +103,21 @@ public abstract class AbstractFakePlayer {
 			return;
 		}
 		if (observer.getLocation().getWorld().equals(serverLocation.getWorld())) {
-			if (Math.sqrt(observer.getLocation().distanceSquared(serverLocation)) < Settings.FakePlayers.maxDistance) {
+			if (serverLocation.getY() < 10) {
 				destroy();
+			}
+			if (serverLocation.getY() > 250) {
+				destroy();
+			}
+			if (observer.getLocation().distance(serverLocation) < Settings.FakePlayers.maxDistance) {
+				destroy();
+				observer.sendMessage("Deleted..");
 			}
 		}
 	}
 
-	private void moveEntity() {
-		previousServerLocation = serverLocation.clone();
-		
-		double i = 0.01;
-		
-		if (moveDir == 0) {
-			if (y) {
-				serverLocation.setX(serverLocation.getX() + i);
-				serverLocation.setY(serverLocation.getY() + i);
-			} else {
-				serverLocation.setX(serverLocation.getX() + i);
-				serverLocation.setY(serverLocation.getY() - i);
-			}
-		} else if (moveDir == 1) {
-			if (y) {
-				serverLocation.setZ(serverLocation.getZ() + i);
-				serverLocation.setY(serverLocation.getY() + i);
-			} else {
-				serverLocation.setZ(serverLocation.getZ() + i);
-				serverLocation.setY(serverLocation.getY() - i);
-			}
-		} else if (moveDir == 2) {
-			if (y) {
-				serverLocation.setX(serverLocation.getX() - i);
-				serverLocation.setY(serverLocation.getY() + i);
-			} else {
-				serverLocation.setX(serverLocation.getX() - i);
-				serverLocation.setY(serverLocation.getY() - i);
-			}
-		} else if (moveDir == 3) {
-			if (y) {
-				serverLocation.setZ(serverLocation.getZ() - i);
-				serverLocation.setY(serverLocation.getY() + i);
-			} else {
-				serverLocation.setZ(serverLocation.getZ() - i);
-				serverLocation.setY(serverLocation.getY() - i);
-			}
-		} else {
-			if (y) {
-				serverLocation.setX(serverLocation.getX() + i);
-				serverLocation.setY(serverLocation.getY() + i);
-			} else {
-				serverLocation.setX(serverLocation.getX() + i);
-				serverLocation.setY(serverLocation.getY() + i);
-			}
-		}
-		if (serverLocation.getY() < 5) {
-			destroy();
-		}
-		if (serverLocation.getY() > 250) {
-			destroy();
-		}
+	private void moveEntity() {		
+		serverLocation.add(v.getX() / 100, v.getY() / 100, v.getZ() / 100);
 	}
 
 	public void addObserver(Player player) {

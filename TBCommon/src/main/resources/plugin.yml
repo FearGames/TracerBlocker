@@ -1,5 +1,5 @@
 name: TracerBlocker
 main: cz.GravelCZLP.TracerBlocker.TracerBlocker
-version: BETA-2.1.2-PRE
+version: BETA-2.2.0-PRE
 authors: [kukelekuuk00, GravelCZLP]
 depend: [ProtocolLib]

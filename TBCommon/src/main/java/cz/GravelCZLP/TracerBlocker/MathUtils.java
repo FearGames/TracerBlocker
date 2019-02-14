@@ -139,15 +139,17 @@ public class MathUtils {
 	}
 
 	public static float[] getAngles(Vector3D start, Vector3D end) {
-		double dx = start.getX() - end.getX();
+		double dx = end.getX() - start.getX();
+		double dz = end.getZ() - start.getZ();
 		double dy = start.getY() - end.getY();
-		double dz = start.getZ() - end.getZ();
 		
-		double dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dz, 2));
+		double hypot = Math.hypot(dz, dx);
 		
-		float yaw = (float) (Math.atan2(dx, dz) * 180.0 / Math.PI);
-		float pitch = (float) (Math.atan2(dist, dy) * 180.0 / Math.PI);
-		return new float[] { yaw, pitch};
+		double angxz = Math.toDegrees(Math.atan2(dz, dx));
+		
+		double angy = Math.toDegrees(Math.atan2(dy, hypot));
+		
+		return new float[] { (float) angxz - 90, (float) angy};
 	}
 
 }

@@ -96,14 +96,14 @@ public abstract class AbstractChestHider {
 								}
 
 								if (Settings.Test.debug) {
-									MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
-									MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
+									//MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
+									//MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
 								}
 
 								backResult = Utils.chestCheck(endBack, state.getLocation());
 								frontResult = Utils.chestCheck(endFront, state.getLocation());
 							}
-
+							
 							Vector3D acualEye = MathUtils.toUnitVector(
 									Vector3D.fromLocation(a.getLocation().add(0, a.getEyeHeight(), 0)), 0.2,
 									a.getLocation().getYaw(), a.getLocation().getPitch());

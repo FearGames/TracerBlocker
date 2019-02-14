@@ -48,9 +48,13 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 	@Override
 	protected void removeObserver(Player player) {
 		sendRemovePlayerTab(player);
+		
 		WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
-		destroy.setEntityIds(new int[]{entityId});
+		
+		destroy.setEntityIds(new int[]{ entityId });
+		
 		destroy.sendPacket(player);
+		
 		observer = null;
 	}
 
@@ -116,9 +120,9 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 		WrapperPlayServerRelEntityMoveLook move = new WrapperPlayServerRelEntityMoveLook();
 		move.setEntityID(entityId);
 
-		double xChange = (serverLocation.getX() * 32 - previousServerLocation.getX() * 32) * 128;
-		double yChange = (serverLocation.getY() * 32 - previousServerLocation.getY() * 32) * 128;
-		double zChange = (serverLocation.getZ() * 32 - previousServerLocation.getZ() * 32) * 128;
+		double xChange = (serverLocation.getX() * 32 - clientLocation.getX() * 32) * 128;
+		double yChange = (serverLocation.getY() * 32 - clientLocation.getY() * 32) * 128;
+		double zChange = (serverLocation.getZ() * 32 - clientLocation.getZ() * 32) * 128;
 		
 		move.setDx(xChange);
 		move.setDy(yChange);
@@ -126,7 +130,7 @@ public class FakePlayer1_12 extends AbstractFakePlayer {
 		
 		float[] angles = MathUtils.getAngles(Vector3D.fromLocation(serverLocation), Vector3D.fromLocation(player.getEyeLocation()));
 		
-		move.setYaw(angles[0]);
+		move.setYaw(angles[0] + 180.0f);
 		move.setPitch(angles[1]);
 		
 		Location loc = new Location(player.getWorld(), serverLocation.getX(), serverLocation.getY(), serverLocation.getZ());

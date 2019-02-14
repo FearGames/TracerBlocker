@@ -50,8 +50,10 @@ public class Settings {
 	}
 	
 	public static class Test {
+		
 		public static boolean antiHealthTags = true;
 		public static boolean packetAntiChestEsp = false;
 		public static boolean debug = false;
+		
 	}
 }
