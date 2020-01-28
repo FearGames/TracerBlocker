@@ -15,9 +15,14 @@
 			<artifactId>TBCommon</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>cz.GravelCZLP</groupId>
 			<artifactId>TBV-1.12</artifactId>
+			<version>${project.version}</version>
+		</dependency> -->
+		<dependency>
+			<groupId>cz.GravelCZLP</groupId>
+			<artifactId>TBV-1.8</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!--<dependency>

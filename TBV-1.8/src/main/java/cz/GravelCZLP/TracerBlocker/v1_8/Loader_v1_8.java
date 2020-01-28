@@ -1,15 +1,11 @@
-package cz.GravelCZLP.TracerBlocker.v1_12;
-
-import java.util.List;
+package cz.GravelCZLP.TracerBlocker.v1_8;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -19,28 +15,28 @@ import cz.GravelCZLP.TracerBlocker.Settings;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
 import cz.GravelCZLP.TracerBlocker.Common.Loader;
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
+import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractPacketChestHider;
 import cz.GravelCZLP.TracerBlocker.Common.FakePlayer.AbstractFakePlayer;
 import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
-import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.ChestHider1_12;
-import cz.GravelCZLP.TracerBlocker.v1_12.ChestHider.PacketChestHider1_12;
-import cz.GravelCZLP.TracerBlocker.v1_12.FakePlayer.FakePlayer1_12;
-import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerEntityMetadata;
-import cz.GravelCZLP.TracerBlocker.v1_12.PlayerHider.PlayerHider1_12;
+import cz.GravelCZLP.TracerBlocker.v1_8.ChestHider.ChestHider1_8;
+import cz.GravelCZLP.TracerBlocker.v1_8.ChestHider.PacketChestHider1_8;
+import cz.GravelCZLP.TracerBlocker.v1_8.FakePlayer.FakePlayer1_8;
+import cz.GravelCZLP.TracerBlocker.v1_8.Packets.WrapperPlayServerEntityMetadata;
+import cz.GravelCZLP.TracerBlocker.v1_8.PlayerHider.PlayerHider1_8;
 
 /**
  * Created by GravelCZLP on 4.7.17.
  */
-public class Loader_v1_12 extends Loader {
+public class Loader_v1_8 extends Loader {
 
 	private TracerBlocker tracerBlocker;
-	private ProtocolManager protocolManager;
-	private PacketChestHider1_12 packetChestHider;
+	
+	private AbstractPacketChestHider packetChestHider;
 	private AbstractPlayerHider playerHider;
 	private AbstractChestHider chestHider;
 
-	public Loader_v1_12(TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
+	public Loader_v1_8(TracerBlocker tracerBlocker) {
 		this.tracerBlocker = tracerBlocker;
-		this.protocolManager = protocolManager;
 	}
 
 	@Override
@@ -48,39 +44,44 @@ public class Loader_v1_12 extends Loader {
 		setupProtocol();
 
 		if (Settings.PlayerHider.enabled) {
-			playerHider = new PlayerHider1_12(tracerBlocker);
+			playerHider = new PlayerHider1_8();
 			
-			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
+			Bukkit.getServer().getPluginManager().registerEvents(playerHider.constructBukkit(), tracerBlocker);
+			ProtocolLibrary.getProtocolManager().addPacketListener(playerHider.constructProtocol(tracerBlocker));
+			
+			tracerBlocker.getServer().getScheduler().runTaskTimerAsynchronously(tracerBlocker, new Runnable() {
 				@Override
 				public void run() {
 					playerHider.checkVisibility();
 				}
-			}, 1, Settings.PlayerHider.everyTicks);
+			}, 0, Settings.PlayerHider.everyTicks);
 			
 		}
 		if (Settings.ChestHider.enabled) {
-			chestHider = new ChestHider1_12();
+			chestHider = new ChestHider1_8();
+			
+			Bukkit.getPluginManager().registerEvents(chestHider.initBukkit(), tracerBlocker);
 			
 			if (Settings.Test.packetAntiChestEsp) {
-				packetChestHider = new PacketChestHider1_12(protocolManager);
+				packetChestHider = new PacketChestHider1_8(chestHider);
 				packetChestHider.setup();
 			}
 			
-			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
+			tracerBlocker.getServer().getScheduler().runTaskTimerAsynchronously(tracerBlocker, new Runnable() {
 				@Override
 				public void run() {
 					chestHider.checkChestVisibility();
 				}
-			}, 1, Settings.ChestHider.everyTicks);
+			}, 0, Settings.ChestHider.everyTicks);
 		}
 		if (Settings.FakePlayers.enabled) {
 			
-			tracerBlocker.getServer().getScheduler().runTaskTimer(tracerBlocker, new Runnable() {
+			tracerBlocker.getServer().getScheduler().runTaskTimerAsynchronously(tracerBlocker, new Runnable() {
 				@Override
 				public void run() {
 					spawnFakePlayers();
 				}
-			}, 1, Settings.FakePlayers.everyTicks);
+			}, 0, Settings.FakePlayers.everyTicks);
 			
 		}
 	}
@@ -94,39 +95,33 @@ public class Loader_v1_12 extends Loader {
 			public void onPacketSending(PacketEvent event) {
 				WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
 
+				if (!(metadata.getEntity(event) instanceof Player)) {
+					return;
+				}
+				
 				int eid = metadata.getEntityID();
+				Player reciever = event.getPlayer();
 				
-				List<Entity> ents = event.getPlayer().getWorld().getEntities();
-				
-				for (Entity ent : ents) {
-					if (ent.getEntityId() == eid) {
-						if (ent.getType() != EntityType.PLAYER) {
-							return; // Not a player, ignore the data.
-						}
-					}
+				if (eid == reciever.getEntityId()) {
+					event.setCancelled(true);
+					return;
 				}
 				
-				if (event.getPlayer().getEntityId() != eid) {	
-					WrappedDataWatcher watcher = new WrappedDataWatcher(metadata.getMetadata());
-					
-					if (watcher.hasIndex(7)) {
-						watcher.setObject(7, WrappedDataWatcher.Registry.get(Float.class), 0.1F);	
-					}
-					
-					if (watcher.hasIndex(11)) {
-						if (watcher.getFloat(11) != 0F) {
-							watcher.setObject(11, WrappedDataWatcher.Registry.get(Float.class), 0.0F);
-						}	
-					}
-					
-					metadata.setMetadata(watcher.getWatchableObjects());
-					
-					event.setPacket(metadata.getHandle());
+				WrappedDataWatcher watcher = new WrappedDataWatcher(metadata.getMetadata());
+				
+				watcher.setObject(6, (float) 20F);
+				
+				if (watcher.hasIndex(17) && watcher.getFloat(17) != 0.0F) {
+					watcher.setObject(17, (float) 0.0F);
 				}
+				
+				metadata.setMetadata(watcher.getWatchableObjects());
+				
+				event.setPacket(metadata.getHandle());
 			}
 		};
 		if (Settings.Test.antiHealthTags) {
-			protocolManager.addPacketListener(adapter);	
+			ProtocolLibrary.getProtocolManager().addPacketListener(adapter);	
 		}
 	}
 
@@ -164,7 +159,7 @@ public class Loader_v1_12 extends Loader {
 		if (player == null) {
 			return null;
 		}
-		AbstractFakePlayer afp = new FakePlayer1_12(tracerBlocker, fakeLocation);
+		AbstractFakePlayer afp = new FakePlayer1_8(tracerBlocker, fakeLocation);
 		afp.setObserver(player);
 		return afp;
 	}

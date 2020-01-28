@@ -56,8 +56,6 @@ public abstract class AbstractFakePlayer {
 	// Update task id
 	private final int taskId;
 	
-	protected Plugin plugin;
-	
 	protected Vector v;
 	
 	public AbstractFakePlayer(final Plugin plugin, Location location) {
@@ -92,9 +90,8 @@ public abstract class AbstractFakePlayer {
 				i++;
 			}
 		};
-		BukkitTask bt = Bukkit.getScheduler().runTaskTimer(plugin, task, 1, Settings.FakePlayers.speed);
+		BukkitTask bt = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, task, 0, Settings.FakePlayers.speed);
 		taskId = bt.getTaskId();
-		this.plugin = plugin;
 	}
 
 	private void maybeDestroyEntity() {
@@ -103,16 +100,16 @@ public abstract class AbstractFakePlayer {
 			return;
 		}
 		if (observer.getLocation().getWorld().equals(serverLocation.getWorld())) {
-			if (serverLocation.getY() < 10) {
+			if (serverLocation.getY() < 0) {
 				destroy();
 			}
 			if (serverLocation.getY() > 250) {
 				destroy();
 			}
-			if (observer.getLocation().distance(serverLocation) < Settings.FakePlayers.maxDistance) {
+			/*if (observer.getLocation().distance(serverLocation) < Settings.FakePlayers.maxDistance) {
 				destroy();
 				observer.sendMessage("Deleted..");
-			}
+			}*/
 		}
 	}
 
@@ -120,7 +117,7 @@ public abstract class AbstractFakePlayer {
 		serverLocation.add(v.getX() / 100, v.getY() / 100, v.getZ() / 100);
 	}
 
-	public void addObserver(Player player) {
+	public void setObserver(Player player) {
 		observer = player;
 		notifySpawnEntity(player);
 		changed = true;

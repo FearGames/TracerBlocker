@@ -10,13 +10,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 
 import cz.GravelCZLP.TracerBlocker.Common.Loader;
 
 public class TracerBlocker extends JavaPlugin {
-	
-	private ProtocolManager manager;
 
 	private Loader currentLoader;
 	
@@ -26,7 +23,7 @@ public class TracerBlocker extends JavaPlugin {
 	public void onEnable() {
 		Plugin pl = getServer().getPluginManager().getPlugin("ProtocolLib");
 		if (pl == null) {
-			getLogger().warning("TracerBlocker depends on ProtocolLib");
+			getLogger().severe("TracerBlocker depends on ProtocolLib");
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -37,8 +34,13 @@ public class TracerBlocker extends JavaPlugin {
 			System.out.println("##############################");
 			System.out.println("#Tracer Blocker Debug Enabled#");
 			System.out.println("##############################");
-			System.out.println(Bukkit.getVersion());
-			System.out.println(Bukkit.getBukkitVersion());	
+			System.out.println("Server Version:" + Bukkit.getVersion());
+			System.out.println("Bukkit version: " + Bukkit.getBukkitVersion());	
+			System.out.println("Maximum supported version " + Version.getMaximumSupported());
+			System.out.println("Minumum supported version " + Version.getMinimumSupported());
+			System.out.println("ProtocolLib version: " + ProtocolLibrary.getPlugin().getDescription().getVersion());
+			System.out.println("Maximum supported version (ProtocolLib) " + ProtocolLibrary.MAXIMUM_MINECRAFT_VERSION);
+			System.out.println("Minimum supported version (ProtocolLib) " + ProtocolLibrary.MINIMUM_MINECRAFT_VERSION);
 		}
 		
 		instance = this;
@@ -46,7 +48,7 @@ public class TracerBlocker extends JavaPlugin {
 		String ver = Bukkit.getBukkitVersion();
 		ver = ver.substring(0, ver.indexOf("-"));
 		if (Settings.Test.debug) {
-			System.out.println(ver);
+			System.out.println("Split version: " + ver);
 		}
 		
 		boolean versionb = Version.isVersionSupported(ver);
@@ -56,9 +58,7 @@ public class TracerBlocker extends JavaPlugin {
 			return;
 		}
 
-		manager = ProtocolLibrary.getProtocolManager();
-
-		currentLoader = Version.getLoaderByVersion(ver, this, manager);
+		currentLoader = Version.getLoaderByVersion(ver, this);
 		
 		if (currentLoader == null) {
 			getServer().getLogger().warning("Tracer blocker did not found any Version Loader for " + ver);
@@ -73,7 +73,7 @@ public class TracerBlocker extends JavaPlugin {
 			currentLoader.onDisable();
 		}
 		ProtocolLibrary.getProtocolManager().removePacketListeners(this);
-		saveConfig();
+		//saveConfig();
 	}
 
 	public void loadConfig() {
@@ -114,7 +114,7 @@ public class TracerBlocker extends JavaPlugin {
 		config.set("playerhider.every-ticks", Settings.PlayerHider.everyTicks);
 		config.set("playerhider.ignore-distance", Settings.PlayerHider.ignoreDistance);
 		config.set("playerhider.max-distance", Settings.PlayerHider.maxDistance);
-		config.set("playerhider.disabledworlds", Settings.PlayerHider.disabledWorlds);
+		config.set("playerhider.disabledWorlds", Settings.PlayerHider.disabledWorlds);
 
 		// Chest hider
 		config.set("chesthider.enabled", Settings.ChestHider.enabled);

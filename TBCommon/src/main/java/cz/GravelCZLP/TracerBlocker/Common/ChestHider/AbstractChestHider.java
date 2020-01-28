@@ -1,15 +1,24 @@
 package cz.GravelCZLP.TracerBlocker.Common.ChestHider;
 
+import java.util.Iterator;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import com.google.common.collect.Table.Cell;
 
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.RayTrace;
@@ -19,6 +28,8 @@ import cz.GravelCZLP.TracerBlocker.Vector3D;
 
 public abstract class AbstractChestHider {
 
+	private Table<Integer, Location, Boolean> chestMemberships = HashBasedTable.create();
+	 
 	public void checkChestVisibility() {
 		for (Player a : Bukkit.getOnlinePlayers()) {
 
@@ -33,18 +44,18 @@ public abstract class AbstractChestHider {
 				continue;
 			}
 
-			int chunkRadius = Settings.ChestHider.maxDistance / 16;
-
+			int chunkRadius = Settings.ChestHider.maxDistance / 16 + 1;
+			
 			int minX = loc.getChunk().getX() - chunkRadius;
-			int maxX = loc.getChunk().getX() + chunkRadius;
+			int maxX = loc.getChunk().getX() + chunkRadius + 1;
 			int minZ = loc.getChunk().getZ() - chunkRadius;
-			int maxZ = loc.getChunk().getZ() + chunkRadius;
-
+			int maxZ = loc.getChunk().getZ() + chunkRadius + 1;
+			
 			for (int x = minX; x < maxX; x++) {
 				for (int z = minZ; z < maxZ; z++) {
 
 					Chunk chunk = world.getChunkAt(x, z);
-
+					
 					for (BlockState state : chunk.getTileEntities()) {
 						if (state.getType().equals(Material.CHEST) || state.getType().equals(Material.TRAPPED_CHEST)
 								|| state.getType().equals(Material.ENDER_CHEST)) {
@@ -74,30 +85,34 @@ public abstract class AbstractChestHider {
 								Vector3D endFront = front.getEnd();
 								Vector3D endBack = back.getEnd();
 
+								
 								for (Vector3D vec : front.raytrace(0.1)) {
 									Block b = vec.toLocation(world).getBlock();
 									if (Settings.Test.debug) {
-										world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+										//world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+										Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
 									}
 									if (!Utils.isTransparent(b)) {
 										endFront = vec;
 										break;
 									}
 								}
+								
 								for (Vector3D vec : back.raytrace(0.1)) {
 									Block b = vec.toLocation(world).getBlock();
 									if (Settings.Test.debug) {
-										world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+										//world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+										Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
 									}
 									if (!Utils.isTransparent(b)) {
 										endBack = vec;
 										break;
 									}
 								}
-
+								
 								if (Settings.Test.debug) {
-									//MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
-									//MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
+									MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
+									MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
 								}
 
 								backResult = Utils.chestCheck(endBack, state.getLocation());
@@ -124,16 +139,65 @@ public abstract class AbstractChestHider {
 
 	@SuppressWarnings("deprecation")
 	private void showBlock(Player player, Location location) {
-		changeBlock(player, location, location.getBlock().getType(), location.getBlock().getData());
+		boolean hiddenBefore = setMembership(player.getEntityId(), location, false);
+		if (hiddenBefore) {
+			changeBlock(player, location, location.getBlock().getType(), location.getBlock().getData());	
+		}
+	}
+	
+	
+	public Table<Integer, Location, Boolean> getChestMembership() {
+		return chestMemberships;
 	}
 
-	public abstract void changeBlock(Player player, Location location, Material type, byte data);
-
 	private void hideBlock(Player player, Location location) {
-		Material mat = Material.AIR;
-		if (location.getBlock().getType() == Material.ENDER_CHEST) {
-			mat = Material.REDSTONE_TORCH_ON;
+		boolean visibleBefore = !setMembership(player.getEntityId(), location, true);
+		if (visibleBefore) {
+			changeBlock(player, location, Material.AIR, (byte) 0);	
 		}
-		changeBlock(player, location, mat, (byte) 0);
+	}
+
+	private boolean setMembership(int entityId, Location location, boolean member)
+	{
+		if (member) {
+			return chestMemberships.put(entityId, location, true) != null;
+		} else {
+			return chestMemberships.remove(entityId, location) != null;
+		}
+	}
+	
+	public abstract void changeBlock(Player player, Location location, Material type, byte data);
+	
+	public Listener initBukkit() {
+		return new Listener() {
+			
+			@EventHandler
+			public void onBlockBreak(BlockBreakEvent e) {
+				Block b = e.getBlock();
+				Material mat = b.getType();
+				Location loc = b.getLocation();
+				if (mat == Material.CHEST || mat == Material.TRAPPED_CHEST || mat == Material.ENDER_CHEST) {
+					Iterator<Cell<Integer, Location, Boolean>> iter = chestMemberships.cellSet().iterator();
+					while (iter.hasNext()) {
+						Location l = iter.next().getColumnKey();
+						if (loc.getBlockX() == l.getBlockX() 
+									|| loc.getBlockY() == l.getBlockY()
+									|| loc.getBlockZ() == l.getBlockZ() || l.getWorld().equals(loc.getWorld())) {
+							iter.remove();
+						}
+					}
+				}
+			}
+			
+			@EventHandler
+			public void onBlockPlace(BlockPlaceEvent e) {
+				Block b = e.getBlock();
+				Material mat = b.getType();
+				if (mat == Material.CHEST || mat == Material.TRAPPED_CHEST || mat == Material.ENDER_CHEST) {
+					checkChestVisibility();
+				}
+			}
+			
+		};
 	}
 }

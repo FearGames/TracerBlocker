@@ -1,17 +1,19 @@
-package cz.GravelCZLP.TracerBlocker.v1_12.PlayerHider;
+package cz.GravelCZLP.TracerBlocker.v1_8.PlayerHider;
+
+import static com.comphenix.protocol.PacketType.Play.Server.*;
+
+import java.lang.reflect.InvocationTargetException;
+
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+
 import cz.GravelCZLP.TracerBlocker.Common.PlayerHider.AbstractPlayerHider;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import java.lang.reflect.InvocationTargetException;
-
-import static com.comphenix.protocol.PacketType.Play.Server.*;
 
 /**
  * Copyright ${year} Luuk Jacobs
@@ -28,9 +30,10 @@ import static com.comphenix.protocol.PacketType.Play.Server.*;
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-public class PlayerHider1_12 extends AbstractPlayerHider {
+public class PlayerHider1_8 extends AbstractPlayerHider {
 
 	private static final PacketType[] ENTITY_PACKETS = {ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN, COLLECT, ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK, REL_ENTITY_MOVE_LOOK, ENTITY_TELEPORT, ENTITY_HEAD_ROTATION, ENTITY_STATUS, ATTACH_ENTITY, ENTITY_METADATA, ENTITY_EFFECT, REMOVE_ENTITY_EFFECT, BLOCK_BREAK_ANIMATION};
+
 	/**
 	 * Determine if a given entity is visible for a particular observer.
 	 *
@@ -52,8 +55,8 @@ public class PlayerHider1_12 extends AbstractPlayerHider {
 	 * @param plugin - the parent plugin.
 	 * @return The packet listener.
 	 */
-	public PacketAdapter constructProtocol(Plugin plugin) {
-		return new PacketAdapter(plugin, ENTITY_PACKETS) {
+	public PacketAdapter constructProtocol(Plugin p) {
+		return new PacketAdapter(p, ENTITY_PACKETS) {
 			@Override
 			public void onPacketSending(PacketEvent event) {
 				int entityID = event.getPacket().getIntegers().read(0);

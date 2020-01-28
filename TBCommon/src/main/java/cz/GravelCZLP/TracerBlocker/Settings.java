@@ -49,6 +49,13 @@ public class Settings {
 		public static double maxDistance = 16;
 	}
 	
+	public static class AntiXRay {
+		
+		public static int radius = 3;
+		
+		
+	}
+	
 	public static class Test {
 		
 		public static boolean antiHealthTags = true;

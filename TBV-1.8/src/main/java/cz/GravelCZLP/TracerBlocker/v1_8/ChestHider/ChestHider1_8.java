@@ -1,4 +1,4 @@
-package cz.GravelCZLP.TracerBlocker.v1_12.ChestHider;
+package cz.GravelCZLP.TracerBlocker.v1_8.ChestHider;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -8,9 +8,9 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 
 import cz.GravelCZLP.TracerBlocker.Common.ChestHider.AbstractChestHider;
-import cz.GravelCZLP.TracerBlocker.v1_12.Packets.WrapperPlayServerBlockChange;
+import cz.GravelCZLP.TracerBlocker.v1_8.Packets.WrapperPlayServerBlockChange;
 
-public class ChestHider1_12 extends AbstractChestHider {
+public class ChestHider1_8 extends AbstractChestHider {
 
 	@Override
 	public void changeBlock(Player player, Location location, Material type, byte data) {
@@ -20,7 +20,4 @@ public class ChestHider1_12 extends AbstractChestHider {
 		packet.sendPacket(player);
 	}
 
-	@Override
-	public void initProtocol()
-	{}
 }

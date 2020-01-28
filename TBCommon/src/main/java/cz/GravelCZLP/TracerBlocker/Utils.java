@@ -3,11 +3,15 @@ package cz.GravelCZLP.TracerBlocker;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 
 public class Utils {
 
@@ -42,10 +46,10 @@ public class Utils {
 
 		transparentMaterials.add(Material.CACTUS);
 		transparentMaterials.add(Material.LONG_GRASS);
-		transparentMaterials.add(Material.GRASS_PATH);
+//		transparentMaterials.add(Material.GRASS_PATH);
 		transparentMaterials.add(Material.DOUBLE_PLANT);
-		transparentMaterials.add(Material.CHORUS_PLANT);
-		transparentMaterials.add(Material.CHORUS_FLOWER);
+//		transparentMaterials.add(Material.CHORUS_PLANT);
+//		transparentMaterials.add(Material.CHORUS_FLOWER);
 		transparentMaterials.add(Material.LEAVES);
 		transparentMaterials.add(Material.LEAVES_2);
 		transparentMaterials.add(Material.YELLOW_FLOWER);
@@ -69,7 +73,7 @@ public class Utils {
 		transparentMaterials.add(Material.RED_ROSE);
 		transparentMaterials.add(Material.ENDER_PORTAL_FRAME);
 		transparentMaterials.add(Material.DEAD_BUSH);
-		transparentMaterials.add(Material.END_ROD);
+//		transparentMaterials.add(Material.END_ROD);
 		transparentMaterials.add(Material.GOLD_PLATE);
 		transparentMaterials.add(Material.IRON_PLATE);
 		transparentMaterials.add(Material.WOOD_PLATE);
@@ -83,7 +87,7 @@ public class Utils {
 		transparentMaterials.add(Material.WALL_BANNER);
 		transparentMaterials.add(Material.SKULL);
 		transparentMaterials.add(Material.SEEDS);
-		transparentMaterials.add(Material.BEETROOT_SEEDS);
+//		transparentMaterials.add(Material.BEETROOT_SEEDS);
 		transparentMaterials.add(Material.MELON_SEEDS);
 		transparentMaterials.add(Material.PUMPKIN_SEEDS);
 		transparentMaterials.add(Material.MELON_STEM);
@@ -168,7 +172,7 @@ public class Utils {
 	}
 	
 	public static boolean sumBooleans(boolean[] in) {
-		if (in.length < 0) {
+		if (in.length <= 0) {
 			return false;
 		}
 		boolean b = in[0];
@@ -178,16 +182,30 @@ public class Utils {
 		return b;
 	}
 	
-	public static void showParticle(List<Vector3D> list, World w, float r, float g, float b) {
+	public static void showParticle(List<Vector3D> list, float r, float g, float b) {
 		if (Settings.Test.debug) {
 			for (Vector3D vec : list) {
-				w.spawnParticle(Particle.REDSTONE, vec.toLocation(w), 0, r, g, b);
+				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.REDSTONE, false,
+							(float) vec.getX(), (float) vec.getY(), (float) vec.getZ(), r, g, b, 1F, 0, 0);
+				Bukkit.getOnlinePlayers().forEach(pl -> {
+					((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet);
+				});
 			}
 		}
 	}
 
+	public static void showParticle(Vector3D vec, float r, float g, float b) {
+		if (Settings.Test.debug) {
+			PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.REDSTONE, false,
+						(float) vec.getX(), (float) vec.getY(), (float) vec.getZ(), r, g, b, 1F, 0, 0);
+			Bukkit.getOnlinePlayers().forEach(pl -> {
+				((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet);
+			});
+		}
+	}
+	
 	public static boolean rayTractResult(List<Vector3D> list, World w, float[] rgb) {
-		showParticle(list, w, rgb[0], rgb[1], rgb[2]);
+		showParticle(list, rgb[0], rgb[1], rgb[2]);
 		for (Vector3D vec : list) {
 			if (!Utils.isTransparent(vec.toLocation(w).getBlock())) {
 				return false;
@@ -200,7 +218,7 @@ public class Utils {
 		Material mat = b.getType();
 		if (mat.toString().contains("FENCE") || mat.toString().contains("STAIRS") || mat.toString().contains("SLAB")
 				|| mat.toString().contains("RAIL") || mat.toString().contains("DOOR")
-				|| mat.toString().contains("WALL")) {
+				|| mat.toString().contains("WALL") || mat.toString().contains("ANVIL")) {
 			return true;
 		}
 		if (transparentMaterials.contains(mat)) {

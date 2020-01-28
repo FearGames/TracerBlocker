@@ -1,7 +1,6 @@
 package cz.GravelCZLP.TracerBlocker;
 
 import org.bukkit.Location;
-import org.bukkit.Particle;
 
 public class MathUtils {
 
@@ -16,7 +15,8 @@ public class MathUtils {
 		y *= radius;
 		z *= radius;
 
-		loc.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(x, y, z), 0, 1, 1, 0);
+		//loc.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(x, y, z), 0, 1, 1, 0);
+		Utils.showParticle(Vector3D.fromLocation(loc.clone().add(x, y, z)), 0f, 1f, 0f);
 	}
 
 	public static Vector3D toUnitVector(Vector3D start, double radius, double yaw, double pitch) {
@@ -65,7 +65,8 @@ public class MathUtils {
 
 			Location particleLoc = loc.clone().add(xoff, y, z);
 			if (i % 10 == 0) {
-				loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, r, g, b);
+				//loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, r, g, b);
+				Utils.showParticle(Vector3D.fromLocation(particleLoc), r, g, b);
 			}
 		}
 		for (int i = 0; i < 360; i++) {
@@ -99,7 +100,7 @@ public class MathUtils {
 
 			Location particleLoc = loc.clone().add(x, y, zoff);
 			if (i % 10 == 0) {
-				loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, r, g, b);
+				Utils.showParticle(Vector3D.fromLocation(particleLoc), r, g, b);
 			}
 		}
 		for (int i = 0; i < 360; i++) {
@@ -133,7 +134,7 @@ public class MathUtils {
 
 			Location particleLoc = loc.clone().add(x, yoff, z);
 			if (i % 10 == 0) {
-				loc.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, r, g, b);
+				Utils.showParticle(Vector3D.fromLocation(particleLoc), r, g, b);
 			}
 		}
 	}

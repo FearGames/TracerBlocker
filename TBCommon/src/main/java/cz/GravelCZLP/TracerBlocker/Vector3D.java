@@ -49,7 +49,11 @@ public class Vector3D {
 		return this;
 	}
 
-    public double distance(Vector3D o) {
+	public double distance(Vector3D o) {
+        return (x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) + (z - o.z) * (z - o.z);
+    }
+	
+    public double distanceSqrt(Vector3D o) {
         return Math.sqrt((x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) + (z - o.z) * (z - o.z));
     }
 	

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -15,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffectType;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -27,6 +25,7 @@ import com.google.common.collect.Table;
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.RayTrace;
 import cz.GravelCZLP.TracerBlocker.Settings;
+import cz.GravelCZLP.TracerBlocker.TracerBlocker;
 import cz.GravelCZLP.TracerBlocker.Utils;
 import cz.GravelCZLP.TracerBlocker.Vector3D;
 import cz.GravelCZLP.TracerBlocker.Events.PlayerHideEvent;
@@ -50,10 +49,9 @@ import cz.GravelCZLP.TracerBlocker.Events.PlayerShowEvent.ShowReason;
  */
 
 public abstract class AbstractPlayerHider {
+	
 	protected Table<Integer, Integer, Boolean> observerEntityMap = HashBasedTable.create();
 	protected ProtocolManager manager;
-	// Listeners
-	protected PacketAdapter protocolListener;
 
 	/**
 	 * Construct a new entity hider.
@@ -61,15 +59,8 @@ public abstract class AbstractPlayerHider {
 	 * @param plugin
 	 *            - the plugin that controls this entity hider.
 	 */
-	public AbstractPlayerHider(Plugin plugin) {
-		Preconditions.checkNotNull(plugin, "plugin cannot be NULL.");
-
-		// Save policy
+	public AbstractPlayerHider() {
 		this.manager = ProtocolLibrary.getProtocolManager();
-
-		// Register events and packet listener
-		Bukkit.getServer().getPluginManager().registerEvents(constructBukkit(), plugin);
-		manager.addPacketListener(protocolListener = constructProtocol(plugin));
 	}
 
 	public void checkVisibility() {
@@ -104,24 +95,24 @@ public abstract class AbstractPlayerHider {
 						continue;
 					}
 					
-					if (b.hasPotionEffect(PotionEffectType.GLOWING)) {
+					/*if (b.hasPotionEffect(PotionEffectType.GLOWING)) {
 						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[0][0]);
 						Bukkit.getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
 							showPlayer(a, b);	
 						}
 						continue;
-					}
+					}*/
 					
 					Vector3D acualEye = MathUtils.toUnitVector(
 							Vector3D.fromLocation(a.getLocation()), 0.2,
 							a.getLocation().getYaw(), a.getLocation().getPitch());
 					
-					boolean[] resultNormal = Utils.checkPlayer(acualEye, b.getLocation(), a.getHeight());
+					boolean[] resultNormal = Utils.checkPlayer(acualEye, b.getLocation(), a.getEyeHeight());
 					boolean[] resultback = new boolean[0];
 					boolean[] resultfront = new boolean[0];
 					
-					if (true) {
+					if (Settings.PlayerHider.calulatef5) {
 						Location eyeLoc = a.getEyeLocation();
 
 						RayTrace front = new RayTrace(Vector3D.fromLocation(eyeLoc), eyeLoc.getYaw(), eyeLoc.getPitch(), 4.1);
@@ -135,7 +126,7 @@ public abstract class AbstractPlayerHider {
 						for (Vector3D vec : front.raytrace(0.1)) {
 							Block bl = vec.toLocation(world).getBlock();
 							if (Settings.Test.debug) {
-								world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+								//Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
 							}
 							if (!Utils.isTransparent(bl)) {
 								endFront = vec;
@@ -144,8 +135,8 @@ public abstract class AbstractPlayerHider {
 						}
 						for (Vector3D vec : back.raytrace(0.1)) {
 							Block bl = vec.toLocation(world).getBlock();
-							if (Settings.Test.debug) {
-								world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
+							if (Settings.Test.debug) {	
+								//Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
 							}
 							if (!Utils.isTransparent(bl)) {
 								endBack = vec;
@@ -255,7 +246,7 @@ public abstract class AbstractPlayerHider {
 	 *
 	 * @return Our listener.
 	 */
-	protected Listener constructBukkit() {
+	public Listener constructBukkit() {
 		return new Listener() {
 
 			@EventHandler
@@ -302,7 +293,7 @@ public abstract class AbstractPlayerHider {
 	 *            - the parent plugin.
 	 * @return The packet listener.
 	 */
-	protected abstract PacketAdapter constructProtocol(Plugin plugin);
+	public abstract PacketAdapter constructProtocol(Plugin plugin);
 
 	/**
 	 * Allow the observer to see an entity that was previously hidden.
@@ -319,7 +310,9 @@ public abstract class AbstractPlayerHider {
 
 		// Resend packets
 		if (manager != null && hiddenBefore) {
-			manager.updateEntity(entity, Arrays.asList(observer));
+			Bukkit.getScheduler().runTask(TracerBlocker.getInstance(), () -> {
+				manager.updateEntity(entity, Arrays.asList(observer));
+			});
 		}
 		return hiddenBefore;
 	}

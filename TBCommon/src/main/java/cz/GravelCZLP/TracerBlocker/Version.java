@@ -2,8 +2,6 @@ package cz.GravelCZLP.TracerBlocker;
 
 import java.lang.reflect.Constructor;
 
-import com.comphenix.protocol.ProtocolManager;
-
 import cz.GravelCZLP.TracerBlocker.Common.Loader;
 
 /**
@@ -12,7 +10,8 @@ import cz.GravelCZLP.TracerBlocker.Common.Loader;
 public enum Version {
  
 	TBV1_12("1.12", "cz.GravelCZLP.TracerBlocker.v1_12.Loader_v1_12"),
-	TBV1_13("1.13", "cz.GravelCZLP.TracerBlocker.v1_13.Loader_v1_13");
+	TBV1_13("1.13", "cz.GravelCZLP.TracerBlocker.v1_13.Loader_v1_13"),
+	TBV1_8_8("1.8.8", "cz.GravelCZLP.TracerBlocker.v1_8.Loader_v1_8");
 
 	private String version, className;
 
@@ -30,10 +29,10 @@ public enum Version {
 		return false;
 	}
 
-	public static Loader getLoaderByVersion(String version, TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
+	public static Loader getLoaderByVersion(String version, TracerBlocker tracerBlocker) {
 		for(Version ver : values()) {
 			if(version.contains(ver.getVersion())) {
-				return ver.getLoader(tracerBlocker, protocolManager);
+				return ver.getLoader(tracerBlocker);
 			}
 		}
 		return null;
@@ -41,7 +40,7 @@ public enum Version {
 
 	public String getVersion() { return version; }
 
-	public Loader getLoader(TracerBlocker tracerBlocker, ProtocolManager protocolManager) {
+	public Loader getLoader(TracerBlocker tracerBlocker) {
 		Class<?> clazz = null;
 		try {
 			clazz = Class.forName(getClazzName());
@@ -52,8 +51,8 @@ public enum Version {
 			return null;
 		}
 		try {
-			Constructor<?> constructor = clazz.getConstructor(TracerBlocker.class, ProtocolManager.class);
-			return ((Loader) constructor.newInstance(tracerBlocker, protocolManager));
+			Constructor<?> constructor = clazz.getConstructor(TracerBlocker.class);
+			return ((Loader) constructor.newInstance(tracerBlocker));
 		} catch(Exception e) {
 			e.printStackTrace();
 			return null;
@@ -64,4 +63,14 @@ public enum Version {
 		return className; 
 	}
 
+	public static String getMaximumSupported()
+	{
+		return TBV1_13.version;
+	}
+
+	
+	public static String getMinimumSupported()
+	{
+		return TBV1_8_8.version;
+	}
 }

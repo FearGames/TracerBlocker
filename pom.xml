@@ -13,10 +13,11 @@
     </properties>
     <packaging>pom</packaging>
     <modules>
-    	<module>TBV-1.12</module>
     	<module>TBCommon</module>
     	<module>FinalBuild</module>
-    	<module>TBV-1.13</module>
+    	<!-- <module>TBV-1.12</module>
+    	<module>TBV-1.13</module> -->
+    	<module>TBV-1.8</module>
     </modules>
    	
     <build>

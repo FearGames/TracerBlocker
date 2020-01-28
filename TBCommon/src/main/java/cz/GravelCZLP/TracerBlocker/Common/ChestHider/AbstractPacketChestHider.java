@@ -5,6 +5,13 @@ package cz.GravelCZLP.TracerBlocker.Common.ChestHider;
  */
 public abstract class AbstractPacketChestHider {
 
+	protected AbstractChestHider ach;
+	
+	public AbstractPacketChestHider(AbstractChestHider ach)
+	{
+		this.ach = ach;
+	}
+	
 	public abstract void setup();
 
 }
