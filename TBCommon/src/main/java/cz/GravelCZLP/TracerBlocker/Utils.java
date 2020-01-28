@@ -9,6 +9,9 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.material.PistonBaseMaterial;
+
+import com.google.common.collect.ImmutableList;
 
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
@@ -93,6 +96,19 @@ public class Utils {
 		transparentMaterials.add(Material.MELON_STEM);
 		transparentMaterials.add(Material.PUMPKIN_STEM);
 		transparentMaterials.add(Material.SUGAR_CANE_BLOCK);
+		
+		transparentMaterials.add(Material.STRING);
+		transparentMaterials.add(Material.STEP);
+		transparentMaterials.add(Material.STONE_SLAB2);
+		transparentMaterials.add(Material.TRIPWIRE_HOOK);
+		transparentMaterials.add(Material.TRIPWIRE);
+		transparentMaterials.add(Material.BROWN_MUSHROOM);
+		transparentMaterials.add(Material.RED_MUSHROOM);
+		transparentMaterials.add(Material.LADDER);
+		transparentMaterials.add(Material.WATER_LILY);
+		transparentMaterials.add(Material.PISTON_EXTENSION);
+		
+		transparentMaterials = ImmutableList.copyOf(transparentMaterials);
 	}
 
 	public static boolean chestCheck(Vector3D from, Location chestLoc) {
@@ -216,11 +232,29 @@ public class Utils {
 
 	public static boolean isTransparent(Block b) {
 		Material mat = b.getType();
-		if (mat.toString().contains("FENCE") || mat.toString().contains("STAIRS") || mat.toString().contains("SLAB")
+		if (mat.toString().contains("FENCE") || mat.toString().contains("STAIRS")
 				|| mat.toString().contains("RAIL") || mat.toString().contains("DOOR")
 				|| mat.toString().contains("WALL") || mat.toString().contains("ANVIL")) {
 			return true;
 		}
+		
+		//checks for extended pistons
+		if (mat == Material.PISTON_BASE || mat == Material.PISTON_STICKY_BASE) {
+			PistonBaseMaterial piston = (PistonBaseMaterial) b.getState().getData();
+			if (piston.isPowered()) {
+				return true;
+			}
+		}
+		
+		if (mat == Material.STATIONARY_LAVA || mat == Material.LAVA) { // this checks if the lava has another lava above it, if it does it is not transparent, othervise it is
+			Block up = b.getLocation().clone().add(0, 1, 0).getBlock();
+			if (up.getType() == Material.STATIONARY_LAVA || up.getType() == Material.LAVA) {
+				return false;
+			}
+			
+			return true;
+		}
+		
 		if (transparentMaterials.contains(mat)) {
 			return true;
 		}
