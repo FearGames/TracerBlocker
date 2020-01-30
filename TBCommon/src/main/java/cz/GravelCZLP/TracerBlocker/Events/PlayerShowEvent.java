@@ -76,6 +76,6 @@ public class PlayerShowEvent extends Event implements Cancellable {
 	}
 	
 	public static enum ShowReason {
-		IGNORE_DISTANCE, GLOWING, RAY_TRACE_RESULTS;
+		IGNORE_DISTANCE, GLOWING, RAY_TRACE_RESULTS, VISIBLE;
 	}
 }

@@ -1,34 +1,51 @@
 #hides players that are behind objects. You can't physically see them, so they shouldn't be rendered.
 playerhider:
   enabled: true
+  
   #how often it checks if someone is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
   every-ticks: 2
+  
   #The distance from the player that should be ignored. It won't hide anyone within the specified distance from the player.
   ignore-distance: 8
-  #the max distance. It will ignore everything that's farther away than the specified distance.
+  
+  #the max distance. It will ignore everything that's farther away than the specified distance. 50 is when the player is despawned by server
   max-distance: 50
+  
   #If this is set to true, the plugin will check if the player can see the other player from f5 mode.
   #This will use more CPU if enabled. (Calculates both f5 perspectives)
   calculatef5: true
+  
+  #This is how often the raytrace should check for blocks, the smaller the more CPU and RAM it will use
+  rtDist: 0.1
+  
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,
   ExampleWoRlD2
   ]
+  
 #Hides chests that are behind objects. You can't physically see them, so they are not rendered.
 chesthider:
   enabled: true
+  
   #how often it checks if a chest is visible/invisible. there are 20 tickets per second, so every 1 tick is every 50 milliseconds
   every-ticks: 5
+  
   #minimal distance needed to see the chest if it is behind a wall
   ignore-distance: 8
+  
   #the max distance. It will ignore everything that's farther away than the specified distance.
   #the cpu usage is exponential, the further it goes, the more CPU it uses. If you notice lag, lower the distance.
-  #should be in increments of 16, if not false positives may occur. do not go below 16
+  #should be in increments of 16, if not false positives may occur. do not go below 16, 64 is when minecraft stops rendering chests
   max-distance: 64
+  
   #If this is set to true, the plugin will check if the player can see the chest from f5 mode.
   #This will use more CPU if enabled. (Calculates both f5 perspectives)
   calculatef5: true
+  
+  #This is how often the raytrace should check for blocks, the smaller the more CPU and RAM it will use
+  rtDist: 0.5
+  
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,
@@ -37,20 +54,27 @@ chesthider:
 #spawns invisible fake client-side players for every player. If you get a low TPS, then you should disable this.
 fakeplayers:
   enabled: false
+  
   #If the fake players should be moving or not.
   #Setting this to false will make the "speed" option useless.
   #If you have lag problems, both FPS(clientside) and TPS(serverside) this might lower it.
   moving: true
+  
   #How often to spawn fake player in ticks
-  every-ticks: 40
+  every-ticks: 10
+  
   #the amount of seconds the fake players should exist for.
   seconds-alive: 5
+  
   # The update speed of the fake player entities in ticks. 1 tick = 50ms
   speed: 3
+  
   #Should Fake Players have arrows in them ?
   showArrows: true
+  
   #Maximum distance the fake player should get to the player observing it, if the FP gets after this value, it will just disappear.
   maxDistance: 16.0
+  
   #list the worlds this feature shouldn't be used in. Case sensitive
   disabledWorlds: [
   Example_World1,
@@ -58,9 +82,13 @@ fakeplayers:
   ]
   
 #WIP
+# This will send fake data about players health/absorbtion hearts
+# For now not compatible with player hider
 antihealthTags: false
+# This hides chests in chunk packets/block updates to make sure all chests are hidden before the player gets close
+# For now only works with chunk packets
 packetAntiChestEsp: true
 
 #DEBUG
-#do not enable this unless you are a developer, this spawns particles and can lag both the server and the client
+#do not enable this unless you are a developer
 debug: false

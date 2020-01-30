@@ -147,7 +147,7 @@ public abstract class AbstractFakePlayer {
 	/**
 	 * Destroy the current entity.
 	 */
-	public void destroy() {
+	private void destroy() {
 		Bukkit.getScheduler().cancelTask(taskId);
 
 		removeObserver(observer);

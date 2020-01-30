@@ -34,7 +34,7 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 		super(plugin, location);
 	}
 
-	protected WrappedDataWatcher getWatcher() {
+	private WrappedDataWatcher getWatcher() {
 		WrappedDataWatcher watcher = new WrappedDataWatcher();
 
 		watcher.setObject(0, (byte) 0x20);
@@ -179,7 +179,7 @@ public class FakePlayer1_8 extends AbstractFakePlayer {
 		metadata.sendPacket(player);
 	}
 
-	protected int getRandomAnimation() {
+	private int getRandomAnimation() {
 		Random r = new Random();
 		int i = r.nextInt(3);
 		switch(i) {

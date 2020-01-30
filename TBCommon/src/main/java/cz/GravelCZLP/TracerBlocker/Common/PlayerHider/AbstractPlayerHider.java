@@ -125,9 +125,6 @@ public abstract class AbstractPlayerHider {
 						
 						for (Vector3D vec : front.raytrace(0.1)) {
 							Block bl = vec.toLocation(world).getBlock();
-							if (Settings.Test.debug) {
-								//Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
-							}
 							if (!Utils.isTransparent(bl)) {
 								endFront = vec;
 								break;
@@ -135,23 +132,17 @@ public abstract class AbstractPlayerHider {
 						}
 						for (Vector3D vec : back.raytrace(0.1)) {
 							Block bl = vec.toLocation(world).getBlock();
-							if (Settings.Test.debug) {	
-								//Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
-							}
 							if (!Utils.isTransparent(bl)) {
 								endBack = vec;
 								break;
 							}
 						}
-
-						if (Settings.Test.debug) {
-							MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
-							MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
-						}
 						
 						resultback = Utils.checkPlayer(endBack, b.getLocation(), 0);
 						resultfront = Utils.checkPlayer(endFront, b.getLocation(), 0);
 					}
+					
+					//Utils.sendActionBar(a, "§4Player: " + Utils.sumBooleans(resultNormal) + " | " + Utils.sumBooleans(resultfront) + " | " + Utils.sumBooleans(resultback));
 					
 					if (!(Utils.sumBooleans(resultNormal) || Utils.sumBooleans(resultfront) || Utils.sumBooleans(resultback))) {
 						PlayerHideEvent e = new PlayerHideEvent(a, b, new boolean[][] {
@@ -164,7 +155,7 @@ public abstract class AbstractPlayerHider {
 							hidePlayer(a, b);
 						}
 					} else {
-						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.GLOWING, new boolean[][] {
+						PlayerShowEvent e = new PlayerShowEvent(a, b, ShowReason.VISIBLE, new boolean[][] {
 							resultNormal,
 							resultback,
 							resultfront

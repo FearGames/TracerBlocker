@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -62,6 +61,8 @@ public abstract class AbstractChestHider {
 
 							int distance = (int) a.getLocation().distance(state.getLocation());
 
+							//MathUtils.renderCircle(state.getLocation(), Settings.ChestHider.ignoreDistance);
+							
 							// No need to check this
 							if (distance > Settings.ChestHider.maxDistance) {
 								hideBlock(a, state.getLocation());
@@ -87,11 +88,7 @@ public abstract class AbstractChestHider {
 
 								
 								for (Vector3D vec : front.raytrace(0.1)) {
-									Block b = vec.toLocation(world).getBlock();
-									if (Settings.Test.debug) {
-										//world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
-										Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
-									}
+									Block b = vec.toLocation(world).getBlock();	
 									if (!Utils.isTransparent(b)) {
 										endFront = vec;
 										break;
@@ -99,31 +96,22 @@ public abstract class AbstractChestHider {
 								}
 								
 								for (Vector3D vec : back.raytrace(0.1)) {
-									Block b = vec.toLocation(world).getBlock();
-									if (Settings.Test.debug) {
-										//world.spawnParticle(Particle.REDSTONE, vec.toLocation(world), 0, 1, 1, 0);	
-										Utils.showParticle(Vector3D.fromLocation(vec.toLocation(world)), 1f, 1f, 0f);
-									}
+									Block b = vec.toLocation(world).getBlock();	
 									if (!Utils.isTransparent(b)) {
 										endBack = vec;
 										break;
 									}
 								}
 								
-								if (Settings.Test.debug) {
-									MathUtils.renderAxisHelper(endFront.toLocation(world), 1);
-									MathUtils.renderAxisHelper(endBack.toLocation(world), 1);
-								}
-
-								backResult = Utils.chestCheck(endBack, state.getLocation());
-								frontResult = Utils.chestCheck(endFront, state.getLocation());
+								backResult = Utils.checkChest(endBack, state.getLocation());
+								frontResult = Utils.checkChest(endFront, state.getLocation());
 							}
 							
 							Vector3D acualEye = MathUtils.toUnitVector(
 									Vector3D.fromLocation(a.getLocation().add(0, a.getEyeHeight(), 0)), 0.2,
 									a.getLocation().getYaw(), a.getLocation().getPitch());
 
-							boolean normalReult = Utils.chestCheck(acualEye, state.getLocation());
+							boolean normalReult = Utils.checkChest(acualEye, state.getLocation());
 
 							if (!(normalReult || backResult || frontResult)) {
 								hideBlock(a, state.getLocation());
@@ -137,7 +125,6 @@ public abstract class AbstractChestHider {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void showBlock(Player player, Location location) {
 		boolean hiddenBefore = setMembership(player.getEntityId(), location, false);
 		if (hiddenBefore) {
@@ -177,27 +164,24 @@ public abstract class AbstractChestHider {
 				Material mat = b.getType();
 				Location loc = b.getLocation();
 				if (mat == Material.CHEST || mat == Material.TRAPPED_CHEST || mat == Material.ENDER_CHEST) {
-					Iterator<Cell<Integer, Location, Boolean>> iter = chestMemberships.cellSet().iterator();
-					while (iter.hasNext()) {
-						Location l = iter.next().getColumnKey();
-						if (loc.getBlockX() == l.getBlockX() 
-									|| loc.getBlockY() == l.getBlockY()
-									|| loc.getBlockZ() == l.getBlockZ() || l.getWorld().equals(loc.getWorld())) {
-							iter.remove();
-						}
-					}
-				}
-			}
-			
-			@EventHandler
-			public void onBlockPlace(BlockPlaceEvent e) {
-				Block b = e.getBlock();
-				Material mat = b.getType();
-				if (mat == Material.CHEST || mat == Material.TRAPPED_CHEST || mat == Material.ENDER_CHEST) {
-					checkChestVisibility();
+					removeLoc(loc);
 				}
 			}
 			
 		};
+	}
+
+	protected void removeLoc(Location loc)
+	{
+		synchronized (this)
+		{
+			Iterator<Cell<Integer, Location, Boolean>> iter = chestMemberships.cellSet().iterator();
+			while (iter.hasNext()) {
+				Cell<Integer, Location, Boolean> cell = iter.next();
+				if (cell.getColumnKey().equals(loc)) {
+					iter.remove();
+				}
+			}
+		}
 	}
 }

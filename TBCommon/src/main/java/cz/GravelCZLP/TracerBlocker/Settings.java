@@ -22,38 +22,33 @@ import java.util.List;
 public class Settings {
 	public static class PlayerHider {
 		public static boolean enabled = true;
+		public static boolean calulatef5 = false;
 		public static int everyTicks = 2;
 		public static int ignoreDistance = 8;
 		public static int maxDistance = 50;
+		public static double rtDist = 0.1;
 		public static List<String> disabledWorlds = new ArrayList<>();
-		public static boolean calulatef5 = false;
 	}
 
 	public static class ChestHider {
 		public static boolean enabled = true;
+		public static boolean calulatef5 = false;
 		public static int everyTicks = 5;
 		public static int ignoreDistance = 8;
 		public static int maxDistance = 32;
+		public static double rtDist = 0.5;
 		public static List<String> disabledWorlds = new ArrayList<>();
-		public static boolean calulatef5 = false;
 	}
 
 	public static class FakePlayers {
 		public static boolean enabled = true;
 		public static boolean moving = true;
+		public static boolean showArrows = true;
 		public static int everyTicks = 40;
 		public static int secondsAlive = 5;
 		public static int speed = 3;
-		public static List<String> disabledWorlds = new ArrayList<>();
-		public static boolean showArrows = true;
 		public static double maxDistance = 16;
-	}
-	
-	public static class AntiXRay {
-		
-		public static int radius = 3;
-		
-		
+		public static List<String> disabledWorlds = new ArrayList<>();
 	}
 	
 	public static class Test {

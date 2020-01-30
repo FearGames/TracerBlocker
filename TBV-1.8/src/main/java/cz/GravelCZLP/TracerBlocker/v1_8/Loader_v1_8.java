@@ -88,39 +88,40 @@ public class Loader_v1_8 extends Loader {
 
 	@Override
 	public void setupProtocol() {
-		PacketAdapter adapter = new PacketAdapter(tracerBlocker, ListenerPriority.HIGHEST,
-				PacketType.Play.Server.ENTITY_METADATA) {
-
-			@Override
-			public void onPacketSending(PacketEvent event) {
-				WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
-
-				if (!(metadata.getEntity(event) instanceof Player)) {
-					return;
-				}
-				
-				int eid = metadata.getEntityID();
-				Player reciever = event.getPlayer();
-				
-				if (eid == reciever.getEntityId()) {
-					event.setCancelled(true);
-					return;
-				}
-				
-				WrappedDataWatcher watcher = new WrappedDataWatcher(metadata.getMetadata());
-				
-				watcher.setObject(6, (float) 20F);
-				
-				if (watcher.hasIndex(17) && watcher.getFloat(17) != 0.0F) {
-					watcher.setObject(17, (float) 0.0F);
-				}
-				
-				metadata.setMetadata(watcher.getWatchableObjects());
-				
-				event.setPacket(metadata.getHandle());
-			}
-		};
 		if (Settings.Test.antiHealthTags) {
+			PacketAdapter adapter = new PacketAdapter(tracerBlocker, ListenerPriority.HIGHEST,
+						PacketType.Play.Server.ENTITY_METADATA) {
+
+				@Override
+				public void onPacketSending(PacketEvent event) {
+					WrapperPlayServerEntityMetadata metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
+
+					if (!(metadata.getEntity(event) instanceof Player)) {
+						return;
+					}
+					
+					int eid = metadata.getEntityID();
+					Player reciever = event.getPlayer();
+					
+					if (eid == reciever.getEntityId()) {
+						event.setCancelled(true);
+						return;
+					}
+					
+					WrappedDataWatcher watcher = new WrappedDataWatcher(metadata.getMetadata());
+					
+					watcher.setObject(6, (float) 20F);
+					
+					if (watcher.hasIndex(17) && watcher.getFloat(17) != 0.0F) {
+						watcher.setObject(17, (float) 0.0F);
+					}
+					
+					metadata.setMetadata(watcher.getWatchableObjects());
+					
+					event.setPacket(metadata.getHandle());
+				}
+			};
+				
 			ProtocolLibrary.getProtocolManager().addPacketListener(adapter);	
 		}
 	}

@@ -53,7 +53,7 @@ public class RayTrace {
 	}
 	
 	public List<Vector3D> raytrace(double interval) {
-		int amount = (int) (start.distanceSqrt(end) / interval);
+		int amount = (int) (start.distance(end) / interval);
 		
 		return raytrace(amount);
 	}

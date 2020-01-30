@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.material.PistonBaseMaterial;
 
 import com.google.common.collect.ImmutableList;
@@ -111,7 +112,7 @@ public class Utils {
 		transparentMaterials = ImmutableList.copyOf(transparentMaterials);
 	}
 
-	public static boolean chestCheck(Vector3D from, Location chestLoc) {
+	public static boolean checkChest(Vector3D from, Location chestLoc) {
 		double size = 0.90;
 
 		Location targetAA = chestLoc.clone().add(0, 0, 0);
@@ -131,17 +132,15 @@ public class Utils {
 		RayTrace rt5 = new RayTrace(from, Vector3D.fromLocation(targetFF));
 		RayTrace rt6 = new RayTrace(from, Vector3D.fromLocation(targetGG));
 		RayTrace rt7 = new RayTrace(from, Vector3D.fromLocation(targetHH));
-
-		float[] c = new float[] {Float.MIN_VALUE, 0, 1};
 		
-		boolean result1 = Utils.rayTractResult(rt.raytrace(0.5), chestLoc.getWorld(), c);
-		boolean result2 = Utils.rayTractResult(rt1.raytrace(0.5), chestLoc.getWorld(), c);
-		boolean result3 = Utils.rayTractResult(rt2.raytrace(0.5), chestLoc.getWorld(), c);
-		boolean result4 = Utils.rayTractResult(rt3.raytrace(0.5), chestLoc.getWorld(), c);
-		boolean result5 = Utils.rayTractResult(rt4.raytrace(0.5), chestLoc.getWorld(), c);
-		boolean result6 = Utils.rayTractResult(rt5.raytrace(0.5), chestLoc.getWorld(), c);
-		boolean result7 = Utils.rayTractResult(rt6.raytrace(0.5), chestLoc.getWorld(), c);
-		boolean result8 = Utils.rayTractResult(rt7.raytrace(0.5), chestLoc.getWorld(), c);
+		boolean result1 = Utils.rayTractResult(rt.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
+		boolean result2 = Utils.rayTractResult(rt1.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
+		boolean result3 = Utils.rayTractResult(rt2.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
+		boolean result4 = Utils.rayTractResult(rt3.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
+		boolean result5 = Utils.rayTractResult(rt4.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
+		boolean result6 = Utils.rayTractResult(rt5.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
+		boolean result7 = Utils.rayTractResult(rt6.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
+		boolean result8 = Utils.rayTractResult(rt7.raytrace(Settings.ChestHider.rtDist), chestLoc.getWorld());
 
 		return sumBooleans(new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8 });
 	}
@@ -172,17 +171,15 @@ public class Utils {
 		RayTrace rt8 = new RayTrace(start, Vector3D.fromLocation(targetHH));
 		RayTrace rt9 = new RayTrace(start, Vector3D.fromLocation(targetII));
 		
-		float[] c = new float[] {Float.MIN_VALUE, 1, 0};
-		
-		boolean result1 = Utils.rayTractResult(rt1.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result2 = Utils.rayTractResult(rt2.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result3 = Utils.rayTractResult(rt3.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result4 = Utils.rayTractResult(rt4.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result5 = Utils.rayTractResult(rt5.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result6 = Utils.rayTractResult(rt6.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result7 = Utils.rayTractResult(rt7.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result8 = Utils.rayTractResult(rt8.raytrace(0.5), playerPos.getWorld(), c);
-		boolean result9 = Utils.rayTractResult(rt9.raytrace(0.5), playerPos.getWorld(), c);
+		boolean result1 = Utils.rayTractResult(rt1.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result2 = Utils.rayTractResult(rt2.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result3 = Utils.rayTractResult(rt3.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result4 = Utils.rayTractResult(rt4.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result5 = Utils.rayTractResult(rt5.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result6 = Utils.rayTractResult(rt6.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result7 = Utils.rayTractResult(rt7.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result8 = Utils.rayTractResult(rt8.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
+		boolean result9 = Utils.rayTractResult(rt9.raytrace(Settings.PlayerHider.rtDist), playerPos.getWorld());
 		
 		return new boolean[] { result1, result2, result3, result4, result5, result6, result7, result8, result9 };
 	}
@@ -199,29 +196,31 @@ public class Utils {
 	}
 	
 	public static void showParticle(List<Vector3D> list, float r, float g, float b) {
-		if (Settings.Test.debug) {
-			for (Vector3D vec : list) {
-				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.REDSTONE, false,
-							(float) vec.getX(), (float) vec.getY(), (float) vec.getZ(), r, g, b, 1F, 0, 0);
-				Bukkit.getOnlinePlayers().forEach(pl -> {
-					((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet);
-				});
+		for (Vector3D vec : list) {
+			PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.REDSTONE, true,
+						(float) vec.getX(), (float) vec.getY(), (float) vec.getZ(), r, g, b, 1F, 0, 0);
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (Vector3D.fromLocation(p.getLocation()).distance(vec) < 20) {
+					((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);	
+				}	
 			}
 		}
 	}
 
 	public static void showParticle(Vector3D vec, float r, float g, float b) {
-		if (Settings.Test.debug) {
-			PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.REDSTONE, false,
-						(float) vec.getX(), (float) vec.getY(), (float) vec.getZ(), r, g, b, 1F, 0, 0);
-			Bukkit.getOnlinePlayers().forEach(pl -> {
-				((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet);
-			});
+		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.REDSTONE, true,
+					(float) vec.getX(), (float) vec.getY(), (float) vec.getZ(), r, g, b, 1F, 0, 0);
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (Vector3D.fromLocation(p.getLocation()).distance(vec) < 20) {
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);	
+			}	
 		}
 	}
 	
-	public static boolean rayTractResult(List<Vector3D> list, World w, float[] rgb) {
-		showParticle(list, rgb[0], rgb[1], rgb[2]);
+	/**
+	 * @return true if the whole ray is transparent, false othervise
+	 */
+	public static boolean rayTractResult(List<Vector3D> list, World w) {
 		for (Vector3D vec : list) {
 			if (!Utils.isTransparent(vec.toLocation(w).getBlock())) {
 				return false;

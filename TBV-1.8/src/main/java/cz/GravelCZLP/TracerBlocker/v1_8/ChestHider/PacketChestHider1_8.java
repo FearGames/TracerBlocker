@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
@@ -17,6 +19,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.BlockPosition;
 
 import cz.GravelCZLP.TracerBlocker.MathUtils;
 import cz.GravelCZLP.TracerBlocker.TracerBlocker;
@@ -73,7 +76,7 @@ public class PacketChestHider1_8 extends AbstractPacketChestHider {
 							if (dist > 64) {
 								hide = true;
 							} else {
-								hide = !Utils.chestCheck(acualEye, bs.getLocation());
+								hide = !Utils.checkChest(acualEye, bs.getLocation());
 							}
 							
 							if (hide) {
@@ -124,9 +127,18 @@ public class PacketChestHider1_8 extends AbstractPacketChestHider {
 								|| bs.getType() == Material.TRAPPED_CHEST 
 								|| bs.getType() == Material.ENDER_CHEST) 
 					{
-						int s = bs.getY() / 16;
-						boolean result = Utils.chestCheck(acualEye, bs.getLocation());
-						if (!result) {
+						double dist = Vector3D.fromLocation(bs.getLocation()).distance(acualEye);
+						
+						boolean hide = false;
+						
+						if (dist > 64) {
+							hide = true;
+						} else {
+							hide = !Utils.checkChest(acualEye, bs.getLocation());
+						}
+						
+						if (hide) {
+							int s = bs.getY() / 16;
 							if (m.get(s) != null)
 							{
 								m.get(s).add(new GBlock(bs.getX(), bs.getY(), bs.getZ()));
@@ -144,7 +156,7 @@ public class PacketChestHider1_8 extends AbstractPacketChestHider {
 				event.setPacket(pc);
 			}
 		};
-		/*PacketAdapter blockAction = new PacketAdapter(TracerBlocker.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Server.BLOCK_ACTION)
+		PacketAdapter blockAction = new PacketAdapter(TracerBlocker.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Server.BLOCK_ACTION)
 		{
 			
 			@Override
@@ -154,10 +166,18 @@ public class PacketChestHider1_8 extends AbstractPacketChestHider {
 				BlockPosition pos = handle.getBlockPositionModifier().read(0);
 				Material mat = handle.getBlocks().read(0);
 				if (mat == Material.ENDER_CHEST || mat == Material.CHEST || mat == Material.TRAPPED_CHEST) {
-					Location loc = new Location(event.getPlayer().getWorld(), pos.getX(), pos.getY(), pos.getZ());
+					Player p = event.getPlayer();
+					Location loc = new Location(p.getWorld(), pos.getX(), pos.getY(), pos.getZ());
 					Block b = loc.getWorld().getBlockAt(loc);
-					boolean hidden = ach.getChestMembership().get(event.getPlayer().getEntityId(), b.getLocation());
-					if (hidden) {
+					Boolean obj = ach.getChestMembership().get(p.getEntityId(), b.getLocation());
+					if (obj == null) {
+						Vector3D acualEye = MathUtils.toUnitVector(
+									Vector3D.fromLocation(p.getLocation().add(0, p.getEyeHeight(), 0)), 0.2,
+									p.getLocation().getYaw(), p.getLocation().getPitch());
+						obj = Boolean.valueOf(!Utils.checkChest(acualEye, loc));
+					}
+					boolean hide = obj.booleanValue();
+					if (hide) {
 						event.setCancelled(true);
 					}
 				}
@@ -172,21 +192,87 @@ public class PacketChestHider1_8 extends AbstractPacketChestHider {
 			{
 				PacketContainer packet = event.getPacket();
 				BlockPosition pos = packet.getBlockPositionModifier().read(0);
-				
 				Player p = event.getPlayer();
-				
-				Block b = p.getWorld().getBlockAt(new Location(p.getWorld(), pos.getX(), pos.getY(), pos.getZ()));
-				
-				boolean hidden = ach.getChestMembership().get(p.getEntityId(), b.getLocation()); // ano musí to bý takto dementě jelikož když tam dám jen new Location... tak get navrací null :/
-				if (hidden) {
-					event.setCancelled(true);	
+				Location loc = new Location(p.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+				Block b = p.getWorld().getBlockAt(loc);
+				if (b.getType() == Material.CHEST || b.getType() == Material.ENDER_CHEST || b.getType() == Material.TRAPPED_CHEST) {
+					Boolean obj = ach.getChestMembership().get(p.getEntityId(), b.getLocation());
+					if (obj == null) {
+						Vector3D acualEye = MathUtils.toUnitVector(
+									Vector3D.fromLocation(p.getLocation().add(0, p.getEyeHeight(), 0)), 0.2,
+									p.getLocation().getYaw(), p.getLocation().getPitch());
+						obj = Boolean.valueOf(!Utils.checkChest(acualEye, loc));
+					}
+					boolean hide = obj.booleanValue();
+					if (hide) {
+						event.setCancelled(true);
+					}
+				}
+			}
+		};
+		
+		/*PacketAdapter blockChange = new PacketAdapter(TracerBlocker.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Server.BLOCK_CHANGE) 
+		{
+			@Override
+			public void onPacketSending(PacketEvent event)
+			{
+				PacketContainer handle = event.getPacket();
+				BlockPosition pos = handle.getBlockPositionModifier().read(0);
+				WrappedBlockData data = handle.getBlockData().read(0);
+				if (data.getType() == Material.CHEST || data.getType() == Material.ENDER_CHEST || data.getType() == Material.TRAPPED_CHEST) {
+					Player p = event.getPlayer();
+					Location loc = pos.toLocation(p.getWorld());
+					Boolean obj = ach.getChestMembership().get(p.getEntityId(), loc);
+					if (obj == null) {
+						Vector3D acualEye = MathUtils.toUnitVector(
+									Vector3D.fromLocation(p.getLocation().add(0, p.getEyeHeight(), 0)), 0.2,
+									p.getLocation().getYaw(), p.getLocation().getPitch());
+						obj = Boolean.valueOf(Utils.checkChest(acualEye, loc));
+					}
+					boolean hidden = obj.booleanValue();
+					if (hidden) {
+						event.setCancelled(true);	
+					}
+				}
+			}
+		};
+		
+		PacketAdapter multiBlockChange = new PacketAdapter(TracerBlocker.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Server.MULTI_BLOCK_CHANGE) 
+		{
+			@Override
+			public void onPacketSending(PacketEvent event)
+			{
+				PacketContainer handle = event.getPacket();
+				MultiBlockChangeInfo[] records = handle.getMultiBlockChangeInfoArrays().read(0);
+				Player p = event.getPlayer();
+				for (MultiBlockChangeInfo info : records) {
+					Location loc = info.getLocation(p.getWorld());
+					Material mat = loc.getBlock().getType();
+					if (mat == Material.CHEST || mat == Material.ENDER_CHEST || mat == Material.TRAPPED_CHEST) {
+						Boolean obj = ach.getChestMembership().get(p.getEntityId(), loc);
+						if (obj == null) {
+							Vector3D acualEye = MathUtils.toUnitVector(
+										Vector3D.fromLocation(p.getLocation().add(0, p.getEyeHeight(), 0)), 0.2,
+										p.getLocation().getYaw(), p.getLocation().getPitch());
+							obj = Boolean.valueOf(Utils.checkChest(acualEye, loc));
+							
+						}
+						boolean hidden = obj.booleanValue();
+						if (hidden) {
+							event.setCancelled(true);	
+						}
+					}
 				}
 			}
 		};*/
 		
 		//TODO: tyto dva nefungují :/ záhí NPE
-		//ProtocolLibrary.getProtocolManager().addPacketListener(breakAnimation);
-		//ProtocolLibrary.getProtocolManager().addPacketListener(blockAction);
+		ProtocolLibrary.getProtocolManager().addPacketListener(breakAnimation);
+		ProtocolLibrary.getProtocolManager().addPacketListener(blockAction);
+		
+//		ProtocolLibrary.getProtocolManager().addPacketListener(blockChange);
+//		ProtocolLibrary.getProtocolManager().addPacketListener(multiBlockChange);
+		
 		ProtocolLibrary.getProtocolManager().addPacketListener(chunkBulk);
 		ProtocolLibrary.getProtocolManager().addPacketListener(chunk);
 	}
@@ -196,15 +282,15 @@ public class PacketChestHider1_8 extends AbstractPacketChestHider {
         int newSections = changedSections & ~map.b;
         int fullBitmask = map.b | changedSections;
         boolean biome = map.a.length % 10240 != 0;
-        boolean skylight = map.a.length > setBits(map.b) * 10240 + (biome ? 256 : 0);
+        boolean skylight = map.a.length > bitCount(map.b) * 10240 + (biome ? 256 : 0);
         //Adding new sections (if necessary)
         if (newSections != 0) {
-            byte[] newBytes = new byte[map.a.length + (10240 + (skylight ? 2048 : 0)) * setBits(newSections)];
+            byte[] newBytes = new byte[map.a.length + (10240 + (skylight ? 2048 : 0)) * bitCount(newSections)];
             System.arraycopy(map.a, 0, newBytes, 0, map.a.length);
-            Arrays.fill(newBytes, 8192 * setBits(fullBitmask), newBytes.length, (byte)255); 
+            Arrays.fill(newBytes, 8192 * bitCount(fullBitmask), newBytes.length, (byte)255); 
             int sectionStart = 0;
-            int lightStart = setBits(fullBitmask) * 8192;
-            int skylightStart = lightStart + setBits(fullBitmask) * 2048;
+            int lightStart = bitCount(fullBitmask) * 8192;
+            int skylightStart = lightStart + bitCount(fullBitmask) * 2048;
             for (int section = 0; section < 16; section++) {
                 if ((fullBitmask & 1 << section) != 0) {
                     if ((newSections & 1 << section) != 0) {
@@ -243,7 +329,7 @@ public class PacketChestHider1_8 extends AbstractPacketChestHider {
         return map;
     }
 
-    private static int setBits(int i) {
+    private static int bitCount(int i) {
         return Integer.bitCount(i);
     }
 

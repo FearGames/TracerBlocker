@@ -2,10 +2,12 @@
 package cz.GravelCZLP.TracerBlocker;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -76,7 +78,7 @@ public class TracerBlocker extends JavaPlugin {
 		//saveConfig();
 	}
 
-	public void loadConfig() {
+	private void loadConfig() {
 		saveDefaultConfig();
 		Settings.PlayerHider.enabled = getConfig().getBoolean("playerhider.enabled", true);
 		Settings.PlayerHider.everyTicks = getConfig().getInt("playerhider.every-ticks", 2);
@@ -84,6 +86,7 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.PlayerHider.maxDistance = getConfig().getInt("playerhider.max-distance", 50);
 		Settings.PlayerHider.disabledWorlds = getConfig().getStringList("playerhider.disabledWorlds");
 		Settings.PlayerHider.calulatef5 = getConfig().getBoolean("playerhider.calculatef5", false);
+		Settings.PlayerHider.rtDist = getConfig().getDouble("playerhider.rtDist", 0.1);
 		
 		Settings.ChestHider.enabled = getConfig().getBoolean("chesthider.enabled", true);
 		Settings.ChestHider.everyTicks = getConfig().getInt("chesthider.every-ticks", 5);
@@ -91,6 +94,7 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.ChestHider.maxDistance = getConfig().getInt("chesthider.max-distance", 32);
 		Settings.ChestHider.disabledWorlds = getConfig().getStringList("chesthider.disabledWorlds");
 		Settings.ChestHider.calulatef5 = getConfig().getBoolean("chesthider.calculatef5", false);
+		Settings.ChestHider.rtDist = getConfig().getDouble("chesthider.rtDist", 0.5);
 		
 		Settings.FakePlayers.enabled = getConfig().getBoolean("fakeplayers.enabled", true);
 		Settings.FakePlayers.moving = getConfig().getBoolean("fakeplayers.moving", true);
@@ -106,7 +110,7 @@ public class TracerBlocker extends JavaPlugin {
 		Settings.Test.debug = getConfig().getBoolean("debug", false);
 	}
 
-	public void saveConfig() {
+	/*public void saveConfig() {
 		FileConfiguration config = getConfig();
 
 		// Player hider
@@ -140,6 +144,26 @@ public class TracerBlocker extends JavaPlugin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}*/
+	
+	@Override
+	public void saveDefaultConfig()
+	{
+		try
+		{
+			InputStream is = getResource("config.yml");
+			File cfg = new File(getDataFolder() + "/config.yml");
+			if (cfg.exists()) {
+				return;
+			}
+			cfg.createNewFile();
+			FileOutputStream fos = new FileOutputStream(cfg);
+			IOUtils.copy(is, fos);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public static TracerBlocker getInstance() {
