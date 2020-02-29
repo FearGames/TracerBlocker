@@ -151,6 +151,10 @@ public class TracerBlocker extends JavaPlugin {
 	{
 		try
 		{
+			File folder = getDataFolder();
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
 			InputStream is = getResource("config.yml");
 			File cfg = new File(getDataFolder() + "/config.yml");
 			if (cfg.exists()) {
